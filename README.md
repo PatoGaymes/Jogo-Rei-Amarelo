@@ -1,5 +1,2 @@
 # Jogo-Rei-Amarelo
-Amarelo
-teste
-TESTE
-teste Erick
+Projeto de jogo RPG em GODOT
