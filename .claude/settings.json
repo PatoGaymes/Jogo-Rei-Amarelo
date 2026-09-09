@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "deny": [
+      "Bash(git commit:*)",
+      "Bash(git commit *)",
+      "Bash(git push:*)",
+      "Bash(git push *)",
+      "Bash(git merge:*)",
+      "Bash(git merge *)",
+      "Bash(git rebase:*)",
+      "Bash(git rebase *)"
+    ],
+    "allow": [
+      "Bash(dotnet build:*)",
+      "Bash(dotnet build *)",
+      "Bash(dotnet restore:*)",
+      "Bash(dotnet restore *)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)"
+    ]
+  }
+}

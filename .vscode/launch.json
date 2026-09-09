@@ -1,0 +1,41 @@
+{
+    // Alteração de IA - Revisar
+    // O que faz: permite rodar o jogo apertando F5 no VS Code, já com a
+    //            depuração ligada (pausar o jogo numa linha e ver os valores).
+    // Por quê: sem isso, só dá para rodar o jogo pelo Godot, e aí não é possível
+    //          pausar o código C# para investigar um problema.
+    //          O caminho do Godot vem do arquivo settings.json, então cada dev
+    //          ajusta em um lugar só.
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Rodar o jogo (com depuração C#)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${config:godotTools.editorPath.godot4}",
+            "args": [
+                "--path",
+                "${workspaceFolder}/ReiDoAmarrilho"
+            ],
+            "cwd": "${workspaceFolder}/ReiDoAmarrilho",
+            "console": "internalConsole",
+            "stopAtEntry": false
+        },
+        {
+            "name": "Rodar so a cena do Player (teste)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${config:godotTools.editorPath.godot4}",
+            "args": [
+                "--path",
+                "${workspaceFolder}/ReiDoAmarrilho",
+                "res://Scenes/player.tscn"
+            ],
+            "cwd": "${workspaceFolder}/ReiDoAmarrilho",
+            "console": "internalConsole",
+            "stopAtEntry": false
+        }
+    ]
+}

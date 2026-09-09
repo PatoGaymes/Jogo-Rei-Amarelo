@@ -1,0 +1,18 @@
+<Project Sdk="Godot.NET.Sdk/4.6.0">
+  <!--
+    Alteração de IA - Revisar
+    O que faz: este arquivo diz ao C# como montar o programa do jogo.
+    Por quê: o Godot precisa dele para reconhecer que o projeto usa C#.
+             Sem este arquivo, nenhum script .cs funciona.
+
+    TargetFramework: qual versão do .NET o jogo usa. É a versão 8, que é o
+    padrão do Godot 4.6. Testado e funcionando nesta máquina mesmo tendo
+    apenas o .NET 10 instalado, então não é preciso instalar a versão 8.
+    Não mudar este valor sem testar o jogo depois.
+  -->
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <EnableDynamicLoading>true</EnableDynamicLoading>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+</Project>

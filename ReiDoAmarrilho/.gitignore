@@ -1,3 +1,21 @@
 # Godot 4+ specific ignores
 .godot/
 /android/
+
+# Alteração de IA - Revisar
+# O que faz: manda o Git ignorar as pastas que o C# cria sozinho ao compilar.
+# Por quê: "bin" e "obj" guardam o programa já montado, que é gerado de novo a
+#          cada compilação. Se fossem enviados ao GitHub, cada dev subiria
+#          milhares de arquivos que mudam toda hora e dariam conflito à toa.
+bin/
+obj/
+.mono/
+*.csproj.user
+.vs/
+
+# Alteração de IA - Revisar
+# O que faz: ignora as pastas onde o jogo pronto para distribuição é gerado.
+# Por quê: são arquivos grandes, montados a partir do código. Quem precisar
+#          do jogo pronto gera na própria máquina ou pega da publicação oficial.
+/build/
+/export/

@@ -1,0 +1,10 @@
+# Alteração de IA - Revisar
+# O que faz: impede que as configurações pessoais do Claude de cada dev sejam
+#            enviadas ao GitHub.
+# Por quê: o arquivo settings.json (sem o "local") é da equipe e vai para o
+#          repositório. O "settings.local.json" é onde cada pessoa coloca ajustes
+#          só da máquina dela, e por isso não deve ser compartilhado.
+.claude/settings.local.json
+
+# Visual Studio
+.vs/

@@ -1,0 +1,23 @@
+{
+    // Alteração de IA - Revisar
+    // O que faz: cria o comando "build", que monta o programa C# do jogo.
+    // Por quê: é usado automaticamente antes de rodar o jogo pelo VS Code,
+    //          garantindo que a versão executada é a do código mais recente.
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "type": "process",
+            "command": "dotnet",
+            "args": [
+                "build",
+                "${workspaceFolder}/ReiDoAmarrilho/ReiAmarrilho.csproj"
+            ],
+            "problemMatcher": "$msCompile",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}

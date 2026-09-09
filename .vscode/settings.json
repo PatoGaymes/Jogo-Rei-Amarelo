@@ -1,0 +1,41 @@
+{
+    // Alteração de IA - Revisar
+    // O que faz: caminho até o programa do Godot nesta máquina.
+    // Por quê: é o que permite ao VS Code abrir cenas e conversar com o Godot.
+    //          ATENÇÃO: cada dev precisa ajustar esta linha para o caminho da
+    //          sua própria máquina, senão as funções do Godot não funcionam.
+    "godotTools.editorPath.godot4": "c:\Users\EricDerre\Documents\Godot\Godot_v4.6.1-stable_mono_win64.exe",
+
+    // Alteração de IA - Revisar
+    // O que faz: indica qual é o arquivo principal do projeto C#.
+    // Por quê: sem isso, o VS Code fica perguntando qual projeto abrir toda vez.
+    "dotnet.defaultSolution": "ReiDoAmarrilho/ReiAmarrilho.sln",
+
+    // Alteração de IA - Revisar
+    // O que faz: esconde do VS Code as pastas geradas automaticamente ao compilar.
+    // Por quê: essas pastas têm milhares de arquivos que ninguém edita. Deixá-las
+    //          visíveis polui a lista de arquivos e deixa a busca lenta.
+    "files.exclude": {
+        "**/bin": true,
+        "**/obj": true
+    },
+    "search.exclude": {
+        "**/.godot": true,
+        "**/bin": true,
+        "**/obj": true
+    },
+    "files.watcherExclude": {
+        "**/.godot/**": true,
+        "**/bin/**": true,
+        "**/obj/**": true
+    },
+
+    // Alteração de IA - Revisar
+    // O que faz: padroniza a quebra de linha dos arquivos e formata o C# ao salvar.
+    // Por quê: mantém o mesmo padrão do arquivo .gitattributes do projeto e evita
+    //          que o Git acuse mudanças em linhas que ninguém mexeu.
+    "files.eol": "\n",
+    "[csharp]": {
+        "editor.formatOnSave": true
+    }
+}

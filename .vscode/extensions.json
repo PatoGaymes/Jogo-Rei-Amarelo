@@ -1,0 +1,14 @@
+{
+    // Alteração de IA - Revisar
+    // O que faz: lista as extensões do VS Code que este projeto usa. Quando um dev
+    //            abrir o projeto, o VS Code sugere instalar as que faltam.
+    // Por quê: garante que todo mundo da equipe trabalhe com as mesmas ferramentas,
+    //          sem precisar seguir uma lista manual de instalação.
+    "recommendations": [
+        "ms-dotnettools.csharp",
+        "geequlim.godot-tools",
+        "neikeq.godot-csharp-vscode",
+        "editorconfig.editorconfig",
+        "ms-dotnettools.csdevkit"
+    ]
+}

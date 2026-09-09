@@ -1,4 +1,6 @@
-[gd_scene format=3 uid="uid://uxsfpgd4b2mn"]
+[gd_scene load_steps=4 format=3 uid="uid://uxsfpgd4b2mn"]
+
+[ext_resource type="Script" path="res://Scripts/Characters/Player.cs" id="1_player"]
 
 [sub_resource type="CompressedTexture2D" id="CompressedTexture2D_f60y1"]
 load_path = "res://.godot/imported/icon.svg-218a8f2b3041327d8a5756f3a245f83b.ctex"
@@ -7,6 +9,7 @@ load_path = "res://.godot/imported/icon.svg-218a8f2b3041327d8a5756f3a245f83b.cte
 size = Vector2(113, 113)
 
 [node name="Player" type="CharacterBody2D" unique_id=114239642]
+script = ExtResource("1_player")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=777051879]
 position = Vector2(132, 86)
