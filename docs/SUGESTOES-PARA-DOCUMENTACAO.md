@@ -1,102 +1,97 @@
 # Sugestões para a documentação externa
 
-A Regra 3 diz que o Claude **nunca altera** a documentação do Trello, OneNote, Canva ou
-Drive. Quando ele identificar algo que precisa ser corrigido lá, a sugestão vem para cá,
-e um dev decide se sobe ou não.
+A Regra 3 diz que o Claude **nunca altera** a documentação do Trello e do Google Drive. Quando
+ele identificar algo que precisa ser corrigido lá, a sugestão vem para cá, e um dev decide se
+sobe ou não.
 
 **Nada nesta página foi aplicado nos sites.**
 
 ---
 
-## 09/09/2026 — Correções na documentação de preparação do ambiente
+# ✅ RESOLVIDAS
 
-### 1. Godot não roda JavaScript, Lua nem Python — **prioridade alta**
+## 09/09/2026 — Preparação do ambiente
 
-**O que está escrito:**
+As 5 sugestões (linguagens do Godot, editor externo para C#, extensões do VS Code, convenção de
+nomes de pastas e a observação sobre o .NET 10) foram **aplicadas no Trello** pela equipe em
+11/09/2026. Confirmado na exportação do quadro.
 
-> "Como iremos utilizar alguns códigos em C# (Caso tenha necessidade, usaremos JavaScrypt e
-> Lua também)"
+## 11/09/2026 — Conflito entre GDD e Árvore de Habilidades
 
-**O problema:** o Godot 4 suporta oficialmente apenas **GDScript** e **C#**. Lua existe só
-através de extensões feitas pela comunidade, que teriam que ser instaladas e mantidas pela
-equipe. JavaScript não tem suporte real. Python também não.
+**Respondido pelo PO/PM em 12/09/2026.** As decisões estão registradas em
+[CLAUDE.md](../CLAUDE.md) e resumidas abaixo.
 
-**Sugestão de texto:**
+### A Árvore de Habilidades é o documento oficial do combate
 
-> Como iremos utilizar C#, usaremos o Visual Studio Code como IDE externa. O Godot suporta
-> oficialmente duas linguagens: **C#** (nossa principal) e **GDScript** (a linguagem própria
-> da engine, útil para scripts pequenos de cena). Outras linguagens como Python podem ser
-> usadas em ferramentas de apoio fora do jogo, mas não dentro dele.
+O PO explicou: *"os efeitos de status foram alterados, e conforme eu fui fazendo as árvores de
+habilidade, eu dei algumas alteradas em certas coisas, e ao invés de puxar pro GDD, eu coloquei
+no documento da árvore de habilidades, sendo assim, ele é o atualizado."*
 
----
+| Item | Decisão |
+|---|---|
+| **Efeitos de status** | Vale a lista da Árvore: Gelo, Ácido, Sangramento, Fogo, Corrosão, Raio, Escuridão, Luz |
+| **Vanguarda** | Quem tem Vanguarda **protege os aliados e toma o dano por eles**. Não era contradição — a Árvore explicou a mesma coisa com outras palavras |
+| **Vulnerável** | Vale o da Árvore: **não pode receber buffs** |
+| **Ações por turno** | **1 ação por turno**, salvo item ou habilidade que contorne isso |
+| **Corrompido / Purificado** | São os nomes **antigos** de Escuridão e Luz. **Não entram no produto final** |
+| **Personagens sem lore** | São recrutáveis só via gameplay. **Não precisam de lore extensa** — não é lacuna |
 
-### 2. Falta a configuração que faz o C# abrir no VS Code — **prioridade alta**
+### Nomes oficiais definidos
 
-**O que está escrito:** a documentação manda configurar `Text Editor > External`.
-
-**O problema:** essa configuração vale **apenas para GDScript**. Existe uma configuração
-separada para C#, e sem ela os scripts C# continuam abrindo no editor interno do Godot —
-exatamente o que a equipe queria evitar.
-
-**Sugestão: acrescentar após o passo do Exec Flags:**
-
-> **Configuração do editor externo para C#**
->
-> A configuração acima vale apenas para GDScript. Para o C# abrir no VS Code:
->
-> Vá em **Dotnet → Editor → External Editor** e selecione **Visual Studio Code**.
->
-> Sem esse passo, os scripts C# continuam abrindo no editor interno do Godot.
+**Xamã**, **Tao**, **Jedara**. Já aplicados nas pastas de assets do projeto
+(`Amana_Xama`, `Tao_Peregrino`, `Jedara_Brutamonte`).
 
 ---
 
-### 3. A lista de extensões do VS Code está incompleta — **prioridade média**
+# ⚠️ PENDENTES
 
-**O que está escrito:** "Instale a extensão própria da Microsoft chamada C#. Só isso é
-necessário, por enquanto."
+## 1. O GDD precisa ser atualizado ou marcado como desatualizado — **prioridade alta**
 
-**O problema:** sem a extensão **godot-tools**, o VS Code trata os arquivos de cena
-(`.tscn`) como texto sem sentido e não consegue depurar o jogo. Na prática ela já está
-instalada na máquina do Eric — a documentação é que está desatualizada.
+Ficou definido que a Árvore de Habilidades é o documento oficial do combate. Só que **o GDD
+continua com as regras antigas escritas**, e ele é o documento principal do projeto — é o
+primeiro lugar onde alguém novo vai procurar.
 
-**Sugestão de texto:**
+Enquanto os dois textos coexistirem, a confusão vai se repetir com a próxima pessoa que ler.
 
-> Instale as seguintes extensões:
->
-> - **C#** (Microsoft) — para programar em C#
-> - **godot-tools** (geequlim) — para o VS Code entender arquivos de cena do Godot e
->   permitir depuração
-> - **C# Tools for Godot** (neikeq) — para pausar o código C# e investigar problemas
->   enquanto o jogo roda
-> - **EditorConfig** — mantém o padrão de formatação do projeto
->
-> Opcional: **C# Dev Kit** (Microsoft) — traz recursos extras. Atenção à licença: é
-> gratuita para uso individual e empresas pequenas, mas exige licença do Visual Studio em
-> empresas grandes.
->
-> Ao abrir o projeto, o VS Code já sugere instalar essas extensões automaticamente.
+**Sugestão:** nas seções *"Status, Efeitos e Condições"* e *"Combate"* do GDD, substituir o
+conteúdo pelo da Árvore de Habilidades — ou, se for mais rápido, apagar essas seções e deixar
+um aviso no lugar:
 
----
+> **Sistema de status, condições e ações de combate:** ver o documento *Árvores de Habilidades*,
+> que é a fonte oficial e mais atualizada. As regras que ficavam aqui estão desatualizadas.
 
-### 4. Correção na convenção de nomes de pastas — **prioridade baixa**
+## 2. Quais ações existem no turno — **prioridade alta, ainda em aberto**
 
-**O que está escrito:** "Nas opções de Convenção de Nomenclatura de Diretórios coloque
-camelCase"
+O PO respondeu **quantas** ações o personagem tem (uma por turno), mas não **quais** ações
+existem. Os dois documentos continuam divergindo nisso:
 
-**O problema:** as pastas que já existem no projeto (`Scenes`, `Scripts`, `Assets`) usam
-**PascalCase** (primeira letra maiúscula), que também é o padrão do C#. Manter `camelCase`
-faria as pastas novas saírem com um padrão diferente das antigas.
+| GDD | Árvore de Habilidades |
+|---|---|
+| Atacar, Habilidades, **Movimento**, Itens, Defender, **Conversar** | Atacar/Habilidades, Itens, Defender, **Fugir** |
 
-**Sugestão:** trocar `camelCase` por `PascalCase`.
+**Por que isso não é detalhe:**
 
----
+- **Movimento** parece continuar existindo, porque a própria Árvore tem habilidades que dependem
+  de posição: *"Jogo de pés: você pode usar suas habilidades a qualquer distância"* e
+  *"Avanço Tático: Avança, causa dano e empurra"*. Sem movimentação, essas habilidades não fazem
+  sentido.
+- **Conversar** (Enganar, Ameaçar, Furtar, Conversar, Expor) é uma mecânica grande e detalhada no
+  GDD, e **três atributos existem só para servir a ela**: Lábia, Intuição e Análise. Se Conversar
+  sair, esses três atributos ficam sem função.
+- **Fugir** aparece só na Árvore e não existe no GDD.
 
-### 5. Observação sobre o .NET 10 — **prioridade baixa, apenas informativa**
+**O que precisamos saber:** a lista final de ações do turno. Ela define diretamente as telas de
+combate e os comandos de controle.
 
-**O que está escrito:** "Baixe a versão .NET 10.0 e instale no disco onde está o Windows"
+## 3. Arte e música sem correspondência no GDD — **prioridade baixa**
 
-**Observação:** está correto e **foi testado funcionando**. Vale acrescentar uma nota,
-porque é uma dúvida que costuma aparecer:
+- **"Criança"** — existe PNG em personagens recrutáveis, mas não aparece no GDD. A pasta está como
+  `_SemNomeNoGDD_Crianca` até alguém confirmar quem é.
+- **"Marioneteira"** — existe música, mas não aparece no GDD nem entre os PNGs de chefe. Está em
+  `Audio/Music/Bosses/` por suposição. Confirmar se é chefe.
 
-> O Godot 4.6 trabalha internamente com o .NET 8, mas o .NET 10 é compatível e foi testado
-> no nosso projeto. Não é preciso instalar as duas versões — o .NET 10 basta.
+## 4. Cards do Trello que já podem mudar de coluna — **prioridade baixa**
+
+**"Preparar o ambiente de programação - Godot"** e **"...- Visual Studio Code"** estão em
+*Em andamento*. O ambiente está montado, testado e rodando — podem ir para *Revisão* ou
+*Concluído*.

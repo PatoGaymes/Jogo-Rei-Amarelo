@@ -1,6 +1,6 @@
-# Rei Amarrilho — contexto do projeto
+# Contos de Outrora: O Rei De Amarelo — contexto do projeto
 
-Jogo de RPG desenvolvido pela equipe **PatoGaymes** na engine **Godot 4.6**, com **C#**.
+RPG tático por turnos desenvolvido pela equipe **PatoGaymes** na engine **Godot 4.6**, com **C#**.
 
 ---
 
@@ -37,36 +37,95 @@ Godot apaga comentários ao salvar), registrar a alteração em
 
 ### Regra 3 — Nunca alterar a documentação externa
 
-O Trello, o OneNote, o Canva e o Google Drive são a **fonte de verdade** do projeto e não
-podem ser alterados pelo Claude. Se algo precisar mudar lá, escrever a sugestão em
+O Trello e o Google Drive são a **fonte de verdade** do projeto e não podem ser alterados
+pelo Claude. Se algo precisar mudar lá, escrever a sugestão em
 [docs/SUGESTOES-PARA-DOCUMENTACAO.md](docs/SUGESTOES-PARA-DOCUMENTACAO.md) para o dev
 revisar e subir manualmente.
+
+> OneNote e Canva foram **descartados** pela equipe em 11/09/2026 por estarem desatualizados.
 
 ---
 
 ## Sobre o jogo
 
-- **Gênero:** RPG por turnos
-- **Referência:** **Darkest Dungeon** — na disposição de tela e nas mecânicas. A arte e o
-  design são próprios da equipe.
+- **Nome oficial:** Contos de Outrora: O Rei De Amarelo
+- **Gênero:** RPG tático por turnos
+- **Referência:** **Darkest Dungeon** — disposição de tela e mecânicas. Arte e design próprios.
 - **Estilo visual:** arte 2D em **alta resolução** (desenhada, **não** pixel art)
 - **Resolução base:** 1920x1080
 - **Câmera:** fixa por cena/corredor — **não** segue o personagem
 
-**Consequências práticas dessas escolhas** (não mudar sem falar com a equipe):
+**Consequências práticas** (não mudar sem falar com a equipe): filtro de textura **Linear**
+(nunca `Nearest`), escala **fracionária** (nunca `integer`), snap de pixel **desligado**,
+UI com âncoras bem definidas (o modo de tela é `expand`).
 
-- Filtro de textura **Linear**, nunca `Nearest` (`Nearest` é para pixel art e deixaria a arte serrilhada)
-- Escala **fracionária** (`fractional`), nunca `integer`
-- Snap de pixel **desligado**
-- UI pesada, com âncoras bem definidas (o modo de tela é `expand`, então a tela pode
-  ficar mais larga em monitores ultrawide)
-- Combate por turnos: a lógica é de **máquina de estados**, não de física em tempo real
+### Premissa
+
+A ilha de Euduro, rebatizada **Carcosa** pelo rei **Hastur Carcosa**, que se fundiu a um
+homúnculo para fugir da morte. O tempo na ilha foi congelado pelo mago Eldaquias, e os não
+nobres foram escravizados nas profundezas. Os personagens jogáveis chegam ali por caminhos
+diferentes e todos terminam presos nas masmorras.
+
+### Mecânicas centrais (do GDD)
+
+- **Combate por turnos**, cada personagem ocupa **1 de 5 posições**. Posição importa: há
+  habilidades que só funcionam em certos lugares da formação.
+- **Uma ação por turno.** A lógica é de **máquina de estados**, não de física em tempo real.
+- **Atributos em 3 categorias:** **Corpo** (vida, Precisão, Furtividade, Reação, Robustez),
+  **Mente** (sanidade, Lábia, Intuição, Análise, Vontade) e **Essência** (foco, Energia, Aura).
+- **PF (Pontos de Foco)** é o recurso gasto pelas habilidades.
+- **Exploração lateral** (só frente e trás), com salas que resetam ao sair, e "Estátuas do Rei"
+  para salvar e viajar rápido.
+- **Progressão:** "lascas de Euduroh" (de inimigos comuns) desbloqueiam habilidades; "jóias
+  douradas" (drop garantido de chefe) sobem o nível. Skill tree com 3 caminhos — escolher um
+  **bloqueia os outros dois**, e só uma jóia sacrificada numa estátua permite refazer.
+
+### Regras de combate — qual documento vale
+
+> ⚠️ **A Árvore de Habilidades é a fonte oficial do combate, não o GDD.** Definido pelo PO em
+> 12/09/2026: as regras foram alteradas durante a criação das árvores e só aquele documento foi
+> atualizado. **O GDD ainda tem as regras antigas escritas — ignorar as seções de status e
+> combate dele.**
+
+| Regra | Valor oficial |
+|---|---|
+| **Efeitos de status** | Gelo, Ácido, Sangramento, Fogo, Corrosão, Raio, Escuridão, Luz |
+| **Vanguarda** | Quem tem Vanguarda **protege os aliados e toma o dano no lugar deles** |
+| **Vulnerável** | **Não pode receber buffs** |
+| **Ações por turno** | **1**, salvo item ou habilidade que contorne isso |
+| **Corrompido / Purificado** | Nomes **antigos** de Escuridão e Luz. **Não existem no jogo** |
+
+**Ainda em aberto:** *quais* ações existem no turno (o GDD lista Movimento e Conversar; a Árvore
+lista Fugir). Ver pendência 2 em [SUGESTOES-PARA-DOCUMENTACAO.md](docs/SUGESTOES-PARA-DOCUMENTACAO.md).
+
+Personagens sem lore in-game (Amana, Gael, Jedara, Varossa, Rosaria) **não são lacuna**: são
+recrutáveis só via gameplay e não precisam de lore extensa.
+
+### Personagens jogáveis e recrutáveis
+
+| Personagem | Classe | Pasta de assets |
+|---|---|---|
+| Khalid de Nortumbria | Cavaleira | `Khalid_Cavaleira` |
+| Amana A'Bajal | **Xamã** | `Amana_Xama` |
+| Rosaria Percival | Aberração | `Rosaria_Aberracao` |
+| Gael Nebraska | Hemomante | `Gael_Hemomante` |
+| **Tao** A'Bajal | Peregrino | `Tao_Peregrino` |
+| Uzhan N'Daka | Desgarrado | `Uzhan_Desgarrado` |
+| Lancelot Claivar | Escudeiro | `Lancelot_Escudeiro` |
+| **Jedara**, Filho de Tauron | Brutamonte | `Jedara_Brutamonte` |
+| Varossa K'Ushim / Homem Misterioso | Bruxo | `Varossa_Bruxo` |
+| Emi Matsunaga | Caçadora | `Emi_Cacadora` |
+
+Grafias oficiais confirmadas pelo PO em 12/09/2026: **Xamã**, **Tao**, **Jedara**. O GDD tem
+grafias antigas em alguns trechos ("Cartomante", "Thao", "Jedah") — usar sempre as oficiais.
+
+Cada personagem jogável tem **Lore in-game em 4 Atos**, com 2 escolhas por Ato.
 
 ---
 
 ## Linguagens
 
-- **C#** é a linguagem principal do projeto
+- **C#** é a linguagem principal
 - **GDScript** pode ser usado pontualmente em scripts pequenos de cena
 
 **Godot não suporta JavaScript, Lua nem Python.** Se alguém pedir código nessas linguagens
@@ -80,30 +139,53 @@ para dentro do jogo, avisar que não é possível e oferecer C# ou GDScript.
 |---|---|
 | Godot | 4.6.1-stable **mono** (`Documents/Godot/Godot_v4.6.1-stable_mono_win64.exe`) |
 | .NET SDK | 10.0.300 |
-| Alvo do projeto C# | `net8.0` — **testado e rodando** com o SDK 10, não precisa instalar o .NET 8 |
+| Alvo do projeto C# | `net8.0` — **testado e rodando** com o SDK 10 |
+| Godot.NET.Sdk | 4.6.1 |
 | Renderizador | Forward+ |
-| Repositório | `github.com/PatoGaymes/Jogo-Rei-Amarelo` |
+| Repositório | `github.com/PatoGaymes/Jogo-Rei-Amarelo` (nome antigo, anterior à definição do título) |
 
-Detalhes e decisões pendentes em [docs/AMBIENTE.md](docs/AMBIENTE.md).
+Detalhes e pendências em [docs/AMBIENTE.md](docs/AMBIENTE.md).
 
 ---
 
 ## Estrutura de pastas
 
 ```
-ReiDoAmarrilho/              # projeto Godot
-├── Scenes/                  # cenas .tscn — Characters/, UI/, Combat/, Levels/
-├── Scripts/                 # código .cs  — Characters/, Combat/, UI/, Systems/
-├── Assets/                  # Art/, Audio/, Fonts/
-├── Resources/               # dados .tres — heróis, habilidades, inimigos
-├── ReiAmarrilho.csproj      # configuração do projeto C#
-└── project.godot            # configurações do jogo
-docs/                        # documentação interna e espelho da externa
+ContosDeOutrora/                  # projeto Godot
+├── Scenes/                       # cenas .tscn — Characters/, UI/, Combat/, Levels/
+├── Scripts/                      # código .cs  — Characters/, Combat/, UI/, Systems/
+├── Assets/                       # arte e som, organizados POR PERSONAGEM
+│   ├── Art/  Characters/ Bosses/ Enemies/ Npcs/ Cenarios/ UI/
+│   ├── Audio/ Music/{Personagens,Bosses,Ambiente}/ SFX/
+│   └── README.md                 # regra de organização — ler antes de adicionar arte
+├── Resources/                    # dados .tres — heróis, habilidades, inimigos
+├── ContosDeOutrora.csproj
+└── project.godot
+docs/                             # documentação interna + espelho da externa
 ```
+
+**Cada personagem, chefe, inimigo e NPC tem pasta própria**, com `Combat/`, `Dialogue/`,
+`Map/` e `Provisorio/` dentro. Pastas em `NomePróprio_Classe`, **sem espaço e sem acento**.
+As regras completas estão em [ContosDeOutrora/Assets/README.md](ContosDeOutrora/Assets/README.md)
+— ler antes de adicionar qualquer arte ou som.
+
+### Formatos de arquivo (decidido em 12/09/2026)
+
+| Tipo | Formato | Observação |
+|---|---|---|
+| Imagem | **`.webp`** sem perda | Metade do tamanho do PNG, pixels idênticos |
+| Música | **`.ogg`** | Exportar já em ogg; nunca `.wav` para música |
+| Efeito sonoro curto | `.wav` | Toca sem descomprimir |
+| Animação | **nunca `.gif`** | O Godot não importa GIF, e GIF só tem 256 cores e transparência "tudo ou nada" |
+
+**Animação:** personagens, chefes, inimigos e NPCs são animados **por ossos/recortes** (o
+personagem é desenhado em partes e a animação move as partes — método do Darkest Dungeon).
+**Efeitos** (explosão, magia, fogo) são **quadro a quadro** em sprite sheet, em `Art/Effects/`.
 
 **`Resources/` é importante:** heróis, habilidades e inimigos devem ser arquivos de dados
 (`.tres`), não valores fixos no código. Isso permite que o game designer balanceie o jogo
-sem precisar programar — é o mesmo padrão do Darkest Dungeon.
+sem programar — é o mesmo padrão do Darkest Dungeon, e o GDD tem dezenas de habilidades
+por personagem, o que torna inviável deixá-las no código.
 
 ---
 
@@ -111,13 +193,16 @@ sem precisar programar — é o mesmo padrão do Darkest Dungeon.
 
 ```bash
 # Compilar o C#
-dotnet build ReiDoAmarrilho/ReiAmarrilho.csproj
+dotnet build ContosDeOutrora/ContosDeOutrora.csproj
 
 # Rodar o jogo
-"$GODOT" --path ReiDoAmarrilho
+"$GODOT" --path ContosDeOutrora
 
 # Rodar sem abrir janela (para testes automatizados)
-"$GODOT" --headless --path ReiDoAmarrilho --quit-after 60 res://Scenes/player.tscn
+"$GODOT" --headless --path ContosDeOutrora --quit-after 60 res://Scenes/player.tscn
+
+# Reimportar assets depois de adicionar arte ou som
+"$GODOT" --headless --path ContosDeOutrora --import
 ```
 
 No VS Code, **F5** roda o jogo já com depuração de C# ligada.
@@ -126,10 +211,16 @@ No VS Code, **F5** roda o jogo já com depuração de C# ligada.
 
 ## Documentação externa
 
-A documentação do jogo está espalhada em Trello, OneNote, Canva e Google Drive — **todos
-privados**, o Claude não consegue acessá-los diretamente. A equipe exporta o conteúdo para
-`docs/externo/`, e é de lá que o Claude lê. Instruções de exportação em
-[docs/README.md](docs/README.md).
+A documentação fica no Trello e no Google Drive — **ambos privados**, o Claude não acessa
+diretamente. A equipe exporta para `docs/externo/`:
+
+| Arquivo | Conteúdo |
+|---|---|
+| `Infos/GDD Rei de Amarelo.md` | **Documento principal** — lore, mapa, combate, atributos, progressão, personagens |
+| `Infos/Árvores de Habilidades.md` | Habilidades e caminhos de cada personagem |
+| `trello-board.json` | Quadro de tarefas da equipe |
+
+Instruções de exportação em [docs/README.md](docs/README.md).
 
 Se uma informação sobre o jogo não estiver em `docs/externo/`, **perguntar à equipe em vez
 de supor.**
@@ -138,7 +229,9 @@ de supor.**
 
 ## Estado atual do código
 
-O projeto está no começo. Existe apenas [player.tscn](ReiDoAmarrilho/Scenes/player.tscn) com
-[Player.cs](ReiDoAmarrilho/Scripts/Characters/Player.cs), que é um **teste de ambiente** —
-usa o ícone padrão do Godot como imagem e tem um movimento lateral provisório. Não é o
-personagem real do jogo e deve ser substituído quando o design estiver definido.
+O projeto está no começo. Existe apenas [player.tscn](ContosDeOutrora/Scenes/player.tscn) com
+[Player.cs](ContosDeOutrora/Scripts/Characters/Player.cs), que é um **teste de ambiente** —
+usa o ícone padrão do Godot como imagem e tem movimento lateral provisório. Não é o
+personagem real e deve ser substituído.
+
+Pelo Trello, o próximo passo de código é **"Criação das mecânicas base - Câmera e Movimentação"**.

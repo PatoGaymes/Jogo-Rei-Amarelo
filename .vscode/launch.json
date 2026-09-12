@@ -16,9 +16,9 @@
             "program": "${config:godotTools.editorPath.godot4}",
             "args": [
                 "--path",
-                "${workspaceFolder}/ReiDoAmarrilho"
+                "${workspaceFolder}/ContosDeOutrora"
             ],
-            "cwd": "${workspaceFolder}/ReiDoAmarrilho",
+            "cwd": "${workspaceFolder}/ContosDeOutrora",
             "console": "internalConsole",
             "stopAtEntry": false
         },
@@ -30,10 +30,10 @@
             "program": "${config:godotTools.editorPath.godot4}",
             "args": [
                 "--path",
-                "${workspaceFolder}/ReiDoAmarrilho",
+                "${workspaceFolder}/ContosDeOutrora",
                 "res://Scenes/player.tscn"
             ],
-            "cwd": "${workspaceFolder}/ReiDoAmarrilho",
+            "cwd": "${workspaceFolder}/ContosDeOutrora",
             "console": "internalConsole",
             "stopAtEntry": false
         }

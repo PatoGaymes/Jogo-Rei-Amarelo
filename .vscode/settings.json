@@ -9,7 +9,7 @@
     // Alteração de IA - Revisar
     // O que faz: indica qual é o arquivo principal do projeto C#.
     // Por quê: sem isso, o VS Code fica perguntando qual projeto abrir toda vez.
-    "dotnet.defaultSolution": "ReiDoAmarrilho/ReiAmarrilho.sln",
+    "dotnet.defaultSolution": "ContosDeOutrora/ContosDeOutrora.sln",
 
     // Alteração de IA - Revisar
     // O que faz: esconde do VS Code as pastas geradas automaticamente ao compilar.
