@@ -15,7 +15,12 @@ config_version=5
 ; Por quê: definido pela equipe em 11/09/2026. Antes estava "Rei Amarrilho",
 ;          que era um nome provisório.
 config/name="Contos de Outrora: O Rei De Amarelo"
-run/main_scene="uid://uxsfpgd4b2mn"
+; Alteração de IA - Revisar
+; O que faz: define qual cena abre quando o jogo inicia.
+; Por quê: antes abria direto no personagem de teste. Agora abre o corredor de teste,
+;          que é onde dá para conferir a movimentação e a câmera funcionando juntas.
+;          Quando existir menu inicial, trocar para a cena do menu.
+run/main_scene="res://Scenes/Levels/CorredorTeste.tscn"
 config/features=PackedStringArray("4.6", "C#", "Forward Plus")
 config/icon="res://icon.svg"
 

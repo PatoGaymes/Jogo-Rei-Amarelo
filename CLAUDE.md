@@ -95,8 +95,16 @@ diferentes e todos terminam presos nas masmorras.
 | **Ações por turno** | **1**, salvo item ou habilidade que contorne isso |
 | **Corrompido / Purificado** | Nomes **antigos** de Escuridão e Luz. **Não existem no jogo** |
 
-**Ainda em aberto:** *quais* ações existem no turno (o GDD lista Movimento e Conversar; a Árvore
-lista Fugir). Ver pendência 2 em [SUGESTOES-PARA-DOCUMENTACAO.md](docs/SUGESTOES-PARA-DOCUMENTACAO.md).
+### As 5 ações do turno (definido pelo PO em 12/09/2026)
+
+**Atacar · Habilidades · Defender · Itens · Fugir**
+
+**Conversar foi removida** do jogo — não seria viável em boa parte da campanha. As sub-opções
+dela (Enganar, Ameaçar, Furtar, Expor) saem junto.
+
+**Não existe ação de "mover".** Como o combate tem 5 posições e várias habilidades dependem de
+posição, a movimentação na formação acontece **através das próprias habilidades** (ex.: *Avanço
+Tático*, que avança e empurra). É como o Darkest Dungeon funciona.
 
 Personagens sem lore in-game (Amana, Gael, Jedara, Varossa, Rosaria) **não são lacuna**: são
 recrutáveis só via gameplay e não precisam de lore extensa.
@@ -229,9 +237,23 @@ de supor.**
 
 ## Estado atual do código
 
-O projeto está no começo. Existe apenas [player.tscn](ContosDeOutrora/Scenes/player.tscn) com
-[Player.cs](ContosDeOutrora/Scripts/Characters/Player.cs), que é um **teste de ambiente** —
-usa o ícone padrão do Godot como imagem e tem movimento lateral provisório. Não é o
-personagem real e deve ser substituído.
+**Mecânicas base de exploração — feitas em 12/09/2026** (card do Trello *"Criação das mecânicas
+base - Câmera e Movimentação"*).
 
-Pelo Trello, o próximo passo de código é **"Criação das mecânicas base - Câmera e Movimentação"**.
+| Arquivo | O que faz |
+|---|---|
+| [Player.cs](ContosDeOutrora/Scripts/Characters/Player.cs) | Movimentação lateral com aceleração e desaceleração, gravidade para manter no chão, e vira o sprite para o lado em que anda |
+| [CameraCorredor.cs](ContosDeOutrora/Scripts/Systems/CameraCorredor.cs) | Câmera que acompanha o personagem **só na horizontal**, com a altura travada |
+| [Player.tscn](ContosDeOutrora/Scenes/Characters/Player.tscn) | Cena do personagem, no grupo `player`. Usa a arte provisória da Khalid como placeholder |
+| [CorredorTeste.tscn](ContosDeOutrora/Scenes/Levels/CorredorTeste.tscn) | Corredor de 4000px com chão, paredes e marcadores de distância. É a cena inicial do jogo hoje |
+
+**Como a câmera funciona:** ela desliza para o lado acompanhando quem anda, mas **nunca sobe nem
+desce** — é o enquadramento de "quadro de teatro" do Darkest Dungeon. Quem faz isso é o
+`CameraCorredor`, que copia só a posição horizontal do alvo. A câmera encontra o personagem
+sozinha pelo grupo `player`, então funciona mesmo que os nós sejam renomeados ou movidos.
+
+**Ainda são placeholders:** a arte da Khalid, o cenário (formas coloridas simples) e os
+marcadores de distância. Tudo isso sai quando a arte real chegar.
+
+**Próximos passos naturais:** interações do cenário (portas, cadáveres, Estátuas do Rei) e a
+cena de menu inicial — hoje o jogo abre direto no corredor de teste.

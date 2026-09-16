@@ -183,41 +183,11 @@ Habilidades são habilidades inatas de cada personagem que só podem ser usadas 
 
 ***Combate***
 
-O combate é dividido por turnos, e cada personagem ocupa um espaço dentre 5, possuindo apenas uma ação por turno (a não ser por habilidades específicas, inimigos únicos ou itens que possibilitam mais ações).
-
- As ações possíveis durante combate são:
-
-\-Atacar: Um ataque básico, que todos os personagens possuem;
-
-\-Habilidades: Diferente do ataque normal, as habilidades consomem a Barra de PF (Pontos de Foco);
-
-\-Movimento: Se movimenta para as laterais. Isso é importante tanto por conta de certas habilidades que podem ser usadas apenas em posições específicas quanto para evitar ataques em área;
-
-\-Itens: Assim como ataque padrão, você não tem nenhuma penalidade por usa-los;
-
-\-Defender: Defender aprimora as capacidades defensivas do usuário, mitigando possiveis danos fatais.
-
-\-Conversar: Essa opção desbloqueia interações únicas, de Enganar, Ameaçar, Furtar, Conversar e Expor.
-
-\=Enganar: Em sucesso, o inimigo fica exposto;
-
-\=Ameaçar: Em sucesso, o inimigo fica desarmado;
-
-\=Furtar: Em sucesso, rouba um item do inimigo e entra em furtivo;
-
-\=Conversar: Essa opção é bloqueada para a maioria dos inimigos, mas quando usada, pode ganhar itens e dicas específicas; 
-
-\= Expor: Em sucesso, o inimigo fica exposto.
-
-*Efeitos e Danos*
-
-Certas habilidades aplicam efeitos de status, que podem ser acumulados até um máximo dependendo de como funcionam. Aplicar um efeito diferente do aplicado causa uma pequena quantidade de dano baseado nos acúmulos atuais e os consome, dando espaço para o novo status.
-
-*Acerto máximo e Dano massivo*
-
-O acerto máximo é o número máximo que o personagem pode tirar em um ataque. Acertos máximos ignoram a esquiva do alvo, e acertam sempre, enquanto o dano massivo é o dano máximo que um ataque pode causar. Ataques de dano Massivo não tem o dano diminuído pela robustez do alvo e aplicam o dobro de acúmulo de status, caso haja
-
-\-
+> **ATENÇÃO — seção desatualizada, substituída em 12/09/2026.**
+>
+> **Sistema de status, condições e ações de combate:** ver o documento *Árvores de
+> Habilidades*, que é a fonte oficial e mais atualizada. As regras que ficavam aqui
+> estão desatualizadas.
 
 ***Atributos***
 
@@ -253,89 +223,11 @@ Aura: A capacidade de resistir a status.
 
 ***Status, Efeitos e Condições***
 
-* afinidades
-
-1. afinidade de arma: mais  dano de armas
-
-2. Afinidade de item: mais eficiência de itens (dano,cura, acerto, etc)
-
-3. Afinidade de reliquia: desbloqueia certas habilidades de relíquias, de acordo com o tipo (Intrísico, arma, armadura)
-
- 
-
-* Condições: Vantagem/Desvantagem
-
- 
-
-1. Mais dano, esquiva e acerto/acumula em até 2
-
-2. Menos dano, esquiva e acerto/acumula em até 3
-
- 
-
-* Condições: Firme/Escorregadio
-
-1. Firme: Se fixa em uma posição não podendo ser movido por aliados ou inimigos;
-
-2. Escorregadio: Ao receber um ataque, você é movido para trás ou pra frente.
-
- 
-
-* Condições: Atordoado/Desarmado/Enraizado
-
-1. Atordoamento: Perde a ação próximo turno;
-
-2. Desarmado: Perde a ação de ataque;
-
-3. Enraizado Perde a ação de movimento.
-
- 
-
-* Efeitos: Vanguarda/Vunerável/Taunt/Couraça
-
- 
-
-1. Vanguarda: Protege um aliado, recebendo todos os golpes direcionados a ele, exceto radiais;
-
-2. Vunerável: Reduz a Robustez, até ela se tornar negativa;
-
-3. Taunt: Os inimigos passam a focar o alvo ;
-
-4. Couraça: Bloqueia o primeiro dano recebido, mas não efeitos de status/acumula em até 2 bloqueios.
-
-   
-
-* Condições: Furtivo/Surpreso/Cego/náusea
-
- 
-
-1. Furtivo: Você não pode ser alvo de ataques inimigos quando nessa condição;
-
-2. Surpreso: Ao tomar a condição surpreso, você se torna o último na iniciativa;
-
-3. Cego: reduz a precisão, além de atacar um alvo aleatório/2 acúmulos de cegueira aplicam surpreso, mas não acumula penalidade no ataque;
-
-4. Náusea: Não pode usar a ação de defender e tem penalidade em ataques. 
-
-* Efeitos de status: Infecção/Sangrando/Corroído/Enfeitiçado/Chamuscado /Corrompido/Purificado
-
- 
-
-1. Infecção: Seu Hp máximo é cortado em até certa quantidade (essa quantidade aumenta quando sob efeito de ‘enfeitiçado’)
-
-2. Sangrando: Fica incapaz de entrar em furtivo, e ganha 1 de desvantagem. Aplicar uma segunda vez reseta o efeito
-
-3. Corroído: Suas resistências são zeradas (Recebe resistência negativa quando sob efeito de ‘enfeitiçado’)
-
-4. Enfeitiçado: Certo efeitos de status tem seus efeitos aprimorados;
-
-5. Chamuscado: Causa muito mais dano do que os outros efeitos de status (sob efeito de ‘enfeitiçado’, o dano aumenta ainda mais)
-
-6. Reduz todos os atributos em 3, acumulando em até 4 vezes(não é afetado por ‘enfeitiçado’)
-
-7. Remove as imunidades do alvo por 1 turno (não é afetado por ‘enfeitiçado’)
-
-\-
+> **ATENÇÃO — seção desatualizada, substituída em 12/09/2026.**
+>
+> **Sistema de status, condições e ações de combate:** ver o documento *Árvores de
+> Habilidades*, que é a fonte oficial e mais atualizada. As regras que ficavam aqui
+> estão desatualizadas.
 
 ***Sistema de progressão e Skill tree***
 

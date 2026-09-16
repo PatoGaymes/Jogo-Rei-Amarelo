@@ -202,14 +202,16 @@ Ver pendência 2 em [SUGESTOES-PARA-DOCUMENTACAO.md](SUGESTOES-PARA-DOCUMENTACAO
 
 ### 3. Cena inicial do jogo
 
-O jogo abre direto na cena do personagem de teste. O certo é criar `Scenes/Main.tscn` (menu ou
-gerenciador) e apontar `run/main_scene` para ela.
+Hoje o jogo abre no **corredor de teste**, que serve para conferir movimentação e câmera. Quando
+existir menu inicial, criar `Scenes/Main.tscn` e apontar `run/main_scene` para ela.
 
-### 4. A câmera dentro do personagem
+### 4. Enquadramento da câmera precisa ser conferido com a arte real
 
-A cena do player tem um `Camera2D` que segue o personagem. Pelo GDD, a exploração é **lateral,
-só para frente e para trás**, e a câmera pertence à cena/corredor. Esse nó provavelmente sai
-quando a movimentação real for implementada — que é justamente o próximo card do Trello.
+A câmera do corredor está com aproximação 1.6 e altura travada em 600. Esses valores foram
+ajustados a olho, com a arte provisória. **Quando a arte de cenário ficar pronta, conferir de
+novo** — é o que define quanto aparece de chão, parede e teto.
+
+Os dois valores ficam na cena do corredor, no nó `Camera`.
 
 ### 5. Singletons (Autoload)
 

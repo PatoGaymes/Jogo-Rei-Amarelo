@@ -23,7 +23,7 @@
             "stopAtEntry": false
         },
         {
-            "name": "Rodar so a cena do Player (teste)",
+            "name": "Rodar so o corredor de teste",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
@@ -31,7 +31,7 @@
             "args": [
                 "--path",
                 "${workspaceFolder}/ContosDeOutrora",
-                "res://Scenes/player.tscn"
+                "res://Scenes/Levels/CorredorTeste.tscn"
             ],
             "cwd": "${workspaceFolder}/ContosDeOutrora",
             "console": "internalConsole",

@@ -1,0 +1,18 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://Scripts/Characters/Player.cs" id="1_script"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Khalid_Cavaleira/Provisorio/Khalid_Cavaleira.webp" id="2_sprite"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_corpo"]
+size = Vector2(110, 340)
+
+[node name="Player" type="CharacterBody2D" groups=["player"]]
+script = ExtResource("1_script")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_sprite")
+offset = Vector2(0, -188)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -170)
+shape = SubResource("RectangleShape2D_corpo")

@@ -182,3 +182,61 @@ estavam corretas nas pastas.
 **Por quê:** ficou definido que personagens são animados por ossos (partes do corpo que se
 movem), mas efeitos não funcionam bem assim — a forma deles muda inteira a cada quadro. Efeitos
 usam sprite sheet quadro a quadro, e precisam de um lugar próprio, separado dos personagens.
+
+---
+
+## 12/09/2026 — Mecânicas base: câmera e movimentação
+
+### Aviso de seção desatualizada aplicado no GDD local
+
+**O que foi feito:** nas seções *"Combate"* e *"Status, Efeitos e Condições"* do arquivo
+`docs/externo/Infos/GDD Rei de Amarelo.md`, o conteúdo antigo foi substituído por um aviso
+apontando para o documento *Árvores de Habilidades*.
+
+**Por quê:** o PO definiu que a Árvore de Habilidades é a fonte oficial do combate, mas o GDD
+continuava com as regras antigas escritas. Como ele é o documento principal, a confusão se
+repetiria com a próxima pessoa que o lesse.
+
+**O que revisar — importante:** isso foi feito **só na cópia local**, dentro do repositório. O
+documento no Google Drive **continua com as regras antigas**. Na próxima vez que alguém exportar
+o GDD do Drive, o arquivo exportado sobrescreve esta cópia e o aviso some. O texto para colar no
+Drive está em [SUGESTOES-PARA-DOCUMENTACAO.md](SUGESTOES-PARA-DOCUMENTACAO.md), pendência 1.
+
+### `Scenes/player.tscn` substituída
+
+**O que foi feito:** a cena de teste de ambiente foi apagada e no lugar entraram duas cenas:
+`Scenes/Characters/Player.tscn` (o personagem) e `Scenes/Levels/CorredorTeste.tscn` (o cenário).
+
+**Por quê:** a cena antiga era só um teste para confirmar que o C# rodava, usando o ícone do
+Godot como imagem. Separar o personagem do cenário permite reaproveitar o mesmo personagem em
+vários corredores, sem copiar e colar.
+
+**O que revisar:** a cena do personagem usa a **arte provisória da Khalid** como placeholder, e
+o cenário são formas coloridas simples. Ambos saem quando a arte real chegar.
+
+### Cena inicial do jogo alterada
+
+**O que foi feito:** a configuração `run/main_scene` passou a apontar para o corredor de teste.
+
+**Por quê:** antes o jogo abria direto no personagem solto, sem chão nem cenário. Agora abre num
+corredor onde dá para conferir a movimentação e a câmera funcionando juntas.
+**Quando existir menu inicial, trocar para a cena do menu.**
+
+### Personagem colocado no grupo "player"
+
+**O que foi feito:** a cena do personagem foi marcada com o grupo `player`.
+
+**Por quê:** é assim que a câmera acha o personagem sozinha, sem depender do caminho dele dentro
+da cena. Se alguém renomear ou mover os nós do corredor, a câmera continua funcionando.
+**Todo personagem controlado pelo jogador precisa estar nesse grupo.**
+
+### Enquadramento da câmera ajustado
+
+**O que foi feito:** a câmera recebeu aproximação (zoom 1.6) e teve a altura travada em 600.
+
+**Por quê:** no primeiro teste o personagem aparecia pequeno no canto inferior, com muito espaço
+vazio em cima. Com a aproximação, ele ocupa a tela de forma parecida com o Darkest Dungeon.
+
+**O que revisar:** esses dois valores definem o enquadramento e **precisam ser conferidos a olho
+junto com a arte real do cenário**. O espaço que sobra em cima é onde entra a arte de teto e
+arquitetura.

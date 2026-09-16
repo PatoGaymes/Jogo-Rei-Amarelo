@@ -1,0 +1,103 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="PackedScene" path="res://Scenes/Characters/Player.tscn" id="1_player"]
+[ext_resource type="Script" path="res://Scripts/Systems/CameraCorredor.cs" id="2_camera"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_chao"]
+size = Vector2(4000, 120)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_parede"]
+size = Vector2(80, 1200)
+
+[sub_resource type="LabelSettings" id="LabelSettings_marco"]
+font_size = 28
+font_color = Color(0.55, 0.5, 0.45, 1)
+
+[node name="CorredorTeste" type="Node2D"]
+
+[node name="Fundo" type="Polygon2D" parent="."]
+color = Color(0.11, 0.095, 0.13, 1)
+polygon = PackedVector2Array(0, 100, 4000, 100, 4000, 800, 0, 800)
+
+[node name="FaixaParede" type="Polygon2D" parent="."]
+color = Color(0.16, 0.14, 0.18, 1)
+polygon = PackedVector2Array(0, 640, 4000, 640, 4000, 800, 0, 800)
+
+[node name="Chao" type="StaticBody2D" parent="."]
+
+[node name="Visual" type="Polygon2D" parent="Chao"]
+color = Color(0.22, 0.185, 0.16, 1)
+polygon = PackedVector2Array(0, 800, 4000, 800, 4000, 1000, 0, 1000)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Chao"]
+position = Vector2(2000, 860)
+shape = SubResource("RectangleShape2D_chao")
+
+[node name="ParedeEsquerda" type="StaticBody2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ParedeEsquerda"]
+position = Vector2(-40, 300)
+shape = SubResource("RectangleShape2D_parede")
+
+[node name="ParedeDireita" type="StaticBody2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ParedeDireita"]
+position = Vector2(4040, 300)
+shape = SubResource("RectangleShape2D_parede")
+
+[node name="Marcos" type="Node2D" parent="."]
+
+[node name="Marco0" type="Label" parent="Marcos"]
+offset_left = 20.0
+offset_top = 700.0
+offset_right = 220.0
+offset_bottom = 740.0
+text = "0 m"
+label_settings = SubResource("LabelSettings_marco")
+
+[node name="Marco1000" type="Label" parent="Marcos"]
+offset_left = 1000.0
+offset_top = 700.0
+offset_right = 1200.0
+offset_bottom = 740.0
+text = "1000"
+label_settings = SubResource("LabelSettings_marco")
+
+[node name="Marco2000" type="Label" parent="Marcos"]
+offset_left = 2000.0
+offset_top = 700.0
+offset_right = 2200.0
+offset_bottom = 740.0
+text = "2000"
+label_settings = SubResource("LabelSettings_marco")
+
+[node name="Marco3000" type="Label" parent="Marcos"]
+offset_left = 3000.0
+offset_top = 700.0
+offset_right = 3200.0
+offset_bottom = 740.0
+text = "3000"
+label_settings = SubResource("LabelSettings_marco")
+
+[node name="Marco4000" type="Label" parent="Marcos"]
+offset_left = 3860.0
+offset_top = 700.0
+offset_right = 4060.0
+offset_bottom = 740.0
+text = "4000"
+label_settings = SubResource("LabelSettings_marco")
+
+[node name="Player" parent="." instance=ExtResource("1_player")]
+position = Vector2(500, 800)
+
+[node name="Camera" type="Camera2D" parent="."]
+position = Vector2(500, 600)
+zoom = Vector2(1.6, 1.6)
+position_smoothing_enabled = true
+position_smoothing_speed = 6.0
+limit_left = 0
+limit_top = 100
+limit_right = 4000
+limit_bottom = 1000
+script = ExtResource("2_camera")
+AlturaFixa = 600.0
