@@ -1,0 +1,72 @@
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="Script" path="res://Scripts/Characters/InimigoIA.cs" id="1_script"]
+[ext_resource type="Script" path="res://Scripts/Systems/SensorDeteccao.cs" id="2_sensor"]
+[ext_resource type="Script" path="res://Scripts/Systems/DebugDeteccao.cs" id="3_debug"]
+[ext_resource type="Script" path="res://Scripts/Systems/RotaRonda.cs" id="4_rota"]
+[ext_resource type="Script" path="res://Scripts/Systems/BalaoAviso.cs" id="6_balao"]
+[ext_resource type="Script" path="res://Scripts/Systems/MedidorDeSuspeita.cs" id="7_medidor"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Enemies/Rasgador/Provisorio/Rasgador.webp" id="5_sprite"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_corpo"]
+radius = 0.35
+height = 1.8
+
+[node name="Inimigo" type="CharacterBody3D" groups=["inimigo"]]
+collision_layer = 2
+collision_mask = 8
+script = ExtResource("1_script")
+Velocidade = 2.5
+VelocidadePerseguicao = 4.0
+TempoProcurando = 3.0
+TempoAteDesistir = 4.0
+ChanceDeIdlePorSegundo = 0.0
+
+[node name="Sprite3D" type="Sprite3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.95, 0)
+billboard = 2
+shaded = false
+alpha_cut = 1
+texture_filter = 1
+pixel_size = 0.0042
+texture = ExtResource("5_sprite")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+shape = SubResource("CapsuleShape3D_corpo")
+
+[node name="SensorDeteccao" type="Node3D" parent="."]
+script = ExtResource("2_sensor")
+RaioDeteccao1 = 5.0
+RaioDeteccao2 = 2.5
+RaioEncontro = 1.8
+AlcanceVisao = 11.0
+AberturaVisao = 80.0
+Furtividade = 0
+Reacao = 0
+
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
+path_desired_distance = 0.5
+target_desired_distance = 0.6
+avoidance_enabled = false
+
+[node name="RotaRonda" type="Node3D" parent="."]
+script = ExtResource("4_rota")
+
+[node name="DebugDeteccao" type="Node3D" parent="."]
+script = ExtResource("3_debug")
+EhInimigo = true
+
+[node name="BalaoAviso" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.1, 0)
+script = ExtResource("6_balao")
+
+[node name="MedidorDeSuspeita" type="Node" parent="."]
+script = ExtResource("7_medidor")
+LimiteParaEstranhar = 10.0
+VelocidadeAoOuvir = 20.0
+TetoAoOuvir = 50.0
+VelocidadeAoChegarPerto = 70.0
+EsperaParaEsquecer = 1.5
+VelocidadeDeEsquecer = 8.0
+AceleracaoPelaSuspeita = 1.0

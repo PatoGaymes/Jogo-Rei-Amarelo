@@ -1,13 +1,17 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://Scripts/Characters/PlayerIsometrico.cs" id="1_script"]
 [ext_resource type="Texture2D" path="res://Assets/Art/Characters/Khalid_Cavaleira/Provisorio/Khalid_Cavaleira.webp" id="2_sprite"]
+[ext_resource type="Script" path="res://Scripts/Systems/SensorDeteccao.cs" id="3_sensor"]
+[ext_resource type="Script" path="res://Scripts/Systems/DebugDeteccao.cs" id="4_debug"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_corpo"]
 radius = 0.35
 height = 1.8
 
 [node name="Player" type="CharacterBody3D" groups=["player"]]
+collision_layer = 1
+collision_mask = 8
 script = ExtResource("1_script")
 
 [node name="Sprite3D" type="Sprite3D" parent="."]
@@ -22,3 +26,17 @@ texture = ExtResource("2_sprite")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
 shape = SubResource("CapsuleShape3D_corpo")
+
+[node name="SensorDeteccao" type="Node3D" parent="."]
+script = ExtResource("3_sensor")
+RaioDeteccao1 = 5.0
+RaioDeteccao2 = 2.5
+RaioEncontro = 0.0
+AlcanceVisao = 10.0
+AberturaVisao = 80.0
+Furtividade = 0
+Reacao = 0
+
+[node name="DebugDeteccao" type="Node3D" parent="."]
+script = ExtResource("4_debug")
+EhInimigo = false

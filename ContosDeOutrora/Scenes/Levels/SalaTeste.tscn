@@ -1,0 +1,168 @@
+[gd_scene format=3 uid="uid://dgqg01duovcdf"]
+
+[ext_resource type="PackedScene" path="res://Scenes/Characters/Player.tscn" id="1_player"]
+[ext_resource type="PackedScene" path="res://Scenes/Characters/Inimigo.tscn" id="2_inimigo"]
+[ext_resource type="Script" uid="uid://d012b3lcqdlce" path="res://Scripts/Systems/CameraIsometrica.cs" id="3_camera"]
+[ext_resource type="Script" uid="uid://cyjfiukbifv86" path="res://Scripts/Systems/GerarNavegacao.cs" id="4_nav"]
+
+[sub_resource type="NavigationMesh" id="NavigationMesh_sala"]
+geometry_parsed_geometry_type = 1
+geometry_collision_mask = 8
+agent_height = 1.75
+
+[sub_resource type="BoxMesh" id="Mesh_chao"]
+size = Vector3(30, 1, 30)
+
+[sub_resource type="StandardMaterial3D" id="Mat_chao"]
+albedo_color = Color(0.25, 0.235, 0.22, 1)
+roughness = 0.95
+
+[sub_resource type="BoxShape3D" id="Shape_chao"]
+size = Vector3(30, 1, 30)
+
+[sub_resource type="BoxMesh" id="Mesh_paredeLonga"]
+size = Vector3(30, 3, 0.6)
+
+[sub_resource type="StandardMaterial3D" id="Mat_parede"]
+albedo_color = Color(0.4, 0.33, 0.29, 1)
+roughness = 0.85
+
+[sub_resource type="BoxShape3D" id="Shape_paredeLonga"]
+size = Vector3(30, 3, 0.6)
+
+[sub_resource type="BoxMesh" id="Mesh_paredeCurta"]
+size = Vector3(0.6, 3, 10)
+
+[sub_resource type="BoxShape3D" id="Shape_paredeCurta"]
+size = Vector3(0.6, 3, 10)
+
+[sub_resource type="BoxMesh" id="Mesh_marca"]
+size = Vector3(0.9, 0.08, 0.9)
+
+[sub_resource type="StandardMaterial3D" id="Mat_marcador"]
+albedo_color = Color(0.35, 0.8, 0.45, 1)
+emission_enabled = true
+emission = Color(0.15, 0.4, 0.2, 1)
+
+[node name="SalaTeste" type="Node3D" unique_id=966504657]
+
+[node name="Sol" type="DirectionalLight3D" parent="." unique_id=432884584]
+transform = Transform3D(0.86, -0.35, 0.37, 0, 0.72, 0.69, -0.51, -0.6, 0.62, 0, 14, 0)
+shadow_enabled = true
+
+[node name="Ambiente" type="WorldEnvironment" parent="." unique_id=2146089713]
+
+[node name="Navegacao" type="NavigationRegion3D" parent="." unique_id=1176736147]
+navigation_mesh = SubResource("NavigationMesh_sala")
+script = ExtResource("4_nav")
+
+[node name="Chao" type="StaticBody3D" parent="Navegacao" unique_id=1160022664]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+collision_layer = 8
+
+[node name="Malha" type="MeshInstance3D" parent="Navegacao/Chao" unique_id=519423214]
+mesh = SubResource("Mesh_chao")
+surface_material_override/0 = SubResource("Mat_chao")
+
+[node name="Colisao" type="CollisionShape3D" parent="Navegacao/Chao" unique_id=1608637218]
+shape = SubResource("Shape_chao")
+
+[node name="ParedeNorte" type="StaticBody3D" parent="Navegacao" unique_id=2025136815]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -15)
+collision_layer = 8
+
+[node name="Malha" type="MeshInstance3D" parent="Navegacao/ParedeNorte" unique_id=1717877405]
+mesh = SubResource("Mesh_paredeLonga")
+surface_material_override/0 = SubResource("Mat_parede")
+
+[node name="Colisao" type="CollisionShape3D" parent="Navegacao/ParedeNorte" unique_id=1411792583]
+shape = SubResource("Shape_paredeLonga")
+
+[node name="ParedeSul" type="StaticBody3D" parent="Navegacao" unique_id=511914106]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 15)
+collision_layer = 8
+
+[node name="Malha" type="MeshInstance3D" parent="Navegacao/ParedeSul" unique_id=1184921126]
+mesh = SubResource("Mesh_paredeLonga")
+surface_material_override/0 = SubResource("Mat_parede")
+
+[node name="Colisao" type="CollisionShape3D" parent="Navegacao/ParedeSul" unique_id=1978864032]
+shape = SubResource("Shape_paredeLonga")
+
+[node name="ParedeOeste" type="StaticBody3D" parent="Navegacao" unique_id=1787165550]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -15, 1.5, 0)
+collision_layer = 8
+
+[node name="Malha" type="MeshInstance3D" parent="Navegacao/ParedeOeste" unique_id=1254285481]
+mesh = SubResource("Mesh_paredeLonga")
+surface_material_override/0 = SubResource("Mat_parede")
+
+[node name="Colisao" type="CollisionShape3D" parent="Navegacao/ParedeOeste" unique_id=2037804183]
+shape = SubResource("Shape_paredeLonga")
+
+[node name="ParedeLeste" type="StaticBody3D" parent="Navegacao" unique_id=2144818543]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 15, 1.5, 0)
+collision_layer = 8
+
+[node name="Malha" type="MeshInstance3D" parent="Navegacao/ParedeLeste" unique_id=1050097458]
+mesh = SubResource("Mesh_paredeLonga")
+surface_material_override/0 = SubResource("Mat_parede")
+
+[node name="Colisao" type="CollisionShape3D" parent="Navegacao/ParedeLeste" unique_id=1162220938]
+shape = SubResource("Shape_paredeLonga")
+
+[node name="DivisoriaMeio" type="StaticBody3D" parent="Navegacao" unique_id=1884638335]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -4)
+collision_layer = 8
+
+[node name="Malha" type="MeshInstance3D" parent="Navegacao/DivisoriaMeio" unique_id=1983472377]
+mesh = SubResource("Mesh_paredeCurta")
+surface_material_override/0 = SubResource("Mat_parede")
+
+[node name="Colisao" type="CollisionShape3D" parent="Navegacao/DivisoriaMeio" unique_id=1633989104]
+shape = SubResource("Shape_paredeCurta")
+
+[node name="DivisoriaLado" type="StaticBody3D" parent="Navegacao" unique_id=1964537006]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 1.5, 7)
+collision_layer = 8
+
+[node name="Malha" type="MeshInstance3D" parent="Navegacao/DivisoriaLado" unique_id=1394144609]
+mesh = SubResource("Mesh_paredeCurta")
+surface_material_override/0 = SubResource("Mat_parede")
+
+[node name="Colisao" type="CollisionShape3D" parent="Navegacao/DivisoriaLado" unique_id=1939864697]
+shape = SubResource("Shape_paredeCurta")
+
+[node name="MarcasDaRonda" type="Node3D" parent="." unique_id=702566155]
+
+[node name="M1" type="MeshInstance3D" parent="MarcasDaRonda" unique_id=1328429365]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0.05, -10)
+mesh = SubResource("Mesh_marca")
+surface_material_override/0 = SubResource("Mat_marcador")
+
+[node name="M2" type="MeshInstance3D" parent="MarcasDaRonda" unique_id=1711379535]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0.05, -10)
+mesh = SubResource("Mesh_marca")
+surface_material_override/0 = SubResource("Mat_marcador")
+
+[node name="M3" type="MeshInstance3D" parent="MarcasDaRonda" unique_id=1314600235]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0.05, 1)
+mesh = SubResource("Mesh_marca")
+surface_material_override/0 = SubResource("Mat_marcador")
+
+[node name="M4" type="MeshInstance3D" parent="MarcasDaRonda" unique_id=1348011949]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0.05, 1)
+mesh = SubResource("Mesh_marca")
+surface_material_override/0 = SubResource("Mat_marcador")
+
+[node name="Player" parent="." unique_id=948592260 instance=ExtResource("1_player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0.1, 10)
+
+[node name="Inimigo" parent="." unique_id=793408907 instance=ExtResource("2_inimigo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0.1, -10)
+
+[node name="Camera" type="Camera3D" parent="." unique_id=2142581654 groups=["camera_isometrica"]]
+fov = 50.0
+script = ExtResource("3_camera")
+Distancia = 18.0
+Inclinacao = 48.0

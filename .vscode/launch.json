@@ -23,7 +23,7 @@
             "stopAtEntry": false
         },
         {
-            "name": "Rodar so o mapa de teste",
+            "name": "Rodar so a sala de teste",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
@@ -31,7 +31,7 @@
             "args": [
                 "--path",
                 "${workspaceFolder}/ContosDeOutrora",
-                "res://Scenes/Levels/MapaTeste.tscn"
+                "res://Scenes/Levels/SalaTeste.tscn"
             ],
             "cwd": "${workspaceFolder}/ContosDeOutrora",
             "console": "internalConsole",
