@@ -1,0 +1,22 @@
+# Alteração de IA - Revisar
+# O que faz: lista o que o Claude deve ignorar ao procurar arquivos no projeto.
+# Por quê: são pastas geradas automaticamente e arquivos duplicados. Ler esse
+#          conteúdo gasta "tokens" (a cota de uso do Claude) sem trazer nada útil.
+
+# Gerado pelo Godot e pelo C#
+ContosDeOutrora/.godot/
+**/bin/
+**/obj/
+
+# Alteração de IA - Revisar
+# O que faz: ignora os documentos em .docx.
+# Por quê: já existe a versão .md de cada um, com o mesmo conteúdo. O .docx é um
+#          arquivo compactado: para ler, o Claude precisa descompactar e limpar
+#          marcação, o que custa o dobro para chegar no mesmo texto.
+#          Se um .docx novo chegar sem .md, é só pedir a conversão.
+docs/externo/Infos/*.docx
+
+# Arte e áudio: o Claude não "vê" imagem nem "ouve" som procurando por texto
+**/*.webp
+**/*.ogg
+**/*.mp3

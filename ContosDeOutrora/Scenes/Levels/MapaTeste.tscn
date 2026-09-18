@@ -1,0 +1,82 @@
+[gd_scene format=3 uid="uid://cp2sfof28ets"]
+
+[ext_resource type="PackedScene" path="res://Scenes/Characters/Player.tscn" id="1_player"]
+[ext_resource type="Script" uid="uid://d012b3lcqdlce" path="res://Scripts/Systems/CameraIsometrica.cs" id="2_camera"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_chao"]
+size = Vector3(40, 1, 40)
+
+[sub_resource type="StandardMaterial3D" id="Mat_chao"]
+albedo_color = Color(0.26, 0.24, 0.22, 1)
+roughness = 0.9
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_chao"]
+size = Vector3(40, 1, 40)
+
+[sub_resource type="BoxMesh" id="BoxMesh_bloco"]
+size = Vector3(2, 3, 2)
+
+[sub_resource type="StandardMaterial3D" id="Mat_bloco"]
+albedo_color = Color(0.42, 0.3, 0.26, 1)
+roughness = 0.8
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_bloco"]
+size = Vector3(2, 3, 2)
+
+[node name="MapaTeste" type="Node3D" unique_id=719482000]
+
+[node name="Sol" type="DirectionalLight3D" parent="." unique_id=1836613297]
+transform = Transform3D(0.86, -0.35, 0.37, 0, 0.72, 0.69, -0.51, -0.6, 0.62, 0, 12, 0)
+light_energy = 1.1
+shadow_enabled = true
+
+[node name="Ambiente" type="WorldEnvironment" parent="." unique_id=743781768]
+
+[node name="Chao" type="StaticBody3D" parent="." unique_id=1837784117]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+
+[node name="Malha" type="MeshInstance3D" parent="Chao" unique_id=362647121]
+mesh = SubResource("BoxMesh_chao")
+surface_material_override/0 = SubResource("Mat_chao")
+
+[node name="Colisao" type="CollisionShape3D" parent="Chao" unique_id=255004686]
+shape = SubResource("BoxShape3D_chao")
+
+[node name="Obstaculos" type="Node3D" parent="." unique_id=1979093018]
+
+[node name="Bloco1" type="StaticBody3D" parent="Obstaculos" unique_id=346961952]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 1.5, 0)
+
+[node name="Malha" type="MeshInstance3D" parent="Obstaculos/Bloco1" unique_id=1287214840]
+mesh = SubResource("BoxMesh_bloco")
+surface_material_override/0 = SubResource("Mat_bloco")
+
+[node name="Colisao" type="CollisionShape3D" parent="Obstaculos/Bloco1" unique_id=1889454166]
+shape = SubResource("BoxShape3D_bloco")
+
+[node name="Bloco2" type="StaticBody3D" parent="Obstaculos" unique_id=2068534608]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5, 1.5, 4)
+
+[node name="Malha" type="MeshInstance3D" parent="Obstaculos/Bloco2" unique_id=426333212]
+mesh = SubResource("BoxMesh_bloco")
+surface_material_override/0 = SubResource("Mat_bloco")
+
+[node name="Colisao" type="CollisionShape3D" parent="Obstaculos/Bloco2" unique_id=468511003]
+shape = SubResource("BoxShape3D_bloco")
+
+[node name="Bloco3" type="StaticBody3D" parent="Obstaculos" unique_id=731676486]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -6)
+
+[node name="Malha" type="MeshInstance3D" parent="Obstaculos/Bloco3" unique_id=1730532158]
+mesh = SubResource("BoxMesh_bloco")
+surface_material_override/0 = SubResource("Mat_bloco")
+
+[node name="Colisao" type="CollisionShape3D" parent="Obstaculos/Bloco3" unique_id=862403089]
+shape = SubResource("BoxShape3D_bloco")
+
+[node name="Player" parent="." unique_id=231230732 instance=ExtResource("1_player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0)
+
+[node name="Camera" type="Camera3D" parent="." unique_id=1589705199 groups=["camera_isometrica"]]
+fov = 45.0
+script = ExtResource("2_camera")

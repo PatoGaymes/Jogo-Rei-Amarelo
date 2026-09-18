@@ -23,7 +23,7 @@
             "stopAtEntry": false
         },
         {
-            "name": "Rodar so o corredor de teste",
+            "name": "Rodar so o mapa de teste",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
@@ -31,7 +31,7 @@
             "args": [
                 "--path",
                 "${workspaceFolder}/ContosDeOutrora",
-                "res://Scenes/Levels/CorredorTeste.tscn"
+                "res://Scenes/Levels/MapaTeste.tscn"
             ],
             "cwd": "${workspaceFolder}/ContosDeOutrora",
             "console": "internalConsole",

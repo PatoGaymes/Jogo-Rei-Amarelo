@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://dt6spemvarnd6"
-path="res://.godot/imported/Crianca.webp-5d336822fa5ccebbb46b08a3f8f98d2b.ctex"
+path="res://.godot/imported/Crianca.webp-cbbf4e6ac6bae7ef4cc40d08be8a5395.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/Art/Characters/_SemNomeNoGDD_Crianca/Provisorio/Crianca.webp"
-dest_files=["res://.godot/imported/Crianca.webp-5d336822fa5ccebbb46b08a3f8f98d2b.ctex"]
+source_file="res://Assets/Art/Characters/Crianca/Provisorio/Crianca.webp"
+dest_files=["res://.godot/imported/Crianca.webp-cbbf4e6ac6bae7ef4cc40d08be8a5395.ctex"]
 
 [params]
 

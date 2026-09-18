@@ -1,18 +1,24 @@
 [gd_scene load_steps=4 format=3]
 
-[ext_resource type="Script" path="res://Scripts/Characters/Player.cs" id="1_script"]
+[ext_resource type="Script" path="res://Scripts/Characters/PlayerIsometrico.cs" id="1_script"]
 [ext_resource type="Texture2D" path="res://Assets/Art/Characters/Khalid_Cavaleira/Provisorio/Khalid_Cavaleira.webp" id="2_sprite"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_corpo"]
-size = Vector2(110, 340)
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_corpo"]
+radius = 0.35
+height = 1.8
 
-[node name="Player" type="CharacterBody2D" groups=["player"]]
+[node name="Player" type="CharacterBody3D" groups=["player"]]
 script = ExtResource("1_script")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
+[node name="Sprite3D" type="Sprite3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.95, 0)
+billboard = 2
+shaded = false
+alpha_cut = 1
+texture_filter = 1
+pixel_size = 0.005
 texture = ExtResource("2_sprite")
-offset = Vector2(0, -188)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(0, -170)
-shape = SubResource("RectangleShape2D_corpo")
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+shape = SubResource("CapsuleShape3D_corpo")

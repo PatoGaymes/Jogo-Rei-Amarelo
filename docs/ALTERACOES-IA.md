@@ -240,3 +240,75 @@ vazio em cima. Com a aproximação, ele ocupa a tela de forma parecida com o Dar
 **O que revisar:** esses dois valores definem o enquadramento e **precisam ser conferidos a olho
 junto com a arte real do cenário**. O espaço que sobra em cima é onde entra a arte de teto e
 arquitetura.
+
+
+---
+
+## 18/09/2026 — Ferramentas e virada para 3D isométrico
+
+### Documentos sincronizados com o repositório
+
+**O que foi feito:** o `Árvores de Habilidades.md` local foi regerado a partir da versão do
+repositório, que estava mais nova. Criado `docs/ferramentas/sincronizar-docs.py` para conferir
+isso automaticamente daqui em diante.
+
+**Por quê:** a equipe mantém a documentação em dois lugares. Sem conferência, uma decisão tomada
+num lugar se perde no outro. O script roda na máquina e devolve só o resumo das diferenças.
+
+**O que revisar:** as mudanças foram Ácido → Veneno, nova condição Espinhos, e três habilidades
+da Caçadora renomeadas. **O documento do repositório tem referências órfãs** — habilidades que
+citam outras pelo nome antigo. Está na pendência 1 das sugestões.
+
+### `.mcp.json` (novo) e ferramentas instaladas
+
+**O que foi feito:** instalados o `codebase-memory-mcp` (indexa o projeto para eu achar as coisas
+sem ler arquivo por arquivo) e o `godot-mcp` (me deixa enxergar o projeto pelo próprio Godot).
+Também o plugin de skills do mattpocock, e os programas `fd` e `jq`.
+
+**Por quê:** reduzem a quantidade de arquivo que preciso ler para responder, o que economiza a
+cota de uso. O binário do codebase-memory foi baixado do GitHub e **conferido pelo checksum
+oficial** antes de instalar, em vez de rodar o script de instalação direto da internet.
+
+**O que revisar:** o `godot-mcp` não é atualizado desde fevereiro. **Foi testado com o Godot
+4.6.1 e funcionou**, mas se um dia der problema, é o primeiro a desconfiar — basta apagar a
+entrada "godot" do `.mcp.json`.
+
+### `.claudeignore` (novo)
+
+**O que foi feito:** lista de arquivos que eu devo ignorar ao procurar coisas no projeto.
+
+**Por quê:** pastas geradas automaticamente e arquivos duplicados (os `.docx` que já têm `.md`).
+Ler isso gasta a cota de uso sem trazer nada útil.
+
+### Código 2D apagado, base 3D no lugar
+
+**O que foi feito:** `Player.cs`, `CameraCorredor.cs` e as duas cenas 2D foram apagados. No lugar
+entraram `CameraIsometrica.cs`, `PlayerIsometrico.cs`, a nova `Player.tscn` (3D) e `MapaTeste.tscn`.
+
+**Por quê:** o jogo deixou de ser 2D lateral e passou a ser 3D isométrico no estilo Don't Starve
+Together. Câmera, movimentação e colisão mudaram por completo — não havia o que aproveitar.
+O histórico do Git preserva o código antigo.
+
+**O que revisar:** o personagem usa a arte provisória da Khalid, e o cenário são caixas coloridas.
+Tudo isso sai quando a arte real chegar.
+
+### Comandos do teclado reorganizados
+
+**O que foi feito:** adicionados `move_forward` (W) e `move_back` (S), e as ações de girar a
+câmera com Q e E. **A tecla de interagir mudou de E para F.**
+
+**Por quê:** o personagem agora anda nas quatro direções, e não só para os lados. O E precisou
+ser liberado porque passou a girar a câmera.
+
+**O que revisar:** quem já estava acostumado com o E para interagir precisa saber da mudança.
+
+### Erro de sinal encontrado no movimento
+
+**O que foi feito:** corrigido o sentido da rotação que converte o comando do teclado em
+movimento no mundo.
+
+**Por quê:** no primeiro teste, o W funcionava com a câmera ao norte ou ao sul, mas **invertia**
+quando ela estava a leste ou a oeste — o personagem andava na direção da câmera em vez de para
+longe dela. Só apareceu porque o teste checou os 8 ângulos, e não apenas o inicial.
+
+**O que revisar:** nada pendente — os 8 ângulos foram testados e todos passaram.

@@ -1,0 +1,18 @@
+{
+  "mcpServers": {
+    "codebase-memory": {
+      "command": "C:\\Users\\EricDerre\\.local\\bin\\codebase-memory-mcp.exe",
+      "args": []
+    },
+    "godot": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@coding-solo/godot-mcp"
+      ],
+      "env": {
+        "GODOT_PATH": "C:\\Users\\EricDerre\\Documents\\Godot\\Godot_v4.6.1-stable_mono_win64.exe"
+      }
+    }
+  }
+}
