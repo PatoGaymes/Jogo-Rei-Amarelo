@@ -81,102 +81,31 @@ de seção desatualizada aplicado. Conferência automática:
 
 ---
 
+## 18/09/2026 — Todas as pendências respondidas pelo PO
+
+| # | Pendência | Decisão |
+|---|---|---|
+| 1 | "Bufão Alegre" é o Abanur? | **Sim.** Pasta renomeada para `Abanur_Bufao` |
+| 2 | Referências órfãs na Árvore | Nomes oficiais: **Morte lenta** e **Veneno**. Corrigido |
+| 3 | Inimigos respawnam? | **Não na demo.** Fica previsto um item/mecânica de respawn **depois** dela |
+| 4 | Quest do Ferreiro | **Saiu da demo.** Menções removidas — a demo tem **4** side-quests |
+| 5 | "Caçador" no masculino | Erro de digitação. Agora é **Caçadora** em todas as referências |
+| 6 | Documento para o Drive | Gerar **`.docx` pronto** para o analista revisar e colar |
+| 7 | Atributos sem função | **Lábia, Intuição e Análise removidas.** Furtividade fica e ganha o **raio de agro** |
+| 8 | Cards do Trello | **Movidos pela equipe** |
+
+### O que a decisão 7 muda
+
+A ficha do personagem passa de **11 para 8 atributos**. A **Furtividade** ganhou um segundo efeito:
+além de reduzir o agro em combate, ela agora define **a que distância o inimigo percebe o
+personagem** — quanto maior, menor o raio de agro.
+
+Isso a conecta direto com dois sistemas da demo: os **perseguidores** e as **safe zones**. Um
+personagem furtivo consegue atravessar trajetos vigiados que um barulhento não conseguiria — o
+atributo deixou de ser secundário e virou escolha de estilo de jogo.
+
+---
+
 # ⚠️ PENDENTES
 
-## 1. O "Bufão Alegre" é o Abanur? — **prioridade média**
-
-O GDD do repositório ganhou um narrador: **Abanur, o deus da morte e das artes**, que *"aparece
-para o jogador trajado como um bufão contador de histórias"* e **aparece em cena**, não só narra.
-
-Nos assets existe um NPC chamado **"Bufão Alegre"** (`Art/Npcs/BufaoAlegre`). Pela descrição,
-parece ser o próprio Abanur — mas **isso não está escrito em lugar nenhum**.
-
-**Por que importa:** se forem a mesma pessoa, a pasta deveria se chamar `Abanur_Bufao` e o
-personagem precisa de tratamento especial (aparece em vários pontos da história). Se forem
-diferentes, são dois NPCs parecidos e isso vai confundir quem produzir a arte.
-
-**O que decidir:** são o mesmo personagem?
-
-## 2. Referências órfãs dentro da Árvore de Habilidades — **prioridade alta**
-
-Ao renomear habilidades, **as que citam as renomeadas não foram atualizadas**. O documento
-ficou se referindo a coisas que não existem mais:
-
-| Onde | O que diz | Problema |
-|---|---|---|
-| `"Queime"` | *"aplica veneno em inimigos marcados por **sede de sangue**"* | "Sede de Sangue" virou **Morte lenta** |
-| `"Dance"` | *"**Sede de sangue** agora marca todos os inimigos"* | idem |
-| `Poço das moléstias` | *"deixa poças que aplicam **ácido** e corrosão"* | "Ácido" virou **Veneno** |
-
-**Por que importa:** na hora de programar, uma habilidade que aponta para outra que não existe
-vira erro. Alguém vai ter que adivinhar, e adivinhar errado custa retrabalho.
-
-**Sugestão:** trocar "sede de sangue" por "Morte lenta" e "ácido" por "veneno" nesses 3 pontos.
-
-## 3. Contradição entre a Demo e o GDD: inimigos respawnam ou não? — **prioridade alta**
-
-| Documento | O que diz |
-|---|---|
-| **Demo** (mais recente) | *"Inimigos e loot pré determinados e fixos/**não respawna**"* |
-| **GDD** | *"Transicionar de uma área para outra **reseta a sala anterior, com novos loots e Spawn de inimigos**"* |
-
-**Adotamos a Demo**, por ser o documento mais recente. Mas o GDD precisa ser corrigido, senão
-a contradição volta.
-
-**Isso muda o desenho do jogo:** sem respawn, não dá para "moer" inimigos para juntar recursos.
-Os itens de progressão (lascas de Euduroh) passam a ser **finitos na demo**, o que torna o
-balanceamento muito mais sensível — faltou recurso, o jogador trava.
-
-## 4. A Demo diz "4 side-quests" mas lista 5 — **prioridade média**
-
-As listadas são: **Brutamonte, Xamã, Hemomante, Ferreiro e Ocultistas**. Além disso, a
-**"Quest do ferreiro" está com o título escrito e o corpo vazio**.
-
-Definir: são 4 ou 5? E qual é a do ferreiro?
-
-## 5. "Caçador" no masculino — **prioridade baixa**
-
-A Demo lista "Caçador" entre os jogáveis, mas a personagem é **Emi Matsunaga**, a **Caçadora**.
-Provavelmente só um erro de digitação, mas vale alinhar porque o nome vira pasta e código.
-
-## 6. Replicar o aviso no Google Drive — **prioridade alta**
-
-O aviso de "seção desatualizada" foi escrito **só na cópia local** do GDD, dentro do repositório.
-O Claude não tem acesso ao Google Drive (Regra 3), então **o documento no Drive continua com as
-regras antigas**.
-
-**Isso importa por um motivo prático:** na próxima vez que alguém exportar o GDD do Drive para
-`docs/externo/`, o arquivo exportado **vai sobrescrever a cópia local** e o aviso desaparece.
-
-**O que fazer:** um dev abre o GDD no Drive e cola o mesmo aviso nas duas seções:
-
-> **ATENÇÃO — seção desatualizada, substituída em 12/09/2026.**
->
-> **Sistema de status, condições e ações de combate:** ver o documento *Árvores de Habilidades*,
-> que é a fonte oficial e mais atualizada. As regras que ficavam aqui estão desatualizadas.
-
-## 7. Três atributos ficaram sem função — **prioridade média**
-
-Com a remoção da ação **Conversar**, três dos onze atributos perderam o motivo de existir. O GDD
-os define assim, na categoria **Mente**:
-
-| Atributo | Definição no GDD | Situação |
-|---|---|---|
-| **Lábia** | *"Aumenta a chance de sucesso em Ameaçar"* | Ameaçar não existe mais |
-| **Intuição** | *"Aumenta a chance de sucesso em Enganar"* | Enganar não existe mais |
-| **Análise** | *"Aumenta a chance de sucesso em Expor"* | Expor não existe mais |
-
-Também some a utilidade da perícia **Furtividade**, que segundo o GDD *"aumenta a chance de
-sucesso de furto"* — embora ela continue útil por reduzir o agro inimigo.
-
-**O que decidir:** dar uma nova função a esses três atributos (por exemplo, ligá-los a
-habilidades, diálogos fora de combate ou eventos de exploração), ou removê-los da ficha do
-personagem. Do jeito que está, o jogador distribui pontos em atributos que não fazem nada.
-
-Isso afeta diretamente a tela de ficha do personagem e o balanceamento da skill tree.
-
-## 8. Cards do Trello que já podem mudar de coluna — **prioridade baixa**
-
-**"Preparar o ambiente de programação - Godot"** e **"...- Visual Studio Code"** estão em
-*Em andamento*. O ambiente está montado, testado e rodando — podem ir para *Revisão* ou
-*Concluído*.
+Nenhuma pendência aberta no momento.

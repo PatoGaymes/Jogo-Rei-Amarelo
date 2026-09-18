@@ -312,3 +312,76 @@ quando ela estava a leste ou a oeste — o personagem andava na direção da câ
 longe dela. Só apareceu porque o teste checou os 8 ângulos, e não apenas o inicial.
 
 **O que revisar:** nada pendente — os 8 ângulos foram testados e todos passaram.
+
+
+---
+
+## 18/09/2026 (tarde) — Decisões do PO aplicadas
+
+### NPC "Bufão Alegre" renomeado para `Abanur_Bufao`
+
+**O que foi feito:** a pasta e a imagem em `Assets/Art/Npcs/` mudaram de nome.
+
+**Por quê:** o PO confirmou que o "Bufão Alegre" **é o Abanur**, o deus da morte e das artes que
+narra o jogo. Eram a mesma pessoa com dois nomes, o que confundiria quem fosse produzir a arte.
+
+**O que revisar:** a arte provisória continua a mesma, só o nome mudou.
+
+### Atributos removidos da ficha do personagem
+
+**O que foi feito:** **Lábia, Intuição e Análise** saíram. A ficha passou de 11 para 8 atributos.
+A **Furtividade** ganhou um segundo efeito.
+
+**Por quê:** os três só serviam à ação Conversar, que foi removida do jogo. Ficariam na ficha sem
+fazer nada, e o jogador gastaria pontos à toa.
+
+A Furtividade agora também define **a que distância o inimigo percebe o personagem** — quanto
+maior, menor o raio de agro. Isso a liga aos perseguidores e às safe zones da demo.
+
+**O que revisar:** o raio de agro ainda **não existe no código** — é só decisão de design por
+enquanto. Entra quando o sistema de inimigos for feito.
+
+### Quest do Ferreiro retirada da demo
+
+**O que foi feito:** as menções foram removidas dos documentos.
+
+**Por quê:** decisão do PO. Era essa quest que fazia a conta não fechar — o documento dizia
+"4 side-quests" mas listava 5, e a do Ferreiro estava sem conteúdo.
+
+### `docs/para-revisao/` (nova pasta)
+
+**O que foi feito:** três `.docx` prontos para o analista revisar e colar no Drive, mais o script
+`gerar-docx-revisao.py` que os regera.
+
+**Por quê:** o Claude não tem acesso ao Google Drive (Regra 3), então tudo que ele corrige aqui
+precisava ser repassado à mão. Agora sai um arquivo pronto, e **cada um começa com uma tabela do
+que mudou e por quê** — o analista revisa só o que é novo.
+
+**O que revisar:** os `.docx` são **gerados**, não editados à mão. Quem manda é o `.md` ao lado.
+Se alguém editar o `.docx` direto, a alteração se perde na próxima geração.
+
+### pandoc instalado
+
+**O que foi feito:** instalado o pandoc (`winget install JohnMacFarlane.Pandoc`).
+
+**Por quê:** converte entre `.docx` e `.md` nos dois sentidos. Serve tanto para gerar os arquivos
+de revisão quanto para ler os `.docx` que a equipe exporta do Drive — antes isso era feito
+descompactando o arquivo na mão.
+
+
+### `docs/para-repositorio/` (nova pasta)
+
+**O que foi feito:** os mesmos três documentos, agora **completos e sem a tabela de mudanças** —
+prontos para substituir os oficiais no Google Drive.
+
+**Por quê:** a tabela "o que mudou" serve para a revisão, mas não deve entrar no documento oficial.
+São duas finalidades diferentes, então viraram duas pastas. A fonte continua sendo um arquivo só:
+o `.md` em `docs/para-revisao/`. A versão limpa é gerada a partir dele.
+
+**O que revisar — foi conferido antes de gerar:** comparei os documentos novos com os originais
+para garantir que nada se perdeu. O GDD ficou **3.554 caracteres menor**, e a conta fecha: as
+seções de Combate (1.830) e Status (2.212) foram substituídas pelo aviso (~490). Toda a lore de
+mundo e de personagens continua presente — foi conferida item por item.
+
+**Atenção:** os `.docx` são gerados, não editados. Quem editar o `.docx` direto perde a alteração
+na próxima vez que o script rodar.

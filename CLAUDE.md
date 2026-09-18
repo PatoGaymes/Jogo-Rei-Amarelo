@@ -36,11 +36,27 @@ Trello e Google Drive são a fonte de verdade e o Claude não os altera. Sugest�
 
 **Arquivos com sufixo `DoRepositorio`:** são o espelho do que está no Drive. O Claude edita **apenas
 os arquivos sem esse sufixo**. Havendo divergência, **perguntar qual lado vale antes de aplicar** —
-nunca escolher sozinho. Conferir com:
+nunca escolher sozinho.
+
+**O caminho de volta para o Drive** (já que o Claude não escreve lá):
 
 ```bash
-python docs/ferramentas/sincronizar-docs.py
+python docs/ferramentas/sincronizar-docs.py         # o que está diferente?
+python docs/ferramentas/atualizar-documentacao.py   # gera os .docx atualizados
 ```
+
+Os arquivos saem em `docs/para-repositorio/`, prontos para substituir os do Drive.
+
+**Regra da formatação:** os documentos são lidos por outras pessoas da equipe, então os `.docx`
+**nunca são gerados do zero** — o script abre o original e altera só o texto, mantendo estilos,
+títulos, numeração e sumário intactos. Gerar a partir de markdown descarta tudo isso e entrega um
+documento com cara diferente do resto da documentação.
+
+As ferramentas estão em [docs/ferramentas/docx_editor.py](docs/ferramentas/docx_editor.py); o que
+já foi alterado em cada documento fica em
+[docs/MUDANCAS-DOCUMENTACAO.md](docs/MUDANCAS-DOCUMENTACAO.md).
+
+Precisa do pandoc para conferir o resultado: `winget install JohnMacFarlane.Pandoc`.
 
 ### Regra 4 — Processar na máquina, não no contexto
 

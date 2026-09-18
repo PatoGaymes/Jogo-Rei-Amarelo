@@ -93,8 +93,8 @@ Espaço aberto: Seu dano aumenta mas sua precisão diminui pra cada  espaço adj
 Navalhas Voadoras: Ganha Mais esquiva e 5 cargas de "Navalha", que aplicam uma segunda instancia de dano aos seus ataques de alvos únicos, aplicando veneno. Ser atacado também remove 1 carga
 Retribuição: Causa dano em área e aplica veneno nos inimigos
 Sentidos Shinobi: Ataques de alvo único ignoram camuflagem
-"Queime": no fim de cada turno, aplica veneno em inimigos marcados por "sede de sangue"
-"Dance": Sede de sangue agora marca todos os inimigos
+"Queime": no fim de cada turno, aplica veneno em inimigos marcados por "Morte lenta"
+"Dance": Morte lenta agora marca todos os inimigos
 "Minha presa": Caso o inimigo esquive se seu. Você lança um segundo ataque
 "Eu quero mais": No segundo turno concedido por "Você vai morrer", você tem duas ações de ataque
 "Inútil": você ignora a imunidade a status dos inimigos e é imune ao dano de sanidade que
@@ -120,7 +120,7 @@ Mina de espinhos: demarca uma área inimiga, e sempre que um inimigo terminar a 
 Dilascerar: Ao usar "Criadouro de insetos" novamente, enquanto ele estiver ativo, se transforma num ataque em área
 Fratura terminal: após o inimigo afetado por "transfiguração térmica", ele explode e aplica congelamento aos adjacentes
 Vortex negro: Aplica escuridão em área e dano. Quando atinge inimigos com status que não sejam escuridão, os convertem para tal
-Poço das moléstias: causa dano em área, e deixa poças que aplicam ácido e corrosão
+Poço das moléstias: causa dano em área, e deixa poças que aplicam veneno e corrosão
 Propagação: quando aplicar um status a um inimigo já afetado, o status atual passa para um dos inimigos atuais. Caso o inimigo seja de estatura "grande" ou maior, a quantidade de status lançado nele é trplicada
 Manipulação de energia: quando um aliado consome mais do que uma certa quantidade de energia, você recupera metade do gasto da energia
 Prismático: você marca um alvo por algumas rodadas, deixando-o

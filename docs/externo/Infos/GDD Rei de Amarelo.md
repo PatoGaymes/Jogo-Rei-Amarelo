@@ -665,7 +665,7 @@ Uma vez orfã de guerra, sua família foi massacrada durante um cerco bélico, n
 
   * **Demonstrar empatia**
 
-  Naquele dia, seu dever falou mais alto, e como caçadora, você não deveria nutrir nenhum desprezo por aquele homem, e honrar seu juramento. Você e seu irmão de criação passaram as próximas semanas tentando inteirar o homem, agora nomeado Tadashi Matsunaga, aos princípios e estilo de vida de sua família. Com o tempo, apesar de ele não terem nada em comum, você começou a se ver nele: alguém perdido e sem propósito, cujo tudo havia sido tomado da noite pro dia, e que os matsunaga deram um motivo para continuar vivendo dali pra frente, e que apesar dos pesares, é grato por tudo. Você, agora era quem o treinava, mesmo sendo mais nova, era muito mais experiente. Foi bem díficil, já que você não era boa em lecionar, mas você criou um excelente caçador e amigo.
+  Naquele dia, seu dever falou mais alto, e como caçadora, você não deveria nutrir nenhum desprezo por aquele homem, e honrar seu juramento. Você e seu irmão de criação passaram as próximas semanas tentando inteirar o homem, agora nomeado Tadashi Matsunaga, aos princípios e estilo de vida de sua família. Com o tempo, apesar de ele não terem nada em comum, você começou a se ver nele: alguém perdido e sem propósito, cujo tudo havia sido tomado da noite pro dia, e que os matsunaga deram um motivo para continuar vivendo dali pra frente, e que apesar dos pesares, é grato por tudo. Você, agora era quem o treinava, mesmo sendo mais nova, era muito mais experiente. Foi bem díficil, já que você não era boa em lecionar, mas você criou um excelente caçadora e amigo.
 
   {Ato 4}
 

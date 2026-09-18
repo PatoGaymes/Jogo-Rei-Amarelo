@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dllhakc85jbt4"
-path="res://.godot/imported/BufaoAlegre.webp-cbb1341bceb8c44b941f4fe84e2599a3.ctex"
+uid="uid://cloryvrrmfi6f"
+path="res://.godot/imported/Abanur_Bufao.webp-22b712c424d14c19160cc018f218f321.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/Art/Npcs/BufaoAlegre/Provisorio/BufaoAlegre.webp"
-dest_files=["res://.godot/imported/BufaoAlegre.webp-cbb1341bceb8c44b941f4fe84e2599a3.ctex"]
+source_file="res://Assets/Art/Npcs/Abanur_Bufao/Provisorio/Abanur_Bufao.webp"
+dest_files=["res://.godot/imported/Abanur_Bufao.webp-22b712c424d14c19160cc018f218f321.ctex"]
 
 [params]
 

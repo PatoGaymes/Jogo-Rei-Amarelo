@@ -51,9 +51,8 @@ nas masmorras.
 O jogo é narrado por **Abanur, o deus da morte e das artes**, que aparece ao jogador trajado como
 um **bufão contador de histórias**. Ele não só narra trechos do jogo, como **aparece em cena**.
 
-> Acrescentado ao GDD do repositório e incorporado aqui em 18/09/2026.
-> **A conferir:** existe um NPC chamado **"Bufão Alegre"** nos assets — provavelmente é o próprio
-> Abanur, mas isso não está escrito em lugar nenhum. Ver pendência nas sugestões.
+**Confirmado pelo PO em 18/09/2026:** o NPC antes chamado "Bufão Alegre" **é o próprio Abanur**.
+A pasta de assets foi renomeada para `Abanur_Bufao`.
 
 ---
 
@@ -115,14 +114,26 @@ Couraça, **Vanguarda** (protege os aliados e toma o dano no lugar deles), Furti
 
 ### Atributos
 
-- **Corpo** — vida, Precisão, Furtividade, Reação, Robustez
-- **Mente** — sanidade, Lábia, Intuição, Análise, Vontade
+- **Corpo** — vida, Precisão, **Furtividade**, Reação, Robustez
+- **Mente** — sanidade, Vontade
 - **Essência** — foco, Energia, Aura
 
 **PF (Pontos de Foco)** é o recurso gasto pelas habilidades.
 
-> ⚠️ Lábia, Intuição e Análise **ficaram sem função** com a remoção do Conversar. Ver pendência 6
-> em [SUGESTOES-PARA-DOCUMENTACAO.md](SUGESTOES-PARA-DOCUMENTACAO.md).
+> **Decisão do PO em 18/09/2026:** **Lábia, Intuição e Análise foram removidas** de vez. Elas só
+> serviam à ação Conversar, que saiu do jogo. Não entram na ficha do personagem.
+
+### Furtividade — dois efeitos
+
+A Furtividade **ficou**, e agora faz duas coisas:
+
+1. **Em combate:** reduz o agro inimigo, como já fazia.
+2. **Na exploração:** entra na **detecção dos inimigos**. Cada inimigo tem um **raio de agro** —
+   a distância em que percebe o personagem. Quanto maior a Furtividade, **menor fica esse raio**,
+   e mais perto o personagem consegue chegar sem ser notado.
+
+Isso liga a Furtividade direto à mecânica de **perseguidores** e às **safe zones** da demo: um
+personagem furtivo consegue atravessar trajetos vigiados que um barulhento não conseguiria.
 
 ---
 
@@ -130,7 +141,9 @@ Couraça, **Vanguarda** (protege os aliados e toma o dano no lugar deles), Furti
 
 - **Estátuas do Rei** — salvar e viajar rápido
 - **Morrer volta ao save**
-- **Inimigos e loot são fixos e não respawnam** (definido na Demo; o GDD ainda diz o contrário)
+- **Inimigos e loot são fixos e não respawnam.** Confirmado pelo PO em 18/09/2026. Está previsto
+  criar, **depois da demo**, um item ou mecânica que faça um inimigo ou uma área inteira voltar a
+  aparecer — mas **não entra na demo**
 - **Mapa estático**, com continuidade: o que o jogador alterou permanece alterado
 - **Safe zones** primárias (mais recursos e opções) e secundárias (limitadas)
 - **Perseguidores** que caçam o jogador em certos trajetos
@@ -141,8 +154,10 @@ Couraça, **Vanguarda** (protege os aliados e toma o dano no lugar deles), Furti
 (drop garantido de chefe) sobem o nível. Skill tree com 3 caminhos — escolher um **bloqueia os
 outros dois**, e só uma jóia sacrificada numa estátua permite refazer.
 
-> Como **não há respawn**, as lascas são **finitas na demo**. Isso torna o balanceamento sensível:
-> se faltar recurso, o jogador trava sem saída.
+> Como **não há respawn na demo**, as lascas são **finitas**. Isso torna o balanceamento sensível:
+> se o jogador gastar errado, ele trava sem ter como juntar mais. A mecânica de respawn prevista
+> para depois da demo resolve isso — mas até lá, a quantidade distribuída pelo mapa **é tudo que
+> existe**.
 
 ---
 
@@ -156,8 +171,10 @@ Sala de contenção (secreta).
 **Chefes e inimigos únicos:** Homem mascarado, Ciclope, Quimera rastejante, Grupo ocultista,
 Aparição nefasta, Senhor das moscas, Brutamonte e Centopéia gigante.
 
-**Side-quests:** Brutamonte, Xamã, Hemomante, Ferreiro e Ocultistas.
-*(A Demo diz "apenas 4" mas lista 5, e a do Ferreiro está vazia — ver pendência 3.)*
+**Side-quests (4):** Brutamonte, Xamã, Hemomante e Ocultistas.
+
+> A **quest do Ferreiro saiu da demo** (decisão do PO em 18/09/2026). Era ela que fazia a conta
+> não fechar: o documento dizia "4 side-quests" mas listava 5.
 
 **3 finais:** derrotar a quimera e abrir o portão do sacrifício; vencer a Centopéia gigante e subir
 à superfície; ou a Centopéia destruir o elevador e o jogador cair nas profundezas.

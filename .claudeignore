@@ -15,6 +15,7 @@ ContosDeOutrora/.godot/
 #          marcação, o que custa o dobro para chegar no mesmo texto.
 #          Se um .docx novo chegar sem .md, é só pedir a conversão.
 docs/externo/Infos/*.docx
+docs/para-repositorio/*.docx
 
 # Arte e áudio: o Claude não "vê" imagem nem "ouve" som procurando por texto
 **/*.webp
