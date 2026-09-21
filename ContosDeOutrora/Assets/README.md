@@ -75,6 +75,30 @@ Guardar em `Art/Effects/`, numa pasta com o nome do efeito.
 
 ---
 
+## Arte nova: largue em `inserir/`
+
+Existe uma caixa de entrada na raiz do projeto: **[`inserir/`](../../inserir/)**. Largue ali os
+arquivos novos como vieram e peça a inserção — eles são convertidos, recortados, renomeados e
+movidos para a pasta certa, e a caixa é esvaziada no fim. As regras completas estão no
+[README de lá](../../inserir/README.md).
+
+### Quadro a quadro para andar no mapa — exceção consciente
+
+A regra acima manda animar personagem **por ossos**, e ela continua valendo para o **combate**.
+Mas a animação de **andar pelo mapa** chegou quadro a quadro, com um conjunto de imagens por
+direção, e **assim está certo** para este caso:
+
+- No mapa o personagem é uma **folha de papel em pé** dentro do mundo 3D, vista sempre de longe e
+  pequena. Não há dobra de braço para valorizar.
+- A direção é resolvida **trocando a imagem** conforme o ângulo entre o personagem e a câmera —
+  é a técnica do Doom, e ela precisa de um conjunto de quadros por direção.
+- São poucos estados (andar, parar, talvez correr), não a árvore inteira de golpes do combate.
+
+**Como entregar:** uma pasta por direção (`Frente`, `Costas`, `Lado`), com os quadros em ordem.
+O espelhamento cobre o lado oposto, então não é preciso desenhar os dois lados.
+
+---
+
 ## Onde guardar cada coisa
 
 **Cada personagem, chefe, inimigo e NPC tem a sua própria pasta.**

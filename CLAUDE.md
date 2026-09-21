@@ -119,6 +119,10 @@ ContosDeOutrora/          # projeto Godot
 docs/                     # documentação interna + espelho da externa
 ```
 
+**Arte e som novos:** largar em **`inserir/`** e pedir a inserção — o Claude converte, recorta,
+renomeia e move para o lugar certo, depois esvazia a pasta. Regras em
+[inserir/README.md](inserir/README.md).
+
 **Cada personagem, chefe, inimigo e NPC tem pasta própria** (`NomePróprio_Classe`, sem espaço nem
 acento), com `Combat/`, `Dialogue/`, `Map/` e `Provisorio/`. Regras completas em
 [Assets/README.md](ContosDeOutrora/Assets/README.md) — **ler antes de adicionar arte ou som**.

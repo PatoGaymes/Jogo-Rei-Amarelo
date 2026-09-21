@@ -8,6 +8,21 @@ using Godot;
 public partial class PlayerIsometrico : CharacterBody3D
 {
 	// Alteração de IA - Revisar
+	// O que faz: as duas formas de agachar.
+	// Por quê: **isto existe para o módulo de configurações que virá depois.** Segurar e
+	//          alternar agradam a pessoas diferentes, e a escolha é do jogador, não nossa.
+	//          Deixar as duas prontas agora significa que a tela de configurações só vai
+	//          precisar escrever neste campo — nada de mexer no controle do personagem.
+	public enum FormaDeAgachar
+	{
+		Segurar,   // agachado só enquanto a tecla estiver pressionada
+		Alternar   // aperta para agachar, aperta de novo para levantar
+	}
+
+	[Export]
+	public FormaDeAgachar ModoDeAgachar { get; set; } = FormaDeAgachar.Segurar;
+
+	// Alteração de IA - Revisar
 	// O que faz: velocidade máxima de caminhada.
 	// Por quê: fica com [Export] para a equipe testar valores no painel do Godot com o jogo
 	//          rodando, sem mexer no código.
@@ -34,8 +49,53 @@ public partial class PlayerIsometrico : CharacterBody3D
 	[Export]
 	public float Gravidade { get; set; } = 24.0f;
 
+	// Alteração de IA - Revisar
+	// O que faz: o quanto ele anda mais devagar enquanto está agachado.
+	// Por quê: **é o preço de agachar, e o único motivo para levantar.** Sem esse preço,
+	//          agachar seria sempre melhor que andar em pé e o jogador passaria o jogo inteiro
+	//          agachado — o que transformaria a mecânica numa tecla obrigatória em vez de uma
+	//          escolha. Com o preço, a decisão vira "vale a pena ir devagar aqui?".
+	//          Em 1.0 não há penalidade nenhuma, caso a equipe prefira assim.
+	[Export]
+	public float FatorDeVelocidadeAgachado { get; set; } = 0.45f;
+
+	// Alteração de IA - Revisar
+	// O que faz: o quanto o desenho do personagem abaixa e achata ao agachar, e a rapidez disso.
+	// Por quê: o jogador precisa **ver** que está agachado, senão só descobre pelo resultado.
+	//          Com a arte provisória, abaixar e achatar um pouco já lê como "abaixou". Quando
+	//          houver desenho de agachado, isto some e vira troca de imagem.
+	[Export]
+	public float AbaixamentoDoDesenho { get; set; } = 0.30f;
+
+	[Export]
+	public float AchatamentoDoDesenho { get; set; } = 0.82f;
+
+	[Export]
+	public float VelocidadeDeAgachar { get; set; } = 9.0f;
+
+	// Alteração de IA - Revisar
+	// O que faz: liga e desliga a mira pelo mouse.
+	// Por quê: com ela desligada o personagem volta a olhar para onde anda, que é o
+	//          comportamento antigo. Serve para comparar os dois durante os testes e para o
+	//          caso de a equipe decidir depois que a mira no mouse não é para todo momento do
+	//          jogo (numa cena de diálogo, por exemplo).
+	[Export]
+	public bool ApontarComOMouse { get; set; } = true;
+
+	// Alteração de IA - Revisar
+	// O que faz: informa se o personagem está agachado agora.
+	// Por quê: o desenho de teste mostra isso na tela, e futuras mecânicas (passar por vãos
+	//          baixos, por exemplo) vão precisar perguntar.
+	public bool Agachado { get; private set; }
+
+	// o ponto do chão para onde o cursor está apontando — usado pelo desenho de teste
+	public Vector3 PontoParaOndeOlha { get; private set; }
+
 	private CameraIsometrica? _camera;
 	private Sprite3D? _sprite;
+	private SensorDeteccao? _sensor;
+	private float _alturaNormalDoDesenho;
+	private float _quantoEstaAgachado;
 
 	// Alteração de IA - Revisar
 	// O que faz: guarda para que lado o personagem está virado, em graus.
@@ -47,6 +107,12 @@ public partial class PlayerIsometrico : CharacterBody3D
 	public override void _Ready()
 	{
 		_sprite = GetNodeOrNull<Sprite3D>("Sprite3D");
+		_sensor = GetNodeOrNull<SensorDeteccao>("SensorDeteccao");
+
+		if (_sprite != null)
+		{
+			_alturaNormalDoDesenho = _sprite.Position.Y;
+		}
 
 		// Alteração de IA - Revisar
 		// O que faz: procura a câmera do mapa pelo grupo "camera_isometrica".
@@ -74,6 +140,29 @@ public partial class PlayerIsometrico : CharacterBody3D
 		// Por quê: X é esquerda/direita e Y é frente/trás vistos da tela — ainda não é a
 		//          direção no mundo 3D. A conversão acontece logo abaixo.
 		Vector2 comando = Input.GetVector("move_left", "move_right", "move_forward", "move_back");
+
+		// Alteração de IA - Revisar
+		// O que faz: agacha do jeito escolhido — segurando a tecla ou apertando para alternar.
+		// Por quê: as duas formas existem porque a escolha é do jogador. O padrão é segurar,
+		//          que evita esquecer que está agachado; quem preferir alternar muda no futuro
+		//          menu de configurações, sem tocar em código.
+		if (ModoDeAgachar == FormaDeAgachar.Alternar)
+		{
+			if (Input.IsActionJustPressed("agachar"))
+			{
+				Agachado = !Agachado;
+			}
+		}
+		else
+		{
+			Agachado = Input.IsActionPressed("agachar");
+		}
+
+		// quem faz as contas de percepção é o sensor; aqui só avisamos o estado
+		if (_sensor != null)
+		{
+			_sensor.Agachado = Agachado;
+		}
 
 		// Alteração de IA - Revisar
 		// O que faz: converte o comando do teclado na direção correspondente dentro do mundo,
@@ -117,7 +206,10 @@ public partial class PlayerIsometrico : CharacterBody3D
 		// Por quê: com comando, o alvo é a velocidade máxima naquela direção e usamos a
 		//          aceleração; sem comando, o alvo é parar e usamos a desaceleração.
 		Vector3 velocidade = Velocity;
-		Vector3 alvoHorizontal = direcao * VelocidadeMaxima;
+		float velocidadeAgora = Agachado
+			? VelocidadeMaxima * Mathf.Max(0.05f, FatorDeVelocidadeAgachado)
+			: VelocidadeMaxima;
+		Vector3 alvoHorizontal = direcao * velocidadeAgora;
 		float taxa = direcao != Vector3.Zero ? Aceleracao : Desaceleracao;
 
 		velocidade.X = Mathf.MoveToward(velocidade.X, alvoHorizontal.X, taxa * (float)delta);
@@ -139,7 +231,85 @@ public partial class PlayerIsometrico : CharacterBody3D
 		Velocity = velocidade;
 		MoveAndSlide();
 
+		ApontarOlharParaOMouse();
 		AtualizarDirecaoVisual(direcao);
+		AtualizarDesenhoAgachado((float)delta);
+	}
+
+	// Alteração de IA - Revisar
+	// O que faz: vira o olhar do personagem para onde o cursor do mouse está apontando no chão.
+	// Por quê: separa **para onde ele anda** de **para onde ele olha**. Antes o personagem
+	//          olhava sempre na direção em que andava, o que impedia andar para um lado
+	//          vigiando o outro — que é justamente o que a névoa exige, já que só se enxerga
+	//          o que está dentro do cone de visão.
+	//
+	//          A câmera **não gira junto**: ela continua nos 8 ângulos fixos, girada só por
+	//          Q e E. Quem gira é o personagem. Misturar as duas coisas deixaria o
+	//          enquadramento instável e enjoativo.
+	//
+	//          Como funciona: joga-se uma linha imaginária da câmera, passando pelo cursor,
+	//          até o chão na altura dos pés do personagem. O ponto em que ela encosta é
+	//          "para onde o jogador está apontando".
+	private void ApontarOlharParaOMouse()
+	{
+		if (_camera == null || !ApontarComOMouse)
+		{
+			return;
+		}
+
+		Vector2 cursor = GetViewport().GetMousePosition();
+		Vector3 origem = _camera.ProjectRayOrigin(cursor);
+		Vector3 rumo = _camera.ProjectRayNormal(cursor);
+
+		// a linha precisa estar descendo para cruzar o chão; se estiver na horizontal, desiste
+		if (Mathf.Abs(rumo.Y) < 0.0001f)
+		{
+			return;
+		}
+
+		float quanto = (GlobalPosition.Y - origem.Y) / rumo.Y;
+		if (quanto <= 0.0f)
+		{
+			return;
+		}
+
+		Vector3 alvo = origem + rumo * quanto;
+		Vector3 ate = alvo - GlobalPosition;
+		ate.Y = 0.0f;
+
+		// cursor praticamente em cima do personagem: mantém o olhar onde estava, para não
+		// ficar girando à toa com qualquer tremida do mouse
+		if (ate.LengthSquared() < 0.04f)
+		{
+			return;
+		}
+
+		DirecaoOlhando = Mathf.PosMod(Mathf.RadToDeg(Mathf.Atan2(-ate.Z, ate.X)), 360.0f);
+		PontoParaOndeOlha = alvo;
+	}
+
+	// Alteração de IA - Revisar
+	// O que faz: abaixa e achata o desenho aos poucos ao agachar, e devolve ao normal ao levantar.
+	// Por quê: aos poucos, e não de um quadro para o outro, porque o salto seco parece defeito.
+	//          É só aparência — quem muda a percepção é o sensor, e os dois são independentes de
+	//          propósito: se a animação travar, a mecânica continua correta.
+	private void AtualizarDesenhoAgachado(float dt)
+	{
+		if (_sprite == null)
+		{
+			return;
+		}
+
+		_quantoEstaAgachado = Mathf.MoveToward(_quantoEstaAgachado, Agachado ? 1.0f : 0.0f,
+											   dt * VelocidadeDeAgachar);
+
+		Vector3 posicao = _sprite.Position;
+		posicao.Y = _alturaNormalDoDesenho - AbaixamentoDoDesenho * _quantoEstaAgachado;
+		_sprite.Position = posicao;
+
+		Vector3 tamanho = _sprite.Scale;
+		tamanho.Y = Mathf.Lerp(1.0f, AchatamentoDoDesenho, _quantoEstaAgachado);
+		_sprite.Scale = tamanho;
 	}
 
 	// Alteração de IA - Revisar
@@ -153,13 +323,25 @@ public partial class PlayerIsometrico : CharacterBody3D
 	//          ou de lado. É a mesma técnica usada no Doom.
 	private void AtualizarDirecaoVisual(Vector3 direcao)
 	{
-		if (direcao == Vector3.Zero || _sprite == null)
+		if (_sprite == null)
 		{
 			return;
 		}
 
-		// ângulo para onde o personagem anda, na mesma roda de graus usada pela câmera
-		DirecaoOlhando = Mathf.PosMod(Mathf.RadToDeg(Mathf.Atan2(-direcao.Z, direcao.X)), 360.0f);
+		// Alteração de IA - Revisar
+		// O que faz: com a mira no mouse ligada, a direção do olhar **já foi decidida** pelo
+		//            cursor e não é mais sobrescrita pela direção da caminhada.
+		// Por quê: é o que permite andar para um lado vigiando o outro. Sem esta condição, o
+		//          personagem voltaria a encarar para onde anda no instante em que desse um
+		//          passo, e a mira no mouse não valeria de nada enquanto ele estivesse andando.
+		if (!ApontarComOMouse)
+		{
+			if (direcao == Vector3.Zero)
+			{
+				return;
+			}
+			DirecaoOlhando = Mathf.PosMod(Mathf.RadToDeg(Mathf.Atan2(-direcao.Z, direcao.X)), 360.0f);
+		}
 
 		float anguloCamera = _camera != null ? _camera.AnguloAtual : 270.0f;
 

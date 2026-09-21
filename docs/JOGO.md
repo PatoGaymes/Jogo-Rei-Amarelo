@@ -128,7 +128,8 @@ Couraça, **Vanguarda** (protege os aliados e toma o dano no lugar deles), Furti
 A Furtividade **ficou**, e agora faz duas coisas:
 
 1. **Em combate:** reduz o agro inimigo, como já fazia.
-2. **Na exploração:** entra na **detecção dos inimigos**. Cada inimigo tem um **raio de agro** —
+2. **Na exploração:** entra na **detecção dos inimigos** — e se soma a **agachar**, que é o efeito
+   que o jogador liga na hora (ver "Agachar" mais abaixo). Cada inimigo tem um **raio de agro** —
    a distância em que percebe o personagem. Quanto maior a Furtividade, **menor fica esse raio**,
    e mais perto o personagem consegue chegar sem ser notado.
 
@@ -226,6 +227,111 @@ desconfiado** — o segundo barulho é percebido mais rápido que o primeiro.
 
 Os números ficam no nó `MedidorDeSuspeita` de cada inimigo, ajustáveis um a um no editor.
 
+### A visão do personagem segue o mouse
+
+O personagem **vira para onde o cursor aponta**, e a câmera **não gira junto** — ela continua nos
+8 ângulos fixos, movida só por Q e E.
+
+Isso separa duas coisas que antes eram a mesma: **para onde ele anda** e **para onde ele olha**.
+Dá para atravessar um corredor de costas para a parede vigiando a porta, ou recuar sem tirar os
+olhos do inimigo. É o que torna a névoa jogável: como só se enxerga dentro do cone, o jogador
+precisa poder escolher para onde olhar sem abrir mão de para onde vai.
+
+Verificado nos 8 ângulos da câmera: com o cursor sobre um ponto fixo do mapa, o personagem encara
+esse ponto em todos eles (erro máximo de 0,2°).
+
+Em `ApontarComOMouse = false` o personagem volta a olhar para onde anda, que era o comportamento
+anterior.
+
+### Névoa de guerra — o jogador só vê o que o personagem veria
+
+**O problema que isso resolve:** num mapa 3D visto de cima, a câmera mostra o que está atrás das
+paredes — inclusive o outro lado da sala. O mapa inteiro se entrega de graça e não sobra tensão
+nenhuma.
+
+O mundo fica **sempre coberto de névoa**, e ela abre só onde o personagem enxerga:
+
+| Faixa | O que o jogador vê |
+|---|---|
+| **Passiva 1** (3,5 m) | Claro, sem precisar olhar |
+| **Passiva 2** (6,0 m) | Levemente embaçado, sem precisar olhar |
+| **Cone nível 1** (até 6,1 m) | Claro |
+| **Cone nível 2** (até 11,2 m) | Levemente embaçado |
+| **Cone nível 3** (até 16,0 m) | Só um vulto: dá para ver que tem alguém, não quem é |
+| Fora de tudo | Névoa |
+
+> **Atenção à numeração:** no cone, **nível 1 é o mais perto e o mais claro**. É o contrário dos
+> raios de detecção, onde o nível 1 é o de fora. Lá o número cresce para fora, aqui cresce para
+> longe.
+
+**Os alcances da visão são números próprios**, separados dos raios de detecção. Ver e ser visto são
+coisas diferentes — e os raios de detecção encolhem ao agachar, então, se fossem os mesmos, agachar
+cegaria o jogador.
+
+**A parede esconde o que está atrás.** Não é só distância e ângulo: o personagem lança linhas
+imaginárias em roda e mede onde estão as paredes, e a névoa respeita esse contorno. Um inimigo a
+11 m, **dentro do cone de visão**, mas atrás de uma divisória, fica invisível.
+
+**A cor da névoa é o que separa neblina de escuridão.** Cinza claro dá névoa de exterior; quase
+preto dá porão sem lamparina. A mesma mecânica serve para iluminação, mudando só a cor.
+
+**A memória visual:** o jogador não esquece o que viu.
+
+| O que | Como a memória se comporta |
+|---|---|
+| **Cenário** (paredes, casa, caixas) | Fica **para sempre**, apagado e sem cor. Casa não anda: saber onde ela está nunca fica errado |
+| **Inimigo** | Fica um **borrão** no último lugar visto, que envelhece e some em **5 s** — e some **na hora** se o jogador olhar para lá e não achar ninguém |
+
+É a diferença entre "não sei o que tem lá" e "sei o que tem lá, só não estou olhando agora". O
+lembrado aparece **sem cor**, para o jogador distinguir de relance informação de agora de
+informação velha.
+
+O borrão do inimigo é desenhado por cima da névoa e **atravessa parede** — a lembrança está na
+cabeça do jogador, não no mundo.
+
+**Ainda por fazer, já previsto:** inimigos que a névoa não afeta (o interruptor `IgnoraANevoa` já
+existe em cada inimigo) e itens que ampliam a visão do jogador — basta mexer nos alcances do
+sensor.
+
+**F4 liga e desliga a névoa** durante o jogo. Isso é ferramenta de teste, ao contrário da névoa em
+si, que é mecânica.
+
+### Agachar — a furtividade que o jogador liga na hora
+
+**Segurar `Ctrl`** (ou `C`) deixa o personagem agachado. A Furtividade da ficha é passiva e vale
+sempre; agachar é a versão ativa, que o jogador decide usar no momento em que precisa.
+
+| | Em pé | Agachado |
+|---|---|---|
+| Raio externo (n1) | 5,00 m | **2,75 m** (−45%) |
+| Raio interno (n2) | 2,50 m | **1,38 m** (−45%) |
+| Tempo até ser reconhecido | 1,20 s | **2,16 s** (+80%) |
+| Altura dos olhos | 1,50 m | 0,80 m |
+| Alcance da própria visão | 10,0 m | 10,0 m — **não muda** |
+| Velocidade de caminhada | 5,0 m/s | **2,25 m/s** |
+
+**Os dois efeitos são diferentes e se completam.** Encolher os círculos muda **a que distância**
+o inimigo começa a desconfiar: a distância em que os círculos se tocam cai de 10,0 m para 7,75 m.
+Aumentar o tempo muda **quanto ele demora a confirmar** depois que já está olhando — medido, dentro
+do cone de visão a 9 m: **0,85 s em pé contra 1,52 s agachado**.
+
+**Agachado não é invisível.** Se o inimigo olhar direto, ele acaba vendo — só demora quase o dobro,
+e é essa demora que dá tempo de sair da linha de visão.
+
+**Agachar não cega:** o alcance da própria visão do personagem continua o mesmo. Ele se esconde,
+não deixa de enxergar.
+
+**Segurar ou alternar** é escolha do jogador: `ModoDeAgachar` aceita as duas, e o **módulo de
+configurações** que vier depois só precisa escrever nesse campo. O padrão é segurar.
+
+**O preço é a velocidade**, e é o único motivo para levantar. Sem ele, agachar seria sempre melhor
+que andar em pé e viraria uma tecla obrigatória em vez de uma escolha. Em
+`FatorDeVelocidadeAgachado = 1.0` a penalidade some, se a equipe preferir.
+
+A altura dos olhos mais baixa ainda não muda nada, porque as paredes da sala de teste vão do chão
+ao teto — é o que vai permitir se esconder atrás de mureta, caixa ou parapeito quando o cenário
+tiver disso.
+
 ### A reação ao barulho — o que torna a furtividade possível
 
 **O problema que isso resolve:** antes, no instante em que os círculos se tocavam o inimigo virava
@@ -304,7 +410,9 @@ tirá-la da camada considerada.
 
 ### Testar
 
-A cena `Scenes/Levels/SalaTeste.tscn` tem paredes, divisórias e um inimigo em ronda.
+A cena `Scenes/Levels/Sandbox.tscn` é o mapa de testes: **70 x 70 m**, com uma casa de dois
+andares e rampa (para testar interiores e elevação), caixas e divisórias soltas, e **dois
+inimigos** — um em ronda por cinco pontos e um parado em Idle dentro da casa.
 **F3 liga e desliga o desenho dos raios.**
 
 > **Ao montar uma sala:** o nó que guarda os pontos da ronda deve se chamar **`MarcasDaRonda`** —

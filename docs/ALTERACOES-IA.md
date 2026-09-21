@@ -657,3 +657,234 @@ Verificado com o arquivo da cena **exatamente como o editor o deixou**, sem nenh
 pontos encontrados e o inimigo andando desde o primeiro instante (10,26 m nos primeiros 5
 segundos), tanto na execução sem tela quanto com janela.
 
+---
+
+## 21/09/2026 — Mecânica de agachar
+
+### `SensorDeteccao.cs` — dois efeitos novos
+
+**O que foi feito:** o sensor ganhou o estado `Agachado` e dois números:
+`FatorDosRaiosAgachado` (0,55) encolhe os círculos de detecção, e `AumentoDoTempoAgachado` (1,8)
+aumenta o tempo necessário para o personagem ser reconhecido dentro do campo de visão.
+
+**Por quê:** era o pedido — agachar diminui todo o alcance de detecção do jogador e, mesmo quando
+ele está dentro das regras de detecção, o inimigo demora mais para perceber.
+
+**O que revisar:** os dois números são de partida e valem por personagem. O estado mora no
+**sensor**, e não no script do jogador, para que um inimigo furtivo também possa se agachar sem
+nenhum código novo.
+
+Medido: raios de 5,00 → 2,75 m; tempo de 1,20 → 2,16 s; distância em que os círculos se tocam de
+10,00 → 7,75 m; e, na prática, dentro do cone de visão a 9 m, perseguição em 0,85 s em pé contra
+1,52 s agachado.
+
+### O alcance da própria visão **não** encolhe
+
+**O que foi feito:** `AlcanceVisaoEfetivo` é o único dos três alcances que não leva o fator de
+agachar.
+
+**Por quê:** agachar esconde o personagem, não cega ele. Quem se abaixa continua enxergando o
+mesmo tanto à frente.
+
+### A altura dos olhos abaixa
+
+**O que foi feito:** agachado, a checagem de parede sai de 0,80 m em vez de 1,50 m.
+
+**O que revisar:** **hoje isso não muda nada**, porque as paredes da sala de teste vão do chão ao
+teto. Foi incluído porque é o que vai permitir se esconder atrás de mureta, caixa ou parapeito —
+assunto que o PO já sinalizou que quer detalhar depois.
+
+### `PlayerIsometrico.cs` — a tecla, o preço e o desenho
+
+**O que foi feito:** segurar `Ctrl` (ou `C`) agacha. Agachado, o personagem anda a 45% da
+velocidade, e o desenho abaixa e achata um pouco, de forma gradual.
+
+**Por quê — importante, é decisão de design:** a penalidade de velocidade **não foi pedida**. Foi
+incluída porque sem um preço agachar seria sempre melhor que andar em pé, e o jogador passaria o
+jogo inteiro agachado — a mecânica viraria uma tecla obrigatória em vez de uma escolha. Em
+`FatorDeVelocidadeAgachado = 1.0` a penalidade some.
+
+**O que revisar:** é **segurar**, não liga/desliga, para o jogador não esquecer que está agachado.
+Para virar liga/desliga, é trocar `IsActionPressed` por `IsActionJustPressed` e inverter o valor.
+O abaixamento do desenho é só aparência — quando houver arte de agachado, vira troca de imagem sem
+mexer na mecânica.
+
+### `project.godot` — ação `agachar`
+
+**O que foi feito:** ação nova ligada a **Ctrl** e a **C**, as duas como segurar. Como `.godot`
+não aceita comentário, fica registrado aqui.
+
+**O que revisar:** duas teclas de propósito — Ctrl é o costume do gênero, e C fica de reserva para
+quem achar Ctrl desconfortável junto com o WASD. Verificado que as duas funcionam.
+
+---
+
+## 21/09/2026 (parte 2) — Mira no mouse e névoa de guerra
+
+### `project.godot` — a tecla Ctrl de agachar não funcionava
+
+**O que foi feito:** a ação `agachar` passou a ter **três** eventos: Ctrl com o modificador
+marcado, Ctrl sem ele, e C.
+
+**Por quê:** o Ctrl é um modificador, e não dá para saber de fora se o Godot marca ou não o
+modificador no evento da própria tecla Ctrl. Se a ação exigir a marcação e o evento não trouxer,
+a tecla nunca funciona; se for o contrário, ela funciona ao apertar mas não ao soltar, e o
+personagem fica agachado para sempre. Registrar as duas variações cobre os dois casos.
+
+**O que revisar — honestidade sobre o teste anterior:** o teste que fiz antes **passou sem
+provar nada**. Eu construí o evento de teclado com a mesma marcação que tinha escrito na ação, de
+modo que ele só confirmou que a ação combina consigo mesma. Como não dá para apertar uma tecla de
+verdade num teste automatizado, este caso precisa ser confirmado jogando.
+
+### `PlayerIsometrico.cs` — segurar ou alternar
+
+**O que foi feito:** `ModoDeAgachar` aceita `Segurar` (padrão) ou `Alternar`.
+
+**Por quê:** foi pedido que a escolha ficasse disponível para o **módulo de configurações** que a
+equipe vai fazer. Deixando as duas prontas, aquele módulo só vai precisar escrever neste campo.
+
+### A visão do personagem segue o cursor do mouse
+
+**O que foi feito:** o personagem vira para onde o cursor aponta no chão. A câmera **não** gira
+junto: continua nos 8 ângulos fixos de Q e E.
+
+**Por quê:** separa "para onde ele anda" de "para onde ele olha". Sem isso a névoa seria
+injogável, porque o jogador não teria como escolher o que vigiar enquanto se desloca.
+
+**O que revisar:** verificado nos 8 ângulos da câmera, com o cursor sobre um ponto fixo do mapa —
+o personagem encara esse ponto em todos, com erro máximo de 0,2°. Em `ApontarComOMouse = false`
+volta o comportamento anterior.
+
+### `SensorDeteccao.cs` — três níveis no cone e duas faixas de visão passiva
+
+**O que foi feito:** o cone ganhou três faixas (claro, embaçado, vulto) e o personagem ganhou duas
+faixas de visão em volta que não dependem de para onde ele olha. O alcance do jogador subiu de 10
+para 16 m.
+
+**O que revisar — duas decisões:**
+
+1. **A numeração do cone é ao contrário da numeração da detecção.** No cone, nível 1 é o mais
+   perto; nos raios de detecção, nível 1 é o de fora. Foi assim que a equipe descreveu cada um.
+   É o tipo de coisa que confunde na leitura do código — está avisado nos comentários dos dois.
+2. **Os alcances da visão são números próprios**, e não os raios de detecção. Ver e ser visto são
+   coisas diferentes, e os raios de detecção encolhem ao agachar: se fossem os mesmos, agachar
+   cegaria o jogador, o contrário do que foi combinado.
+
+### `NevoaDeGuerra.cs` + `Shaders/NevoaDeGuerra.gdshader` (novos)
+
+**O que foi feito:** o mundo fica coberto de névoa e ela abre só onde o personagem enxerga.
+Funciona em cima da imagem pronta: para cada ponto da tela, descobre a que lugar do mundo ele
+corresponde e pergunta se o personagem vê aquele lugar.
+
+**Por quê:** num mapa 3D visto de cima, a câmera entrega o que está atrás das paredes e o mapa
+inteiro se revela de graça.
+
+**O que revisar:** a **cor da névoa é o que separa neblina de escuridão** — a mesma mecânica serve
+para iluminação, mudando só a cor. A névoa se cria sozinha na câmera, em código, porque alterações
+em arquivos de cena já se perderam três vezes por serem regravadas pelo editor.
+
+### A parede esconde o que está atrás — medida com linhas imaginárias
+
+**O que foi feito:** a cada passo da física, 128 linhas saem do personagem em roda e medem a que
+distância está a parede em cada direção. Essas distâncias vão para o desenho da tela numa tira de
+imagem, e a névoa respeita esse contorno.
+
+**Por quê:** sem isto a névoa limpava tudo que estivesse perto e dentro do cone, **inclusive o
+cômodo do outro lado do muro** — que é exatamente o problema que ela veio resolver. Verificado:
+um inimigo a 11 m, dentro do cone de visão, atrás de uma divisória, fica invisível.
+
+**O que revisar:** `QuantidadeDeRaios` (128) é o equilíbrio entre contorno fiel e custo; menos
+linhas deixam os cantos serrilhados. `FolgaDaParede` (0,8 m) existe para a própria parede
+continuar aparecendo — sem folga, a face dela ficaria escura e pareceria defeito.
+
+### `VisibilidadeDoInimigo.cs` (novo)
+
+**O que foi feito:** cada inimigo decide como aparece conforme o quanto o jogador o enxerga:
+normal, apagado, vulto escuro, ou escondido.
+
+**Por quê:** a névoa escurece o cenário por igual, mas um inimigo não pode escurecer junto — no
+limite do alcance o jogador tem que **perceber que tem alguém ali sem saber quem é**. Esse vulto é
+informação de jogo, não enfeite.
+
+**O que revisar:** o interruptor `IgnoraANevoa` já está pronto para os **inimigos que a névoa não
+afeta**, que a equipe avisou que vão existir. O componente é criado em código junto com o inimigo,
+pelo mesmo motivo do medidor de suspeita.
+
+---
+
+## 21/09/2026 (parte 3) — Sandbox, arte do Desgarrado e memória visual
+
+### `Sandbox.tscn` (nova) — o mapa de testes cresceu
+
+**O que foi feito:** mapa novo de **70 x 70 m** (o anterior tinha 30 x 30), com uma casa de dois
+andares, rampa externa subindo até o segundo piso, caixas espalhadas, duas divisórias soltas, e
+**dois inimigos**: um em ronda por cinco pontos e outro parado em Idle dentro da casa. Virou a
+cena principal do projeto.
+
+**Por quê: cena nova em vez de alterar a antiga.** A `SalaTeste.tscn` já foi regravada três vezes
+pelo editor do Godot, desfazendo alterações. Um arquivo que o editor nunca abriu não tem cópia
+velha em memória para sobrescrever. A `SalaTeste.tscn` continua onde estava, sem uso — pode ser
+apagada quando a equipe quiser.
+
+**O que revisar:** a rampa sobe 3,40 m em 9,34 m (20°), por fora da parede leste, e chega num vão
+do parapeito. Verificado que o jogador sobe até o segundo piso. A casa é feita de caixas sem
+telhado, de propósito: com telhado a câmera de cima não mostraria nada do interior.
+
+### `InimigoIA.cs` — escolher o modo inicial
+
+**O que foi feito:** campo `ModoInicial`. Antes todo inimigo começava rondando e o modo Idle
+existia no código mas não dava para escolher pela cena.
+
+**O que revisar:** um inimigo que **só** fica parado precisa de `ModoInicial = Idle`,
+`ChanceDeIdlePorSegundo = 0` e `TempoEmIdle = 0`. Se levar um susto ele sai do Idle e passa a
+rondar, o que é proposital.
+
+### Animação de andar do Desgarrado — 96 quadros inseridos
+
+**O que foi feito:** os 96 arquivos entregues em `inserir/` foram recortados, renomeados e movidos
+para `Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/{Frente,Costas,Lado}/`, 32 quadros cada.
+
+**Por quê o recorte:** cada quadro vinha numa tela de 1850 x 910 com o personagem ocupando
+539 x 399 no meio — **87% da imagem era vazio**. Em disco isso quase não pesa (o vazio comprime),
+mas **bagunça a posição do personagem no jogo**, porque o motor centraliza a imagem inteira. Todos
+os 96 quadros foram recortados com a **mesma moldura**, senão a animação trocaria de
+enquadramento a cada quadro e o personagem tremeria.
+
+**O que revisar — divergência consciente com o padrão:** o `Assets/README.md` manda animar
+personagem **por ossos**, e isso continua valendo para o combate. Andar no mapa quadro a quadro
+está certo neste caso (personagem visto de longe, direção resolvida trocando a imagem — a técnica
+do Doom), e o README foi atualizado explicando a exceção. **Se a equipe discordar, é aqui que se
+discute.**
+
+### `inserir/` — caixa de entrada documentada
+
+**O que foi feito:** a pasta ganhou um `README.md` explicando o que largar ali, o que acontece com
+cada arquivo e o que não entra. Apontada também no `CLAUDE.md` e no `Assets/README.md`.
+
+### Memória visual — o cenário fica, o inimigo desbota
+
+**O que foi feito:** duas memórias diferentes, porque são duas coisas diferentes.
+
+**Cenário (`NevoaDeGuerra`):** uma grade sobre o mapa anota tudo o que o personagem já viu. Lugar
+já visto continua aparecendo, **apagado e sem cor**, mesmo de costas. Nunca é esquecido.
+
+**Inimigo (`VisibilidadeDoInimigo`):** ao sair de vista, fica um **borrão** no último lugar onde
+foi visto, que **envelhece e some em 5 segundos** — e some **na hora** se o jogador olhar para lá
+e não achar ninguém.
+
+**Por quê separado:** casa não anda, então saber onde ela está nunca fica errado. Inimigo anda,
+então a lembrança dele apodrece. Tratar os dois igual daria um de dois defeitos: ou o mapa some
+ao virar o rosto, ou o jogador passa a caçar um inimigo que já saiu dali.
+
+**O que revisar:**
+- `TempoDeMemoria` (5 s) **decide o quanto o jogador pode confiar na lembrança.** Curto demais e o
+  borrão não ajuda; longo demais e ele vira armadilha.
+- `PesoDaMemoria` (0,45) é o quanto um lugar lembrado aparece comparado a estar olhando.
+- A grade da memória cobre **80 m** centrados na origem. **Mapa maior que isso não é lembrado nas
+  bordas** — ao montar as fases da demo, conferir `TamanhoDoMapa`.
+- O borrão é desenhado **por cima da névoa e atravessando parede**, de propósito: a lembrança está
+  na cabeça do jogador, não no mundo. Se a equipe achar que atravessar parede confunde, é um
+  campo a mudar.
+- A cor do vulto (nível 3) passou a ser **mais clara que a névoa**, não mais escura. Vulto escuro
+  sumia dentro da névoa escura.
+

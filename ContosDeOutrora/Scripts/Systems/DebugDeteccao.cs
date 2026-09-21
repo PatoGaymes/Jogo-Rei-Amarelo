@@ -29,6 +29,7 @@ public partial class DebugDeteccao : Node3D
 	private static readonly Color CorRaio2 = new(1.0f, 0.45f, 0.1f, 0.9f);
 	private static readonly Color CorEncontro = new(1.0f, 0.15f, 0.15f, 0.9f);
 	private static readonly Color CorVisao = new(0.3f, 0.7f, 1.0f, 0.9f);
+	private static readonly Color CorVisaoPassiva = new(0.55f, 1.0f, 0.75f, 0.8f);
 
 	private SensorDeteccao _sensor = null!;
 	private InimigoIA? _inimigo;
@@ -125,7 +126,25 @@ public partial class DebugDeteccao : Node3D
 			? (_inimigo?.DirecaoOlhando ?? 270.0f)
 			: (_jogador?.DirecaoOlhando ?? 270.0f);
 
-		Cone(centro, _sensor.AlcanceVisaoEfetivo, _sensor.AberturaVisao, olhando, CorVisao);
+		// Alteração de IA - Revisar
+		// O que faz: desenha as três faixas do cone de visão, uma dentro da outra, cada uma mais
+		//            apagada que a anterior.
+		// Por quê: o cone deixou de ser "vê ou não vê" e virou três qualidades de visão. Com um
+		//          traço só, não dava para conferir onde termina o claro e começa o vulto — que
+		//          é justamente o que a névoa mostra ao jogador.
+		Cone(centro, _sensor.AlcanceVisao1, _sensor.AberturaVisao, olhando, CorVisao);
+		Cone(centro, _sensor.AlcanceVisao2, _sensor.AberturaVisao, olhando, CorVisao * 0.75f);
+		Cone(centro, _sensor.AlcanceVisao3, _sensor.AberturaVisao, olhando, CorVisao * 0.5f);
+
+		// Alteração de IA - Revisar
+		// O que faz: só no jogador, desenha também o que ele percebe em volta sem olhar.
+		// Por quê: são os círculos que impedem a névoa de cegá-lo para os próprios pés. Nos
+		//          inimigos não aparecem porque a névoa é sempre do ponto de vista do jogador.
+		if (!EhInimigo)
+		{
+			Circulo(centro, _sensor.VisaoPassiva1, CorVisaoPassiva);
+			Circulo(centro, _sensor.VisaoPassiva2, CorVisaoPassiva * 0.6f);
+		}
 
 		_malha.SurfaceEnd();
 	}
@@ -190,8 +209,17 @@ public partial class DebugDeteccao : Node3D
 	{
 		if (_inimigo == null)
 		{
-			_texto.Text = "jogador";
-			_texto.Modulate = Colors.White;
+			// Alteração de IA - Revisar
+			// O que faz: mostra, sobre o jogador, se ele está agachado e o tamanho atual dos
+			//            círculos dele.
+			// Por quê: agachar encolhe os círculos e atrasa o reconhecimento. O encolhimento dá
+			//          para ver no desenho, mas o atraso não — então o número do tempo aparece
+			//          escrito. É o que permite conferir se agachar está valendo o que deveria.
+			bool agachado = _jogador?.Agachado ?? false;
+			_texto.Text = agachado
+				? $"AGACHADO\nraio {_sensor.Raio1Efetivo:0.0} m · visto em {_sensor.TempoParaSerVistoEfetivo:0.0}s"
+				: $"jogador\nraio {_sensor.Raio1Efetivo:0.0} m · visto em {_sensor.TempoParaSerVistoEfetivo:0.0}s";
+			_texto.Modulate = agachado ? new Color(0.5f, 0.9f, 1.0f) : Colors.White;
 			return;
 		}
 

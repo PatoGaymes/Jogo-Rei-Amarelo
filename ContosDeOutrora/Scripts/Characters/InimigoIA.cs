@@ -121,6 +121,15 @@ public partial class InimigoIA : CharacterBody3D
 	[Export]
 	public float ReducaoDosRaiosEmIdle { get; set; } = 0.35f;
 
+	// Alteração de IA - Revisar
+	// O que faz: em que modo o inimigo começa a partida.
+	// Por quê: até agora todo inimigo começava rondando, e não havia como montar um sentinela
+	//          parado numa atividade — o modo Idle existia no código mas não dava para escolher
+	//          pela cena. Um inimigo que **só** fica parado deve começar em Idle e ter a chance
+	//          de largar a ronda em zero.
+	[Export]
+	public Modo ModoInicial { get; set; } = Modo.Ronda;
+
 	public Modo ModoAtual { get; private set; } = Modo.Ronda;
 	public float DirecaoOlhando { get; private set; } = 270.0f;
 
@@ -201,6 +210,15 @@ public partial class InimigoIA : CharacterBody3D
 			AddChild(_medidor);
 		}
 
+		// Alteração de IA - Revisar
+		// O que faz: garante que todo inimigo saiba aparecer e sumir conforme a névoa.
+		// Por quê: mesmo motivo do medidor acima — criar em código, e não montar na cena, evita
+		//          que a ligação se perca quando o editor do Godot regrava o arquivo da cena.
+		if (GetNodeOrNull<VisibilidadeDoInimigo>("VisibilidadeDoInimigo") == null)
+		{
+			AddChild(new VisibilidadeDoInimigo { Name = "VisibilidadeDoInimigo" });
+		}
+
 		_sensor.AplicarProporcao();
 		_raio1Original = _sensor.RaioDeteccao1;
 		_alcanceVisaoOriginal = _sensor.AlcanceVisao;
@@ -221,6 +239,8 @@ public partial class InimigoIA : CharacterBody3D
 			GD.PushWarning("InimigoIA: não achei o sensor do jogador. " +
 						   "Confira se o jogador está no grupo 'player' e tem um nó SensorDeteccao.");
 		}
+
+		ModoAtual = ModoInicial;
 
 		if (ModoAtual == Modo.Idle)
 		{
