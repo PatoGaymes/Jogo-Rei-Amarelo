@@ -5,7 +5,7 @@ using Godot;
 // Por quê: o mapa é 3D, mas o personagem é um desenho 2D em pé, como uma folha de papel —
 //          é o estilo do Don't Starve. Então ele se move nas três dimensões, mas o que
 //          aparece na tela é sempre uma imagem plana virada para a câmera.
-public partial class PlayerIsometrico : CharacterBody3D
+public partial class PlayerIsometrico : CharacterBody3D, IPersonagemQueOlha
 {
 	// Alteração de IA - Revisar
 	// O que faz: as duas formas de agachar.
@@ -92,7 +92,11 @@ public partial class PlayerIsometrico : CharacterBody3D
 	public Vector3 PontoParaOndeOlha { get; private set; }
 
 	private CameraIsometrica? _camera;
-	private Sprite3D? _sprite;
+	// Alteração de IA - Revisar
+	// O que faz: o desenho do personagem, seja uma imagem parada ou uma animação.
+	// Por quê: com a chegada da animação de andar, o desenho deixou de ser sempre uma imagem
+	//          única. Guardar pelo tipo em comum aos dois deixa o agachar funcionar igual.
+	private SpriteBase3D? _sprite;
 	private SensorDeteccao? _sensor;
 	private float _alturaNormalDoDesenho;
 	private float _quantoEstaAgachado;
@@ -106,7 +110,24 @@ public partial class PlayerIsometrico : CharacterBody3D
 
 	public override void _Ready()
 	{
-		_sprite = GetNodeOrNull<Sprite3D>("Sprite3D");
+		foreach (Node filho in GetChildren())
+		{
+			if (filho is SpriteBase3D desenho)
+			{
+				_sprite = desenho;
+				break;
+			}
+		}
+
+		// Alteração de IA - Revisar
+		// O que faz: garante que o personagem tenha quem escolha o desenho certo para cada
+		//            direção (frente, costas, lado) e toque a animação de andar.
+		// Por quê: criado em código, e não montado na cena, para não se perder quando o editor
+		//          do Godot regravar o arquivo da cena — o que já aconteceu três vezes.
+		if (GetNodeOrNull<AnimacaoDirecional>("AnimacaoDirecional") == null)
+		{
+			AddChild(new AnimacaoDirecional { Name = "AnimacaoDirecional" });
+		}
 		_sensor = GetNodeOrNull<SensorDeteccao>("SensorDeteccao");
 
 		if (_sprite != null)
@@ -343,12 +364,10 @@ public partial class PlayerIsometrico : CharacterBody3D
 			DirecaoOlhando = Mathf.PosMod(Mathf.RadToDeg(Mathf.Atan2(-direcao.Z, direcao.X)), 360.0f);
 		}
 
-		float anguloCamera = _camera != null ? _camera.AnguloAtual : 270.0f;
-
-		// diferença entre para onde ele anda e de onde a câmera olha
-		float relativo = Mathf.PosMod(DirecaoOlhando - anguloCamera, 360.0f);
-
-		// entre 0 e 180 significa que ele está indo para a direita da tela
-		_sprite.FlipH = relativo > 180.0f;
+		// Alteração de IA - Revisar
+		// O que faz: espelhar e escolher o desenho saiu daqui.
+		// Por quê: agora é trabalho da AnimacaoDirecional, que além de espelhar escolhe entre
+		//          frente, costas e lado. Deixar os dois mexendo no mesmo desenho faria um
+		//          desfazer o que o outro fez a cada quadro.
 	}
 }

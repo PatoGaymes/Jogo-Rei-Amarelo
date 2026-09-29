@@ -28,13 +28,6 @@ public partial class CameraIsometrica : Camera3D
 	public Node3D? Alvo { get; set; }
 
 	// Alteração de IA - Revisar
-	// O que faz: liga a névoa de guerra nesta câmera.
-	// Por quê: fica desligável para cenas onde ela não faz sentido — uma cena de história, um
-	//          mapa de menu, ou um teste em que se queira ver o mapa inteiro.
-	[Export]
-	public bool UsarNevoaDeGuerra { get; set; } = true;
-
-	// Alteração de IA - Revisar
 	// O que faz: o quanto a câmera fica afastada do personagem.
 	// Por quê: é o "zoom" da cena. Número maior afasta e mostra mais mapa; menor aproxima
 	//          e mostra mais detalhe do personagem.
@@ -119,17 +112,16 @@ public partial class CameraIsometrica : Camera3D
 	}
 
 	// Alteração de IA - Revisar
-	// O que faz: pendura a névoa de guerra na própria câmera, se ela ainda não estiver lá.
-	// Por quê: a névoa é uma camada desenhada por cima da imagem pronta, então o lugar dela é
-	//          na câmera. Criar em código, e não montar na cena, é decisão consciente: alterações
-	//          em arquivos de cena já se perderam três vezes por serem regravadas pelo editor do
-	//          Godot. O que está no código não se perde ao salvar.
+	// O que faz: pendura na própria câmera a camada que esconde o que o personagem não enxerga.
+	// Por quê: a camada é pintada por cima da imagem pronta, então o lugar dela é na câmera. Ela é
+	//          criada sempre, mas **só aparece e só gasta alguma coisa** se o mapa tiver um nó
+	//          AmbienteDaFase com névoa ou escuridão. Mapa sem esse nó é limpo.
 	//
-	//          Assim, qualquer fase que tenha esta câmera ganha a névoa automaticamente, sem
-	//          ninguém precisar lembrar de montar nada.
+	//          Criada em código, e não montada na cena, porque alterações em arquivos de cena já se
+	//          perderam três vezes ao serem regravadas pelo editor do Godot.
 	private void CriarNevoa()
 	{
-		if (!UsarNevoaDeGuerra || GetNodeOrNull<NevoaDeGuerra>("NevoaDeGuerra") != null)
+		if (GetNodeOrNull<NevoaDeGuerra>("NevoaDeGuerra") != null)
 		{
 			return;
 		}

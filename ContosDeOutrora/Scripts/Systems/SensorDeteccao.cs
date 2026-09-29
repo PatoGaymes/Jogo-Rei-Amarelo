@@ -354,28 +354,6 @@ public partial class SensorDeteccao : Node3D
 		return Mathf.Min(porPerto, porOlhar);
 	}
 
-	// Alteração de IA - Revisar
-	// O que faz: responde se este personagem enxerga um ponto qualquer **de verdade** — dentro
-	//            do alcance, na direção certa e sem parede no meio.
-	// Por quê: o `NivelDeVisaoDe` acima só olha distância e ângulo. Esta versão fecha a conta
-	//          com a parede, e é a pergunta que a memória precisa fazer: "estou olhando para
-	//          onde lembro de ter visto o inimigo, e não tem ninguém lá?".
-	public bool EnxergaOPonto(Vector3 ponto, float direcaoOlhandoGraus)
-	{
-		if (NivelDeVisaoDe(ponto, direcaoOlhandoGraus) == 0)
-		{
-			return false;
-		}
-
-		var espaco = GetWorld3D().DirectSpaceState;
-		var consulta = PhysicsRayQueryParameters3D.Create(PosicaoDosOlhos,
-														 ponto + new Vector3(0.0f, 0.9f, 0.0f));
-		consulta.CollisionMask = (uint)CamadaQueBloqueiaVisao;
-		consulta.HitFromInside = false;
-
-		return espaco.IntersectRay(consulta).Count == 0;
-	}
-
 	public bool TemLinhaDeVisao(SensorDeteccao outro)
 	{
 		var espaco = GetWorld3D().DirectSpaceState;

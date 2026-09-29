@@ -1,94 +1,136 @@
 // Alteração de IA - Revisar
-// O que faz: cobre a tela com névoa em tudo que o personagem não está enxergando, e deixa
-//            limpo o que ele enxerga.
-// Por quê: o mapa é 3D visto de cima, então a câmera mostra o que está atrás das paredes — até
-//          o outro canto da sala. Isso entrega o mapa inteiro de graça e acaba com qualquer
-//          tensão. A névoa devolve ao jogador só o que o personagem realmente veria.
+// O que faz: esconde de verdade o que o personagem não enxerga — pintando névoa ou escuridão por
+//            cima da imagem pronta, conforme o ambiente da fase.
+// Por quê: o mapa é 3D visto de cima, então a câmera mostraria o que está atrás das paredes. Para
+//          cada ponto da tela, este desenho descobre a que lugar do mundo ele corresponde e
+//          pergunta: o personagem enxerga aquilo? Por isso vale igual para chão, parede, inimigo
+//          ou objeto, sem precisar marcar nada.
 //
-//          Funciona **em cima da imagem pronta**: para cada ponto da tela, descobre a que lugar
-//          do mundo ele corresponde e pergunta se o personagem enxerga aquele lugar. Por isso
-//          funciona igual para chão, parede, inimigo ou objeto, sem precisar marcar nada.
+//          ESCURIDÃO (modo 2): vê-se só o que está **iluminado** e, ao mesmo tempo, perto do
+//          personagem ou na direção em que ele olha. Sem luz, breu total — é o Don't Starve.
 //
-//          O embaçado usa as versões reduzidas da própria imagem (os "mipmaps"), que o motor já
-//          calcula de qualquer jeito — sai de graça em vez de custar dezenas de leituras.
-// Desenhada na passada das coisas transparentes, e por último de todas (ver RenderPriority no
-// script), para que a imagem que ela lê já tenha o cenário e os personagens prontos.
+//          NÉVOA (modo 1): fora da visão, a névoa encobre entre 70% e 100%, variando pelo mapa e
+//          com o tempo, como massas de ar passando. É o Silent Hill antigo. Atrás de parede e
+//          longe do personagem ela sempre chega a 100%.
+//
+//          Desempenho: a névoa que se move é um desenho de ruído gerado uma vez e só deslizado
+//          pelo mapa (duas leituras por ponto da tela). As paredes chegam já medidas numa tira de
+//          imagem. Nada aqui é calculado de novo que possa ser reaproveitado.
 shader_type spatial;
 render_mode unshaded, blend_mix, depth_draw_never, depth_test_disabled, cull_disabled, fog_disabled;
 
 uniform sampler2D tela : hint_screen_texture, filter_linear_mipmap;
 uniform sampler2D profundidade : hint_depth_texture, filter_nearest;
 
-// onde o personagem está e para onde está olhando (em radianos, na roda usada pelo jogo)
+uniform int modo = 1;
+
+// --- quem enxerga, de onde e para onde ---
 uniform vec3 jogador;
 uniform float olhando;
 uniform float meia_abertura;
-
-// o que ele enxerga sem precisar olhar
 uniform float passiva_clara;
 uniform float passiva_embacada;
-
-// as três faixas do cone de visão
 uniform float cone_claro;
 uniform float cone_embacado;
 uniform float cone_vulto;
-
-// Alteração de IA - Revisar
-// O que faz: uma tira fina onde cada pixel guarda a distância até a parede numa direção.
-// Por quê: é como as paredes chegam até aqui. O script mede com linhas imaginárias e entrega
-//          nesta tira; aqui só se consulta a direção do ponto e compara. É o que impede a
-//          névoa de limpar o cômodo do outro lado do muro.
-uniform sampler2D paredes : filter_linear, repeat_enable;
-uniform float folga_da_parede = 0.8;
-
-// Alteração de IA - Revisar
-// O que faz: a grade com tudo o que o personagem já viu alguma vez no mapa.
-// Por quê: lugar já visto continua aparecendo, apagado, mesmo de costas — casa não anda, então
-//          saber que ela está ali não se perde ao virar o rosto. Sem isso, virar de lado apagava
-//          o mundo inteiro e o jogador se perdia no próprio mapa.
-uniform sampler2D memoria : filter_linear;
-uniform float peso_da_memoria = 0.45;
-uniform vec2 canto_do_mapa;
-uniform float tamanho_do_mapa = 80.0;
-uniform float dessaturacao_da_memoria : hint_range(0.0, 1.0) = 0.7;
-
-uniform vec4 cor_da_nevoa : source_color = vec4(0.13, 0.14, 0.18, 1.0);
-uniform float forca_da_nevoa : hint_range(0.0, 1.0) = 0.93;
-uniform float forca_do_borrao : hint_range(0.0, 6.0) = 3.2;
 uniform float suavidade = 1.2;
 
+// distância até a parede em cada direção em volta do jogador
+uniform sampler2D paredes : filter_linear, repeat_enable;
+uniform float folga_da_parede = 0.8;
+uniform float forca_do_borrao = 3.0;
+
+// --- névoa ---
+uniform sampler2D ruido : filter_linear, repeat_enable;
+uniform float tempo;
+uniform vec4 cor_da_nevoa : source_color = vec4(0.60, 0.62, 0.64, 1.0);
+uniform float densidade_minima = 0.70;
+uniform float densidade_maxima = 1.0;
+uniform float tamanho_das_massas = 16.0;
+uniform vec2 vento = vec2(0.55, 0.20);
+
+// --- escuridão ---
+uniform vec4 cor_da_escuridao : source_color = vec4(0.0, 0.0, 0.0, 1.0);
+uniform float luz_ambiente = 0.0;
+uniform sampler2D paredes_das_luzes : filter_linear, repeat_enable;
+uniform int quantas_luzes = 0;
+uniform vec4 luzes[16];
+uniform vec4 cores_das_luzes[16];
+
 // Alteração de IA - Revisar
-// O que faz: devolve o quanto o personagem enxerga um ponto, de 0 (névoa) a 1 (claro).
-// Por quê: é um valor contínuo, e não os níveis 1/2/3 inteiros, para as faixas se misturarem
-//          sem deixar anéis e bordas duras na tela. Os níveis continuam existindo na mecânica;
-//          aqui eles viram degraus suaves de clareza.
-float clareza(vec3 ponto) {
-	vec2 d = ponto.xz - jogador.xz;
-	float dist = length(d);
-
-	// --- parede na frente? então acaba aqui ---
-	// a direção do ponto vira uma posição na tira de distâncias; se o ponto está mais longe do
-	// que a parede naquela direção, ele está escondido atrás dela.
-	float volta = fract(atan(-d.y, d.x) / TAU + 1.0);
-	float ate_a_parede = texture(paredes, vec2(volta, 0.5)).r;
-	if (dist > ate_a_parede + folga_da_parede) {
-		return 0.0;
-	}
-
-	// --- o que ele percebe em volta sem olhar ---
+// O que faz: o quanto o personagem percebe um ponto, de 0 a 1, **sem contar parede**.
+// Por quê: junta as duas formas de enxergar — o que está em volta sem precisar olhar, e o cone
+//          na direção do olhar, que vai de claro a vulto conforme a distância. Vale a melhor das
+//          duas. É contínuo (e não os níveis 1/2/3 inteiros) para não deixar anéis duros na tela.
+float percepcao(vec2 d, float dist) {
 	float perto = mix(1.0, 0.55, smoothstep(passiva_clara, passiva_embacada, dist));
 	perto *= 1.0 - smoothstep(passiva_embacada, passiva_embacada + suavidade, dist);
 
-	// --- o que o cone de visão alcança ---
 	float ang = atan(-d.y, d.x);
 	float diferenca = abs(atan(sin(ang - olhando), cos(ang - olhando)));
-	float dentro_do_cone = 1.0 - smoothstep(meia_abertura * 0.82, meia_abertura, diferenca);
+	float dentro = 1.0 - smoothstep(meia_abertura * 0.82, meia_abertura, diferenca);
 
-	float por_distancia = mix(1.0, 0.62, smoothstep(cone_claro, cone_embacado, dist));
-	por_distancia = mix(por_distancia, 0.20, smoothstep(cone_embacado, cone_vulto, dist));
-	por_distancia *= 1.0 - smoothstep(cone_vulto, cone_vulto + suavidade, dist);
+	float longe = mix(1.0, 0.62, smoothstep(cone_claro, cone_embacado, dist));
+	longe = mix(longe, 0.20, smoothstep(cone_embacado, cone_vulto, dist));
+	longe *= 1.0 - smoothstep(cone_vulto, cone_vulto + suavidade, dist);
 
-	return max(perto, dentro_do_cone * por_distancia);
+	return max(perto, dentro * longe);
+}
+
+// Alteração de IA - Revisar
+// O que faz: devolve de 0 a 1 o quanto o ponto está escondido atrás de parede.
+// Por quê: a passagem é suave (cerca de um metro), e não um corte seco. Com corte seco a sombra
+//          da parede virava um polígono de borda dura, com cara de defeito — principalmente na
+//          névoa, onde nada tem contorno nítido.
+float atras_da_parede(vec2 d, float dist) {
+	float volta = fract(atan(-d.y, d.x) / TAU + 1.0);
+	float ate = texture(paredes, vec2(volta, 0.5)).r;
+	return smoothstep(ate + folga_da_parede, ate + folga_da_parede + 1.0, dist);
+}
+
+// Alteração de IA - Revisar
+// O que faz: o quão densa está a névoa neste ponto, agora — entre a densidade mínima e a máxima.
+// Por quê: duas camadas do mesmo ruído, de tamanhos diferentes, levadas pelo vento em direções
+//          diferentes. Somadas, nunca se repetem de um jeito que o olho perceba: uma massa passa,
+//          abre uma brecha, fecha de novo. Longe do personagem a névoa sempre chega ao máximo —
+//          senão daria para espiar o mapa inteiro pelas brechas.
+float densidade(vec2 xz, float dist, out float massa) {
+	vec2 uv1 = (xz + vento * tempo) / (tamanho_das_massas * 3.0);
+	vec2 uv2 = (xz - vec2(vento.y, -vento.x) * tempo * 0.7) / (tamanho_das_massas * 1.7);
+	float n = texture(ruido, uv1).r * 0.65 + texture(ruido, uv2).r * 0.35;
+	massa = smoothstep(0.30, 0.70, n);
+	float dens = mix(densidade_minima, densidade_maxima, smoothstep(0.38, 0.62, n));
+	return mix(dens, densidade_maxima, smoothstep(cone_vulto, cone_vulto * 1.5, dist));
+}
+
+// Alteração de IA - Revisar
+// O que faz: soma a luz de todas as fontes que alcançam o ponto, e devolve a cor dessa luz.
+// Por quê: cada fonte ilumina um círculo com borda suave. Se houver parede entre a fonte e o
+//          ponto, aquela fonte não conta — é o que impede a fogueira de clarear o outro lado do
+//          muro.
+vec3 luz_em(vec3 p, out float forca) {
+	float total = luz_ambiente;
+	vec3 cor = vec3(0.0);
+	float peso = 0.0;
+	for (int i = 0; i < quantas_luzes; i++) {
+		vec2 d = p.xz - luzes[i].xz;
+		float dist = length(d);
+		float raio = luzes[i].w;
+		if (dist > raio) {
+			continue;
+		}
+		float volta = fract(atan(-d.y, d.x) / TAU + 1.0);
+		float ate = texture(paredes_das_luzes, vec2(volta, (float(i) + 0.5) / 16.0)).r;
+		if (dist > ate + folga_da_parede) {
+			continue;
+		}
+		float f = cores_das_luzes[i].a * (1.0 - smoothstep(raio * 0.45, raio, dist));
+		total += f;
+		cor += cores_das_luzes[i].rgb * f;
+		peso += f;
+	}
+	forca = clamp(total, 0.0, 1.0);
+	return peso > 0.0 ? cor / peso : vec3(1.0);
 }
 
 void vertex() {
@@ -97,44 +139,41 @@ void vertex() {
 }
 
 void fragment() {
-	// Alteração de IA - Revisar
-	// O que faz: descobre o ponto do mundo que aparece neste pedacinho da tela.
-	// Por quê: é o que permite perguntar "o personagem enxerga ISTO?" sobre qualquer coisa
-	//          desenhada — usa a profundidade que o motor já guardou ao desenhar a cena.
+	// o ponto do mundo que aparece neste pedacinho da tela
 	float z = texture(profundidade, SCREEN_UV).x;
 	vec3 ndc = vec3(SCREEN_UV * 2.0 - 1.0, z);
 	vec4 na_camera = INV_PROJECTION_MATRIX * vec4(ndc, 1.0);
 	na_camera.xyz /= na_camera.w;
 	vec3 no_mundo = (INV_VIEW_MATRIX * vec4(na_camera.xyz, 1.0)).xyz;
 
-	float vejo = clareza(no_mundo);
+	vec2 d = no_mundo.xz - jogador.xz;
+	float dist = length(d);
+	float escondido = atras_da_parede(d, dist);
+	float percebo = percepcao(d, dist) * (1.0 - escondido);
 
-	// Alteração de IA - Revisar
-	// O que faz: soma ao que ele vê agora o que ele **lembra** de já ter visto.
-	// Por quê: o lugar lembrado nunca fica tão nítido quanto o que está sendo olhado (o peso da
-	//          memória segura isso), mas também não volta a ser névoa. É a diferença entre
-	//          "não sei o que tem lá" e "sei o que tem lá, só não estou olhando agora".
-	vec2 no_mapa = (no_mundo.xz - canto_do_mapa) / tamanho_do_mapa;
-	float lembro = 0.0;
-	if (no_mapa.x > 0.0 && no_mapa.x < 1.0 && no_mapa.y > 0.0 && no_mapa.y < 1.0) {
-		lembro = texture(memoria, no_mapa).r * peso_da_memoria;
+	if (modo == 2) {
+		// ESCURIDÃO: só aparece o que está iluminado E percebido
+		float forca;
+		vec3 cor_da_luz = luz_em(no_mundo, forca);
+		float visivel = percebo * forca;
+		vec3 cor = textureLod(tela, SCREEN_UV, (1.0 - visivel) * forca_do_borrao * 0.5).rgb;
+		cor *= mix(vec3(1.0), cor_da_luz, 0.35 * forca);
+		ALBEDO = mix(cor_da_escuridao.rgb, cor, visivel);
+	} else {
+		// NÉVOA: fora da visão encobre de 70% a 100%; atrás de parede, sempre 100%
+		float massa;
+		float dens = densidade(no_mundo.xz, dist, massa);
+		float nevoa = mix((1.0 - percebo) * dens, 1.0, escondido);
+		vec3 cor = textureLod(tela, SCREEN_UV, nevoa * forca_do_borrao).rgb;
+
+		// Alteração de IA - Revisar
+		// O que faz: as massas de névoa ficam um pouco mais claras ou mais escuras enquanto passam.
+		// Por quê: longe do personagem a névoa encobre sempre 100% — senão daria para espiar o
+		//          mapa pelas brechas. Mas 100% de uma cor só parece uma parede cinza parada. A
+		//          variação de claridade faz a névoa **se mexer na tela inteira** sem revelar nada
+		//          do que está atrás dela.
+		vec3 cor_aqui = cor_da_nevoa.rgb * (0.90 + 0.18 * massa);
+		ALBEDO = mix(cor, cor_aqui, nevoa);
 	}
-
-	float visivel = max(vejo, lembro);
-	float nevoa = 1.0 - visivel;
-
-	// quanto menos ele enxerga, mais borrada fica a imagem
-	vec3 cor = textureLod(tela, SCREEN_UV, nevoa * forca_do_borrao).rgb;
-
-	// Alteração de IA - Revisar
-	// O que faz: tira a cor do que é só memória, deixando acinzentado.
-	// Por quê: separa à primeira vista o que ele está vendo agora do que ele apenas sabe que
-	//          está ali. Sem isso, memória e visão ficariam parecidas demais e o jogador
-	//          confiaria numa informação velha achando que é atual.
-	float so_lembranca = clamp(lembro - vejo, 0.0, 1.0) / max(peso_da_memoria, 0.001);
-	float cinza = dot(cor, vec3(0.299, 0.587, 0.114));
-	cor = mix(cor, vec3(cinza), so_lembranca * dessaturacao_da_memoria);
-
-	ALBEDO = mix(cor, cor_da_nevoa.rgb, nevoa * forca_da_nevoa);
 	ALPHA = 1.0;
 }

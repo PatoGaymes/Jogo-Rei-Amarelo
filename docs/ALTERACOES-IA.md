@@ -888,3 +888,114 @@ ao virar o rosto, ou o jogador passa a caçar um inimigo que já saiu dali.
 - A cor do vulto (nível 3) passou a ser **mais clara que a névoa**, não mais escura. Vulto escuro
   sumia dentro da névoa escura.
 
+---
+
+## 29/09/2026 — Animação do Desgarrado, novo padrão de animação e reestruturação da névoa
+
+### A animação do Desgarrado não funcionava — erro meu
+
+**O que aconteceu:** na entrega anterior os 96 quadros foram movidos para a pasta certa e a inserção
+foi dada como pronta. **Nada no jogo usava aqueles arquivos**: o personagem continuava com a imagem
+provisória do Khalid, que só espelhava para os lados.
+
+**O que foi feito:**
+
+- `Uzhan_Desgarrado_Mapa.tres` (novo, na pasta `Map/` do personagem): o `SpriteFrames` com três
+  animações — `andar_frente`, `andar_costas`, `andar_lado` — de 32 quadros a 24 por segundo.
+- `Player.tscn`: o desenho do jogador passou a ser a animação do Desgarrado (era a imagem do Khalid).
+  Como `.tscn` não aceita comentário, fica registrado aqui.
+- `AnimacaoDirecional.cs` (novo): escolhe frente, costas ou lado comparando para onde o personagem
+  olha com de onde a câmera olha, espelha o lado para a esquerda, e toca a animação no ritmo da
+  caminhada. Verificado nos 8 ângulos da câmera × 4 direções do olhar: **32 combinações certas**.
+- `PlayerIsometrico.cs`: o espelhamento saiu daqui (agora é do componente acima), e o personagem
+  implementa `IPersonagemQueOlha`, que permite ao mesmo componente animar inimigos no futuro.
+
+**O que revisar:**
+
+- **Os quadros foram recortados de novo**, agora com os pés no centro de cada direção. Na arte
+  entregue, o corpo de frente e de costas estava 0,9 m à direita do corpo de lado — o personagem
+  pularia quase um metro ao virar. Conferido: pés no centro com erro de 0,4 pixel, e a marca no chão
+  fica exatamente sob os pés nas quatro vistas. Nenhum pixel do desenho foi alterado, só o fundo
+  transparente.
+- `VelocidadeDeReferencia` (3 m/s) é a velocidade em que a animação toca no ritmo original. Se os
+  pés parecerem patinar no chão, é esse número.
+- Parado, o personagem fica no primeiro quadro, até chegar uma animação de parado própria.
+- A escala foi ajustada para 1,85 m de altura (o Rasgador tem 1,83 m, o Khalid provisório 1,61 m).
+
+### Padrão de animação: tudo quadro a quadro
+
+**O que foi feito:** `Assets/README.md`, `CLAUDE.md` e `inserir/README.md` atualizados. A regra
+antiga (personagens por ossos, efeitos quadro a quadro) foi substituída: **o jogo inteiro é quadro a
+quadro**. A Quimera é produzida de outro jeito na ferramenta de arte, mas no jogo também chega
+quadro a quadro.
+
+**O que revisar — para a equipe de devs:** a regra antiga existia por causa do tamanho (estimativa
+de ~6 MB por ossos contra ~216 MB quadro a quadro). O andar do Desgarrado sozinho tem 4,6 MB. Vale
+considerar **Git LFS** para as pastas de arte antes que o repositório fique pesado para clonar.
+
+### Lembrança do inimigo e memória do cenário — retiradas
+
+**O que foi feito:** o borrão no último lugar em que o inimigo foi visto e a grade que lembrava o
+cenário já visto foram retirados, a pedido do PO. Saíram também o `EnxergaOPonto` do sensor (só a
+lembrança usava) e o `UsarNevoaDeGuerra` da câmera (quem decide agora é o ambiente da fase).
+
+**Onde ficou registrado:** [IDEIAS-ARQUIVADAS.md](IDEIAS-ARQUIVADAS.md), com como funcionavam, os
+números e o commit onde está o código (`7757945`).
+
+### `AmbienteDaFase.cs` (novo) — cada fase escolhe o seu ambiente
+
+**O que foi feito:** nó que diz se a fase é limpa, com névoa ou com escuridão. **Mapa sem esse nó é
+limpo**: nada ofusca, e a camada da névoa nem aparece.
+
+**O que revisar:** a tecla **F4** passou a percorrer os ambientes (limpo → névoa → escuridão → breu
+total → limpo), no lugar de só ligar e desligar. Ferramenta de teste.
+
+### `FonteDeLuz.cs` (novo) — a luz da escuridão
+
+**O que foi feito:** fogueiras, lamparinas e tochas. Na escuridão, só se vê o que está iluminado e,
+ao mesmo tempo, perto do personagem ou na direção em que ele olha. Sem luz, breu total — nem o
+personagem aparece, como na referência do Don't Starve.
+
+**O que revisar:** a luz **não atravessa parede** — medido: brilho 0,239 do lado da lâmpada, 0,000 do
+outro lado da divisória, os dois dentro do alcance dela. Até 16 luzes contam ao mesmo tempo (as mais
+perto do jogador).
+
+### `NevoaDeGuerra.cs` e `NevoaDeGuerra.gdshader` — reescritos
+
+**O que foi feito:** a camada agora **esconde de verdade** o que está fora da visão, em dois modos.
+
+- **Escuridão:** preto onde não há luz.
+- **Névoa:** clara, e **volátil** — encobre entre 70% e 100%, mudando com o tempo e de lugar para
+  lugar. Medido num mesmo ponto em 12 segundos: 83% → 97% → 77%. Atrás de parede e longe do
+  personagem, sempre 100%, para a névoa rala não virar janela.
+
+**O que revisar — desempenho, que foi pedido explicitamente:**
+
+| | Limpo | Névoa | Escuridão |
+|---|---|---|---|
+| Placa de vídeo | 1,12 ms | 1,51 ms | 1,52 ms |
+| Processador, parado | 0 | 0,002 ms | 0,04 ms |
+| Processador, andando | 0 | 0,17 ms | 0,33 ms |
+
+A primeira versão custava **1,0 a 1,6 ms** de processador em todo passo da física, por causa das 128
+linhas até as paredes. Ficou até 8 vezes mais barata com três medidas: a pergunta ao mundo passou a
+ser reaproveitada em vez de criada 128 vezes por passo; as paredes só são medidas de novo quando o
+jogador se move; e, andando, um passo sim, um não.
+
+**Sobre as medições:** a janela de teste ficou presa em 30 quadros por segundo **em todos os modos,
+inclusive o limpo** — limitação do ambiente de teste, não do jogo. Por isso os números acima são o
+tempo gasto pela placa de vídeo (medido pelo próprio Godot) e o tempo do código da névoa (medido com
+cronômetro), e não quadros por segundo.
+
+### `VisibilidadeDoInimigo.cs` — simplificado
+
+**O que foi feito:** quem esconde o inimigo agora é a camada da névoa, igual esconde o resto do mapa.
+O script ficou só com o que ela não resolve: na névoa, o inimigo longe vira **silhueta escura**, que
+aparece por um instante onde a névoa afina.
+
+### `Sandbox.tscn` — ambiente e luzes
+
+**O que foi feito:** o mapa de testes ganhou um `AmbienteDaFase` (começa na escuridão), cinco
+luzes (fogueira perto do início, lamparinas nos dois andares da casa, numa esquina da ronda e atrás
+de uma divisória) e uma lanterna na mão do jogador.
+

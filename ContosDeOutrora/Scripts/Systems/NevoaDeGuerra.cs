@@ -1,158 +1,109 @@
 using System;
+using System.Collections.Generic;
 using Godot;
 
 // Alteração de IA - Revisar
-// O que faz: liga a névoa da tela ao personagem — a cada instante, avisa ao desenho onde o
-//            jogador está, para onde está olhando e até onde ele enxerga.
-// Por quê: quem decide o que é enxergado é o `SensorDeteccao` do personagem, e quem pinta é o
-//          arquivo de desenho (`Shaders/NevoaDeGuerra.gdshader`). Este script é a ponte entre os
-//          dois, e existe para que **exista uma fonte de verdade só**: se a equipe mudar o
-//          alcance da visão no personagem, a névoa acompanha sozinha.
+// O que faz: a camada pintada por cima da imagem do jogo que esconde o que o personagem não
+//            enxerga — seja névoa ou escuridão, conforme o ambiente da fase.
+// Por quê: o mapa é 3D visto de cima, então a câmera mostraria o que está atrás das paredes e do
+//          outro lado da sala. Esta camada devolve ao jogador só o que o personagem veria.
 //
-//          É uma tela plana pendurada na frente da câmera, desenhada por último, por cima de
-//          tudo. Ela se cria sozinha em código, sem precisar ser montada na cena.
+//          "Névoa de guerra" é o nome do **sistema** (o termo usado em jogos para "o que você não
+//          sabe o que tem"). Névoa e escuridão são os dois **ambientes** que ele sabe desenhar —
+//          quem decide qual vale é o nó AmbienteDaFase do mapa. Mapa sem esse nó é limpo, e esta
+//          camada simplesmente não aparece nem gasta nada.
+//
+//          Quem decide o que é enxergado é o SensorDeteccao do personagem; quem pinta é
+//          Shaders/NevoaDeGuerra.gdshader. Este script é a ponte, e existe para que haja uma fonte
+//          de verdade só: mudou o alcance da visão no personagem, a névoa acompanha.
 public partial class NevoaDeGuerra : MeshInstance3D
 {
 	// Alteração de IA - Revisar
-	// O que faz: a cor da névoa.
-	// Por quê: **é o que decide se a cena é neblina ou escuridão.** Cinza claro dá névoa de
-	//          exterior; quase preto dá porão sem lamparina. A mesma mecânica serve para os dois,
-	//          mudando só esta cor — por isso ela fica ajustável e não fixa no desenho.
-	[Export]
-	public Color CorDaNevoa { get; set; } = new(0.13f, 0.14f, 0.18f);
-
-	// Alteração de IA - Revisar
-	// O que faz: o quanto a névoa chega a encobrir, de 0 a 1.
-	// Por quê: em 1 o que está fora da visão some por completo. Um pouco abaixo disso deixa
-	//          adivinhar contornos, o que ajuda a não se perder no mapa. É um dos números que a
-	//          equipe vai querer sentir jogando.
-	[Export(PropertyHint.Range, "0,1,0.01")]
-	public float ForcaDaNevoa { get; set; } = 0.93f;
-
-	[Export(PropertyHint.Range, "0,6,0.1")]
-	public float ForcaDoBorrao { get; set; } = 3.2f;
-
-	// Alteração de IA - Revisar
-	// O que faz: liga e desliga a névoa durante o jogo, na tecla F4.
-	// Por quê: com a névoa ligada não dá para conferir se o inimigo está fazendo a ronda certa
-	//          do outro lado da sala — é justamente o que ela esconde. A tecla permite espiar o
-	//          mapa inteiro durante um teste e voltar. **É ferramenta de teste**, diferente da
-	//          névoa em si, que é mecânica de jogo.
-	[Export]
-	public bool Ligada { get; set; } = true;
-
-	// Alteração de IA - Revisar
 	// O que faz: quantas linhas imaginárias saem do personagem, em roda, para medir onde estão
 	//            as paredes em cada direção.
-	// Por quê: **é isto que faz a parede esconder o que está atrás dela.** Sem isso, a névoa
-	//          limparia tudo o que estivesse perto e dentro do cone, inclusive o cômodo do outro
-	//          lado do muro — que é justamente o problema que ela veio resolver.
-	//
-	//          Mais linhas deixam o contorno das paredes mais fiel; menos linhas deixam os
-	//          cantos serrilhados. 128 dá cerca de 3 graus entre uma e outra, o que a olho nu
-	//          já fica redondo.
+	// Por quê: **é o que faz a parede esconder o que está atrás dela.** 128 dá cerca de 3 graus
+	//          entre uma linha e outra, o que a olho nu já fica redondo.
 	[Export]
 	public int QuantidadeDeRaios { get; set; } = 128;
 
 	// Alteração de IA - Revisar
 	// O que faz: a folga dada além da parede antes de considerar que algo está escondido.
 	// Por quê: a própria parede precisa continuar aparecendo — ela é o que o personagem enxerga.
-	//          Sem folga, a face dela ficaria escura, o que pareceria defeito. A folga é da ordem
-	//          da espessura de uma parede.
 	[Export]
 	public float FolgaDaParede { get; set; } = 0.8f;
 
-	// Alteração de IA - Revisar
-	// O que faz: guarda tudo o que o personagem **já viu alguma vez**, e volta a mostrar esses
-	//            lugares de forma apagada quando ele não está mais olhando.
-	// Por quê: era o pedido, e é como funciona a cabeça de alguém. Você olhou para a casa: sabe
-	//          que ela está ali mesmo de costas, porque casa não anda. Sem isso, virar de lado
-	//          apagava o mundo inteiro e o jogador se perdia no próprio mapa.
-	//
-	//          **Só vale para o cenário.** Inimigos andam, então a memória deles é outra coisa e
-	//          fica com cada inimigo (ver VisibilidadeDoInimigo).
-	[Export]
-	public bool LembrarDoCenario { get; set; } = true;
+	[Export(PropertyHint.Range, "0,6,0.1")]
+	public float ForcaDoBorrao { get; set; } = 3.0f;
 
 	// Alteração de IA - Revisar
-	// O que faz: o quanto um lugar lembrado aparece, comparado a estar olhando para ele.
-	// Por quê: lembrar não é ver. Em 0,45 o lugar fica reconhecível mas claramente mais apagado,
-	//          e o jogador entende de relance que aquilo é memória, não informação de agora.
-	[Export(PropertyHint.Range, "0,1,0.01")]
-	public float PesoDaMemoria { get; set; } = 0.45f;
-
-	// Alteração de IA - Revisar
-	// O que faz: o tamanho do quadrado do mapa coberto pela memória, e em quantos pedacinhos ele
-	//            é dividido.
-	// Por quê: a memória é guardada como uma grade sobre o mapa. Se o mapa for maior que este
-	//          quadrado, as bordas não são lembradas; se a grade for fina demais, custa caro sem
-	//          aparecer. 80 m em 256 pedaços dá cerca de 31 cm cada, que a olho nu já é liso.
-	[Export]
-	public float TamanhoDoMapa { get; set; } = 80.0f;
-
-	[Export]
-	public Vector2 CentroDoMapa { get; set; } = Vector2.Zero;
-
-	[Export]
-	public int ResolucaoDaMemoria { get; set; } = 256;
-
-	// Alteração de IA - Revisar
-	// O que faz: de quantos em quantos passos da física a memória é anotada.
-	// Por quê: anotar a memória custa percorrer alguns milhares de pedacinhos da grade. Fazer
-	//          isso 60 vezes por segundo é desperdício: ninguém percebe a diferença entre anotar
-	//          agora ou daqui a três quadros.
-	[Export]
-	public int PassosEntreAnotacoes { get; set; } = 3;
+	// O que faz: o máximo de fontes de luz consideradas ao mesmo tempo, e quantas linhas cada uma
+	//            usa para saber onde as paredes a bloqueiam.
+	// Por quê: a conta de cada ponto da tela percorre as luzes uma a uma; limitar às 16 mais
+	//          perto do jogador mantém o custo fixo, não importa quantas lamparinas o mapa tenha.
+	//          Luz parada mede suas paredes uma única vez; só luz que anda (tocha na mão) mede de
+	//          novo, e só quando se move.
+	private const int MaximoDeLuzes = 16;
+	private const int RaiosPorLuz = 64;
 
 	private SensorDeteccao? _sensor;
 	private PlayerIsometrico? _jogador;
+	private AmbienteDaFase? _ambiente;
 	private ShaderMaterial _material = null!;
 
-	private float[] _distanciaAteAParede = Array.Empty<float>();
-	private byte[] _bytesDasDistancias = Array.Empty<byte>();
-	private Image? _imagemDasParedes;
-	private ImageTexture? _texturaDasParedes;
+	// paredes em volta do jogador
+	private float[] _paredesDoJogador = Array.Empty<float>();
+	private byte[] _bytesDoJogador = Array.Empty<byte>();
+	private Image? _imagemDoJogador;
+	private ImageTexture? _texturaDoJogador;
 
-	private byte[] _memoriaDoCenario = Array.Empty<byte>();
-	private Image? _imagemDaMemoria;
-	private ImageTexture? _texturaDaMemoria;
-	private int _passosDesdeAUltimaAnotacao;
-	private bool _memoriaMudou;
+	// paredes em volta de cada luz (uma linha da imagem por luz)
+	private readonly float[] _paredesDasLuzes = new float[MaximoDeLuzes * RaiosPorLuz];
+	private readonly byte[] _bytesDasLuzes = new byte[MaximoDeLuzes * RaiosPorLuz * sizeof(float)];
+	private Image? _imagemDasLuzes;
+	private ImageTexture? _texturaDasLuzes;
+	private readonly FonteDeLuz?[] _luzNaVaga = new FonteDeLuz?[MaximoDeLuzes];
+	private readonly Vector3[] _ondeAVagaMediu = new Vector3[MaximoDeLuzes];
+	private readonly Vector4[] _posicoesDasLuzes = new Vector4[MaximoDeLuzes];
+	private readonly Vector4[] _coresDasLuzes = new Vector4[MaximoDeLuzes];
+	private int _quantasLuzes;
+
+	private ImageTexture? _texturaDaNevoa;
+	private float _tempo;
+
+	// Alteração de IA - Revisar
+	// O que faz: uma única "pergunta ao mundo" reaproveitada para todas as linhas até as paredes,
+	//            e a lembrança de onde o jogador estava na última medição.
+	// Por quê: **desempenho.** Criar uma pergunta nova para cada uma das 128 linhas, 60 vezes por
+	//          segundo, custava mais do que as linhas em si. E parede não anda: se o jogador está
+	//          parado, a medida anterior continua certa e não há por que refazê-la. Andando, ela é
+	//          refeita um passo sim, um não — 30 vezes por segundo, o que a olho nu é igual.
+	private readonly PhysicsRayQueryParameters3D _consulta = new() { HitFromInside = false };
+	private Vector3 _ondeMediuOJogador = new(float.MaxValue, 0.0f, 0.0f);
+	private float _alcanceMedido;
+	private bool _pularEstePasso;
 
 	public override void _Ready()
 	{
 		// Alteração de IA - Revisar
-		// O que faz: monta uma tela plana de tamanho 2x2 presa à câmera.
-		// Por quê: o desenho reposiciona cada canto para cobrir a tela inteira, então o tamanho
-		//          e a posição aqui não importam para o resultado — o que importa é ela nunca
-		//          ser descartada por estar fora de vista, e é para isso que serve a margem
-		//          enorme abaixo.
+		// O que faz: monta uma tela plana presa à câmera, que o desenho estica para cobrir a tela.
+		// Por quê: a margem enorme impede que ela seja descartada por "estar fora de vista".
 		Mesh = new QuadMesh { Size = new Vector2(2.0f, 2.0f) };
 		ExtraCullMargin = 16384.0f;
 		CastShadow = ShadowCastingSetting.Off;
 		Position = new Vector3(0.0f, 0.0f, -0.5f);
+		Visible = false;
 
 		var desenho = GD.Load<Shader>("res://Shaders/NevoaDeGuerra.gdshader");
 		if (desenho == null)
 		{
-			GD.PushWarning("NevoaDeGuerra: não achei 'res://Shaders/NevoaDeGuerra.gdshader'. " +
-						   "A névoa fica desligada.");
-			Visible = false;
+			GD.PushWarning("NevoaDeGuerra: não achei 'res://Shaders/NevoaDeGuerra.gdshader'.");
 			return;
 		}
 
-		// Alteração de IA - Revisar
-		// O que faz: manda desenhar esta camada depois de todas as outras.
-		// Por quê: ela pinta por cima da imagem já montada. Se fosse desenhada no meio,
-		//          leria uma imagem pela metade e partes do cenário apareceriam por cima
-		//          da névoa.
+		// desenhada por último, por cima de tudo: lê a imagem já pronta
 		_material = new ShaderMaterial { Shader = desenho, RenderPriority = 100 };
 		MaterialOverride = _material;
 
-		// Alteração de IA - Revisar
-		// O que faz: procura o personagem pelo grupo "player".
-		// Por quê: a névoa é sempre do ponto de vista do jogador. Procurar pelo grupo mantém
-		//          isso funcionando mesmo que alguém reorganize os nós do mapa.
 		var achados = GetTree().GetNodesInGroup("player");
 		if (achados.Count > 0)
 		{
@@ -160,212 +111,213 @@ public partial class NevoaDeGuerra : MeshInstance3D
 			_sensor = (achados[0] as Node)?.GetNodeOrNull<SensorDeteccao>("SensorDeteccao");
 		}
 
-		if (_sensor == null)
-		{
-			GD.PushWarning("NevoaDeGuerra: não achei o sensor do jogador. A névoa fica desligada.");
-			Visible = false;
-			return;
-		}
-
-		PrepararMedidaDasParedes();
+		PrepararTexturas();
 	}
 
 	// Alteração de IA - Revisar
-	// O que faz: prepara a tabelinha onde ficam guardadas as distâncias até a parede em cada
-	//            direção — uma tira de imagem de um pixel de altura.
-	// Por quê: é a forma de entregar esses números ao desenho da tela. Uma imagem é o único
-	//          formato que o desenho consegue consultar rápido, milhares de vezes por quadro.
-	//          Cada pixel guarda uma distância, e a posição dele na tira corresponde a uma
-	//          direção da roda.
-	private void PrepararMedidaDasParedes()
+	// O que faz: prepara as tiras de imagem onde as distâncias até as paredes são entregues ao
+	//            desenho, e gera **uma única vez** o desenho de ruído que dá forma à névoa.
+	// Por quê: o desenho da tela só consegue consultar números rapidamente se eles vierem como
+	//          imagem. E a névoa que se move é esse mesmo ruído deslizando pelo mapa — gerado uma
+	//          vez só, no início, em vez de calculado a cada ponto da tela a cada quadro. É isso
+	//          que deixa a névoa volátil praticamente de graça.
+	private void PrepararTexturas()
 	{
-		int quantos = Mathf.Max(8, QuantidadeDeRaios);
-		_distanciaAteAParede = new float[quantos];
-		_bytesDasDistancias = new byte[quantos * sizeof(float)];
-		_imagemDasParedes = Image.CreateEmpty(quantos, 1, false, Image.Format.Rf);
-		_texturaDasParedes = ImageTexture.CreateFromImage(_imagemDasParedes);
+		int raios = Mathf.Max(8, QuantidadeDeRaios);
+		_paredesDoJogador = new float[raios];
+		_bytesDoJogador = new byte[raios * sizeof(float)];
+		_imagemDoJogador = Image.CreateEmpty(raios, 1, false, Image.Format.Rf);
+		_texturaDoJogador = ImageTexture.CreateFromImage(_imagemDoJogador);
 
-		int lado = Mathf.Clamp(ResolucaoDaMemoria, 32, 1024);
-		_memoriaDoCenario = new byte[lado * lado];
-		_imagemDaMemoria = Image.CreateEmpty(lado, lado, false, Image.Format.R8);
-		_texturaDaMemoria = ImageTexture.CreateFromImage(_imagemDaMemoria);
+		_imagemDasLuzes = Image.CreateEmpty(RaiosPorLuz, MaximoDeLuzes, false, Image.Format.Rf);
+		_texturaDasLuzes = ImageTexture.CreateFromImage(_imagemDasLuzes);
+
+		var ruido = new FastNoiseLite
+		{
+			NoiseType = FastNoiseLite.NoiseTypeEnum.SimplexSmooth,
+			Frequency = 0.012f,
+			FractalType = FastNoiseLite.FractalTypeEnum.Fbm,
+			FractalOctaves = 3,
+			Seed = 7
+		};
+		// "sem emenda": a imagem se repete lado a lado sem deixar costura visível no mapa
+		Image imagem = ruido.GetSeamlessImage(256, 256);
+		_texturaDaNevoa = ImageTexture.CreateFromImage(imagem);
 	}
 
-	// Alteração de IA - Revisar
-	// O que faz: anota na grade de memória tudo o que o personagem está enxergando agora.
-	// Por quê: uma vez anotado, nunca é apagado — é o "eu já vi essa parte do mapa". A conta usada
-	//          aqui é a mesma da névoa na tela (distância, cone e parede na frente), para o que
-	//          fica lembrado ser exatamente o que foi visto, nem mais nem menos.
-	private void AnotarNaMemoria(float direcaoOlhandoGraus)
-	{
-		if (!LembrarDoCenario || _sensor == null || _memoriaDoCenario.Length == 0)
-		{
-			return;
-		}
-
-		int lado = (int)Mathf.Sqrt(_memoriaDoCenario.Length);
-		float metros = Mathf.Max(1.0f, TamanhoDoMapa);
-		float porPedaco = metros / lado;
-
-		Vector3 onde = _sensor.GlobalPosition;
-		float alcance = _sensor.AlcanceVisao3;
-		float meiaAbertura = Mathf.DegToRad(_sensor.AberturaVisao * 0.5f);
-		float olhando = Mathf.DegToRad(direcaoOlhandoGraus);
-		float passiva = _sensor.VisaoPassiva2;
-
-		// só percorre o pedaço da grade que o personagem poderia estar enxergando
-		Vector2 canto = CentroDoMapa - Vector2.One * (metros * 0.5f);
-		int x0 = Mathf.Clamp((int)((onde.X - alcance - canto.X) / porPedaco), 0, lado - 1);
-		int x1 = Mathf.Clamp((int)((onde.X + alcance - canto.X) / porPedaco), 0, lado - 1);
-		int z0 = Mathf.Clamp((int)((onde.Z - alcance - canto.Y) / porPedaco), 0, lado - 1);
-		int z1 = Mathf.Clamp((int)((onde.Z + alcance - canto.Y) / porPedaco), 0, lado - 1);
-
-		int quantosRaios = _distanciaAteAParede.Length;
-
-		for (int gz = z0; gz <= z1; gz++)
-		{
-			float mundoZ = canto.Y + (gz + 0.5f) * porPedaco;
-			for (int gx = x0; gx <= x1; gx++)
-			{
-				int posicao = gz * lado + gx;
-				if (_memoriaDoCenario[posicao] == 255)
-				{
-					continue;   // já lembrado: não precisa recalcular
-				}
-
-				float mundoX = canto.X + (gx + 0.5f) * porPedaco;
-				float dx = mundoX - onde.X;
-				float dz = mundoZ - onde.Z;
-				float distancia = Mathf.Sqrt(dx * dx + dz * dz);
-
-				if (distancia > alcance)
-				{
-					continue;
-				}
-
-				// parede na frente?
-				float angulo = Mathf.Atan2(-dz, dx);
-				int raio = Mathf.PosMod((int)Mathf.Round(angulo / Mathf.Tau * quantosRaios), quantosRaios);
-				if (distancia > _distanciaAteAParede[raio] + FolgaDaParede)
-				{
-					continue;
-				}
-
-				bool vePerto = distancia <= passiva;
-				bool veNoCone = Mathf.Abs(Mathf.AngleDifference(angulo, olhando)) <= meiaAbertura;
-
-				if (vePerto || veNoCone)
-				{
-					_memoriaDoCenario[posicao] = 255;
-					_memoriaMudou = true;
-				}
-			}
-		}
-
-		if (_memoriaMudou)
-		{
-			_imagemDaMemoria!.SetData(lado, lado, false, Image.Format.R8, _memoriaDoCenario);
-			_texturaDaMemoria!.Update(_imagemDaMemoria);
-			_memoriaMudou = false;
-		}
-	}
-
-	// Alteração de IA - Revisar
-	// O que faz: esquece tudo o que foi visto.
-	// Por quê: ao trocar de fase ou recomeçar, a memória precisa zerar — senão o jogador
-	//          começaria a fase nova já conhecendo o mapa da anterior.
-	public void EsquecerTudo()
-	{
-		Array.Clear(_memoriaDoCenario, 0, _memoriaDoCenario.Length);
-		_memoriaMudou = true;
-	}
-
-	// Alteração de IA - Revisar
-	// O que faz: mede, em cada direção em volta do personagem, a que distância está a parede
-	//            mais próxima.
-	// Por quê: roda junto com a física, e não junto com o desenho, porque perguntar ao mundo
-	//          "tem parede nesta direção?" fora da hora certa da física dá resultado instável.
 	public override void _PhysicsProcess(double delta)
 	{
-		if (_sensor == null || !Ligada || _distanciaAteAParede.Length == 0)
+		if (!EstaAtiva())
 		{
 			return;
 		}
 
-		var espaco = GetWorld3D().DirectSpaceState;
-		Vector3 olhos = _sensor.PosicaoDosOlhos;
-		float alcance = Mathf.Max(1.0f, _sensor.AlcanceVisao3);
-		int quantos = _distanciaAteAParede.Length;
-
-		for (int i = 0; i < quantos; i++)
-		{
-			float angulo = Mathf.Tau * i / quantos;
-			var rumo = new Vector3(Mathf.Cos(angulo), 0.0f, -Mathf.Sin(angulo));
-
-			var consulta = PhysicsRayQueryParameters3D.Create(olhos, olhos + rumo * alcance);
-			consulta.CollisionMask = (uint)_sensor.CamadaQueBloqueiaVisao;
-			consulta.HitFromInside = false;
-
-			var achou = espaco.IntersectRay(consulta);
-			float distancia = alcance;
-
-			if (achou.Count > 0)
-			{
-				var ponto = (Vector3)achou["position"];
-				distancia = new Vector2(ponto.X - olhos.X, ponto.Z - olhos.Z).Length();
-			}
-
-			_distanciaAteAParede[i] = distancia;
-		}
-
-		Buffer.BlockCopy(_distanciaAteAParede, 0, _bytesDasDistancias, 0, _bytesDasDistancias.Length);
-		_imagemDasParedes!.SetData(quantos, 1, false, Image.Format.Rf, _bytesDasDistancias);
-		_texturaDasParedes!.Update(_imagemDasParedes);
-
-		_passosDesdeAUltimaAnotacao++;
-		if (_passosDesdeAUltimaAnotacao >= Mathf.Max(1, PassosEntreAnotacoes))
-		{
-			_passosDesdeAUltimaAnotacao = 0;
-			AnotarNaMemoria(_jogador?.DirecaoOlhando ?? 270.0f);
-		}
+		MedirParedesDoJogador();
+		EscolherEMedirLuzes();
 	}
 
 	public override void _Process(double delta)
 	{
-		if (Input.IsActionJustPressed("debug_nevoa"))
-		{
-			Ligada = !Ligada;
-		}
+		_ambiente ??= AmbienteDaFase.DaFase(GetTree());
 
-		if (_sensor == null || _texturaDasParedes == null || _texturaDaMemoria == null)
-		{
-			return;
-		}
-
-		Visible = Ligada;
-		if (!Ligada)
+		bool ativa = EstaAtiva();
+		Visible = ativa;
+		if (!ativa)
 		{
 			return;
 		}
 
-		float olhando = _jogador?.DirecaoOlhando ?? 270.0f;
+		_tempo += (float)delta;
+		var amb = _ambiente!;
+		var s = _sensor!;
 
-		_material.SetShaderParameter("jogador", _sensor.GlobalPosition);
-		_material.SetShaderParameter("olhando", Mathf.DegToRad(olhando));
-		_material.SetShaderParameter("meia_abertura", Mathf.DegToRad(_sensor.AberturaVisao * 0.5f));
-		_material.SetShaderParameter("passiva_clara", _sensor.VisaoPassiva1);
-		_material.SetShaderParameter("passiva_embacada", _sensor.VisaoPassiva2);
-		_material.SetShaderParameter("cone_claro", _sensor.AlcanceVisao1);
-		_material.SetShaderParameter("cone_embacado", _sensor.AlcanceVisao2);
-		_material.SetShaderParameter("cone_vulto", _sensor.AlcanceVisao3);
-		_material.SetShaderParameter("cor_da_nevoa", CorDaNevoa);
-		_material.SetShaderParameter("forca_da_nevoa", ForcaDaNevoa);
-		_material.SetShaderParameter("forca_do_borrao", ForcaDoBorrao);
-		_material.SetShaderParameter("paredes", _texturaDasParedes);
+		_material.SetShaderParameter("modo", amb.Tipo == AmbienteDaFase.TipoDeAmbiente.Escuridao ? 2 : 1);
+		_material.SetShaderParameter("jogador", s.GlobalPosition);
+		_material.SetShaderParameter("olhando", Mathf.DegToRad(_jogador?.DirecaoOlhando ?? 270.0f));
+		_material.SetShaderParameter("meia_abertura", Mathf.DegToRad(s.AberturaVisao * 0.5f));
+		_material.SetShaderParameter("passiva_clara", s.VisaoPassiva1);
+		_material.SetShaderParameter("passiva_embacada", s.VisaoPassiva2);
+		_material.SetShaderParameter("cone_claro", s.AlcanceVisao1);
+		_material.SetShaderParameter("cone_embacado", s.AlcanceVisao2);
+		_material.SetShaderParameter("cone_vulto", s.AlcanceVisao3);
+		_material.SetShaderParameter("paredes", _texturaDoJogador!);
 		_material.SetShaderParameter("folga_da_parede", FolgaDaParede);
-		_material.SetShaderParameter("memoria", _texturaDaMemoria);
-		_material.SetShaderParameter("peso_da_memoria", LembrarDoCenario ? PesoDaMemoria : 0.0f);
-		_material.SetShaderParameter("canto_do_mapa", CentroDoMapa - Vector2.One * (TamanhoDoMapa * 0.5f));
-		_material.SetShaderParameter("tamanho_do_mapa", Mathf.Max(1.0f, TamanhoDoMapa));
+		_material.SetShaderParameter("forca_do_borrao", ForcaDoBorrao);
+
+		_material.SetShaderParameter("ruido", _texturaDaNevoa!);
+		_material.SetShaderParameter("tempo", _tempo);
+		_material.SetShaderParameter("cor_da_nevoa", amb.CorDaNevoa);
+		_material.SetShaderParameter("densidade_minima", amb.DensidadeMinima);
+		_material.SetShaderParameter("densidade_maxima", amb.DensidadeMaxima);
+		_material.SetShaderParameter("tamanho_das_massas", Mathf.Max(1.0f, amb.TamanhoDasMassas));
+		_material.SetShaderParameter("vento", amb.Vento);
+
+		_material.SetShaderParameter("cor_da_escuridao", amb.CorDaEscuridao);
+		_material.SetShaderParameter("luz_ambiente", amb.LuzAmbiente);
+		_material.SetShaderParameter("paredes_das_luzes", _texturaDasLuzes!);
+		_material.SetShaderParameter("quantas_luzes", _quantasLuzes);
+		_material.SetShaderParameter("luzes", _posicoesDasLuzes);
+		_material.SetShaderParameter("cores_das_luzes", _coresDasLuzes);
+	}
+
+	// Alteração de IA - Revisar
+	// O que faz: responde se a camada deve aparecer agora.
+	// Por quê: em mapa limpo ela some **e não calcula nada** — nem as linhas até as paredes. É o
+	//          que garante que ter o sistema no jogo não custa desempenho onde ele não é usado.
+	private bool EstaAtiva()
+	{
+		return _sensor != null && _texturaDoJogador != null && _texturaDaNevoa != null &&
+			   _ambiente != null && _ambiente.EscondeOQueNaoSeVe;
+	}
+
+	// Alteração de IA - Revisar
+	// O que faz: mede, em cada direção em volta do personagem, a que distância está a parede.
+	// Por quê: roda junto com a física porque perguntar ao mundo "tem parede aqui?" fora da hora
+	//          da física dá resposta instável.
+	private void MedirParedesDoJogador()
+	{
+		Vector3 olhos = _sensor!.PosicaoDosOlhos;
+		float alcance = Mathf.Max(1.0f, _sensor.AlcanceVisao3);
+
+		bool parado = olhos.DistanceTo(_ondeMediuOJogador) < 0.03f && Mathf.IsEqualApprox(alcance, _alcanceMedido);
+		if (parado)
+		{
+			return;   // nada mudou: a medida anterior continua valendo
+		}
+
+		_pularEstePasso = !_pularEstePasso;
+		bool primeiraVez = _ondeMediuOJogador.X == float.MaxValue;
+		if (_pularEstePasso && !primeiraVez)
+		{
+			return;   // andando: mede um passo sim, um não
+		}
+
+		_ondeMediuOJogador = olhos;
+		_alcanceMedido = alcance;
+
+		var espaco = GetWorld3D().DirectSpaceState;
+		MedirEmRoda(espaco, olhos, alcance, _paredesDoJogador, 0, _paredesDoJogador.Length);
+
+		Buffer.BlockCopy(_paredesDoJogador, 0, _bytesDoJogador, 0, _bytesDoJogador.Length);
+		_imagemDoJogador!.SetData(_paredesDoJogador.Length, 1, false, Image.Format.Rf, _bytesDoJogador);
+		_texturaDoJogador!.Update(_imagemDoJogador);
+	}
+
+	private void MedirEmRoda(PhysicsDirectSpaceState3D espaco, Vector3 origem, float alcance,
+							 float[] destino, int inicio, int quantos)
+	{
+		_consulta.CollisionMask = (uint)_sensor!.CamadaQueBloqueiaVisao;
+		_consulta.From = origem;
+		for (int i = 0; i < quantos; i++)
+		{
+			float angulo = Mathf.Tau * i / quantos;
+			var rumo = new Vector3(Mathf.Cos(angulo), 0.0f, -Mathf.Sin(angulo));
+			_consulta.To = origem + rumo * alcance;
+
+			var achou = espaco.IntersectRay(_consulta);
+			float distancia = alcance;
+			if (achou.Count > 0)
+			{
+				var ponto = (Vector3)achou["position"];
+				distancia = new Vector2(ponto.X - origem.X, ponto.Z - origem.Z).Length();
+			}
+			destino[inicio + i] = distancia;
+		}
+	}
+
+	// Alteração de IA - Revisar
+	// O que faz: escolhe as luzes acesas mais perto do jogador e mede as paredes em volta de cada
+	//            uma — só quando a luz é nova na lista ou se moveu.
+	// Por quê: é o que impede a luz de atravessar parede. Uma fogueira do outro lado do muro não
+	//          clareia o lado de cá. Luz parada é medida uma vez e nunca mais; só a tocha que
+	//          anda com o personagem é medida de novo, e só quando se move.
+	private void EscolherEMedirLuzes()
+	{
+		_quantasLuzes = 0;
+		if (_ambiente!.Tipo != AmbienteDaFase.TipoDeAmbiente.Escuridao || _ambiente.ApagarTodasAsLuzes)
+		{
+			return;
+		}
+
+		Vector3 jogador = _sensor!.GlobalPosition;
+		var acesas = new List<FonteDeLuz>();
+		foreach (Node no in GetTree().GetNodesInGroup("fonte_de_luz"))
+		{
+			if (no is FonteDeLuz luz && luz.Acesa && luz.Intensidade > 0.0f && luz.IsVisibleInTree())
+			{
+				acesas.Add(luz);
+			}
+		}
+		acesas.Sort((a, b) => a.GlobalPosition.DistanceSquaredTo(jogador)
+							   .CompareTo(b.GlobalPosition.DistanceSquaredTo(jogador)));
+
+		var espaco = GetWorld3D().DirectSpaceState;
+		bool mudou = false;
+
+		for (int i = 0; i < Mathf.Min(acesas.Count, MaximoDeLuzes); i++)
+		{
+			FonteDeLuz luz = acesas[i];
+			Vector3 onde = luz.GlobalPosition;
+
+			if (_luzNaVaga[i] != luz || _ondeAVagaMediu[i].DistanceTo(onde) > 0.1f)
+			{
+				MedirEmRoda(espaco, onde, Mathf.Max(1.0f, luz.Raio * 1.1f), _paredesDasLuzes,
+							i * RaiosPorLuz, RaiosPorLuz);
+				_luzNaVaga[i] = luz;
+				_ondeAVagaMediu[i] = onde;
+				mudou = true;
+			}
+
+			_posicoesDasLuzes[i] = new Vector4(onde.X, onde.Y, onde.Z, luz.RaioAgora);
+			_coresDasLuzes[i] = new Vector4(luz.CorDaLuz.R, luz.CorDaLuz.G, luz.CorDaLuz.B, luz.Intensidade);
+			_quantasLuzes++;
+		}
+
+		if (mudou)
+		{
+			Buffer.BlockCopy(_paredesDasLuzes, 0, _bytesDasLuzes, 0, _bytesDasLuzes.Length);
+			_imagemDasLuzes!.SetData(RaiosPorLuz, MaximoDeLuzes, false, Image.Format.Rf, _bytesDasLuzes);
+			_texturaDasLuzes!.Update(_imagemDasLuzes);
+		}
 	}
 }

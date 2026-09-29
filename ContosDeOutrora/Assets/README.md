@@ -37,41 +37,51 @@ converter duas vezes perde qualidade.
 
 ---
 
-## Animação — decidido em 12/09/2026
+## Animação — **tudo quadro a quadro** (decidido em 29/09/2026)
 
-O jogo usa **dois métodos diferentes**, cada um onde funciona melhor:
+> Até 29/09/2026 a regra era animar personagens por ossos e só os efeitos quadro a quadro. A equipe
+> mudou: **o jogo inteiro é quadro a quadro**, no combate e na exploração.
 
-### Personagens, chefes, inimigos e NPCs → **por ossos (recortes)**
+Cada animação é uma sequência de desenhos completos, um por quadro, tocados em ordem.
 
-O personagem é desenhado **uma vez**, em partes separadas: cabeça, tronco, braço, perna, arma.
-Depois essas partes são montadas dentro do Godot como um boneco articulado, e a animação
-**move as partes** em vez de redesenhar tudo.
+**A única exceção é a Quimera** — ela pode ser *produzida* de outro jeito na ferramenta de arte,
+mas **dentro do jogo também chega quadro a quadro**. Para quem programa, não existe exceção: todo
+personagem, chefe, inimigo, NPC e efeito é uma sequência de imagens.
 
-É como funciona o Darkest Dungeon, que é a nossa referência.
+### Como entregar personagens
 
-**Por que este método:**
+**Uma pasta por direção**, com os quadros em ordem:
 
-- **Espaço:** estimamos ~6 MB para todas as entidades do jogo. No método quadro a quadro seriam
-  cerca de 216 MB — e cada revisão da arte somaria tudo de novo no repositório.
-- **Retrabalho:** mudar uma pose não exige redesenhar o personagem inteiro, só mover as partes.
-- **Qualidade:** a arte continua em alta resolução, sem precisar espremer dezenas de quadros.
+```
+Map/Andar/Frente/   Map/Andar/Costas/   Map/Andar/Lado/
+```
 
-**No Godot:** as partes viram nós `Sprite2D` organizados em hierarquia (o braço "pendurado" no
-tronco, a mão no braço), e o `AnimationPlayer` grava o movimento delas. Para dobras mais
-orgânicas, existe o `Skeleton2D`.
+- **Frente, costas e um lado só.** O outro lado é o mesmo desenho espelhado pelo jogo. O lado
+  desenhado deve olhar **para a direita** (se vier para a esquerda, avisar — é um ajuste).
+- A direção mostrada é escolhida pelo jogo comparando para onde o personagem olha com de onde a
+  câmera olha. É a técnica do Doom, e é por isso que cada ação precisa das três vistas.
+- **Não precisa se preocupar com o enquadramento.** A arte pode vir numa tela grande com o
+  personagem em qualquer canto — na inserção cada direção é recortada com **os pés no centro e na
+  base**, que é o que impede o personagem de pular de lugar ao virar (ver `inserir/README.md`).
 
-**Como entregar a arte:** cada parte do corpo como uma imagem separada, com fundo transparente,
-todas dentro de `Combat/` do personagem.
+**No Godot:** os quadros viram um recurso `SpriteFrames` (arquivo `.tres` na pasta `Map/` do
+personagem), com uma animação por direção chamada `<ação>_frente`, `<ação>_costas` e
+`<ação>_lado` — por exemplo `andar_frente`. O componente `AnimacaoDirecional` escolhe qual tocar.
 
-### Efeitos → **quadro a quadro (sprite sheet)**
+### Efeitos
 
-Explosões, magias, fogo, sangue, fumaça. Esses **não** funcionam bem com ossos, porque a forma
-muda completamente a cada quadro.
+Explosões, magias, fogo, sangue, fumaça: quadro a quadro também, em `Art/Effects/`, numa pasta com
+o nome do efeito.
 
-**Como entregar:** todos os quadros numa única imagem, lado a lado, em grade regular (todos os
-quadros do mesmo tamanho). Isso é um *sprite sheet*. No Godot vira um `AnimatedSprite2D`.
+### O custo em espaço — **atenção da equipe de devs**
 
-Guardar em `Art/Effects/`, numa pasta com o nome do efeito.
+A regra antiga existia por causa do tamanho: a estimativa era de ~6 MB para todas as entidades por
+ossos contra **~216 MB quadro a quadro**, e cada revisão de arte soma tudo de novo no histórico do
+repositório. A animação de andar do Desgarrado sozinha tem **96 quadros e 4,6 MB**.
+
+O Git guarda para sempre cada versão de cada imagem. Com o jogo inteiro quadro a quadro, vale a
+equipe de devs considerar **Git LFS** para as pastas de arte antes que o repositório fique pesado
+demais para clonar.
 
 ---
 
@@ -81,21 +91,6 @@ Existe uma caixa de entrada na raiz do projeto: **[`inserir/`](../../inserir/)**
 arquivos novos como vieram e peça a inserção — eles são convertidos, recortados, renomeados e
 movidos para a pasta certa, e a caixa é esvaziada no fim. As regras completas estão no
 [README de lá](../../inserir/README.md).
-
-### Quadro a quadro para andar no mapa — exceção consciente
-
-A regra acima manda animar personagem **por ossos**, e ela continua valendo para o **combate**.
-Mas a animação de **andar pelo mapa** chegou quadro a quadro, com um conjunto de imagens por
-direção, e **assim está certo** para este caso:
-
-- No mapa o personagem é uma **folha de papel em pé** dentro do mundo 3D, vista sempre de longe e
-  pequena. Não há dobra de braço para valorizar.
-- A direção é resolvida **trocando a imagem** conforme o ângulo entre o personagem e a câmera —
-  é a técnica do Doom, e ela precisa de um conjunto de quadros por direção.
-- São poucos estados (andar, parar, talvez correr), não a árvore inteira de golpes do combate.
-
-**Como entregar:** uma pasta por direção (`Frente`, `Costas`, `Lado`), com os quadros em ordem.
-O espelhamento cobre o lado oposto, então não é preciso desenhar os dois lados.
 
 ---
 
@@ -118,9 +113,9 @@ Dentro da pasta de cada personagem:
 
 | Pasta | O que guardar |
 |---|---|
-| `Combat/` | As partes do corpo para a animação de batalha |
+| `Combat/` | Os quadros das animações de batalha, uma pasta por ação e direção |
 | `Dialogue/` | Retrato usado nas conversas |
-| `Map/` | Sprite usado andando pelo cenário |
+| `Map/` | Os quadros das animações no mapa (andar, parar...) e o `SpriteFrames` do personagem |
 | `Provisorio/` | Arte temporária, só para testar. **Sai quando a definitiva ficar pronta** |
 
 ### Como nomear

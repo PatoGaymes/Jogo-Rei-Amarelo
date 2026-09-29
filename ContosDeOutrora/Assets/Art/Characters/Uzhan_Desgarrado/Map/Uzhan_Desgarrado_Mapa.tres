@@ -1,0 +1,404 @@
+[gd_resource type="SpriteFrames" load_steps=97 format=3]
+
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Frente/Andar_Frente_00.webp" id="1"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Frente/Andar_Frente_01.webp" id="2"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Frente/Andar_Frente_02.webp" id="3"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Frente/Andar_Frente_03.webp" id="4"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Frente/Andar_Frente_04.webp" id="5"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Frente/Andar_Frente_05.webp" id="6"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Frente/Andar_Frente_06.webp" id="7"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Frente/Andar_Frente_07.webp" id="8"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Frente/Andar_Frente_08.webp" id="9"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Frente/Andar_Frente_09.webp" id="10"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Frente/Andar_Frente_10.webp" id="11"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Frente/Andar_Frente_11.webp" id="12"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Frente/Andar_Frente_12.webp" id="13"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Frente/Andar_Frente_13.webp" id="14"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Frente/Andar_Frente_14.webp" id="15"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Frente/Andar_Frente_15.webp" id="16"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Frente/Andar_Frente_16.webp" id="17"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Frente/Andar_Frente_17.webp" id="18"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Frente/Andar_Frente_18.webp" id="19"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Frente/Andar_Frente_19.webp" id="20"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Frente/Andar_Frente_20.webp" id="21"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Frente/Andar_Frente_21.webp" id="22"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Frente/Andar_Frente_22.webp" id="23"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Frente/Andar_Frente_23.webp" id="24"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Frente/Andar_Frente_24.webp" id="25"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Frente/Andar_Frente_25.webp" id="26"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Frente/Andar_Frente_26.webp" id="27"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Frente/Andar_Frente_27.webp" id="28"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Frente/Andar_Frente_28.webp" id="29"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Frente/Andar_Frente_29.webp" id="30"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Frente/Andar_Frente_30.webp" id="31"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Frente/Andar_Frente_31.webp" id="32"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Costas/Andar_Costas_00.webp" id="33"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Costas/Andar_Costas_01.webp" id="34"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Costas/Andar_Costas_02.webp" id="35"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Costas/Andar_Costas_03.webp" id="36"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Costas/Andar_Costas_04.webp" id="37"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Costas/Andar_Costas_05.webp" id="38"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Costas/Andar_Costas_06.webp" id="39"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Costas/Andar_Costas_07.webp" id="40"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Costas/Andar_Costas_08.webp" id="41"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Costas/Andar_Costas_09.webp" id="42"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Costas/Andar_Costas_10.webp" id="43"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Costas/Andar_Costas_11.webp" id="44"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Costas/Andar_Costas_12.webp" id="45"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Costas/Andar_Costas_13.webp" id="46"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Costas/Andar_Costas_14.webp" id="47"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Costas/Andar_Costas_15.webp" id="48"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Costas/Andar_Costas_16.webp" id="49"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Costas/Andar_Costas_17.webp" id="50"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Costas/Andar_Costas_18.webp" id="51"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Costas/Andar_Costas_19.webp" id="52"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Costas/Andar_Costas_20.webp" id="53"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Costas/Andar_Costas_21.webp" id="54"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Costas/Andar_Costas_22.webp" id="55"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Costas/Andar_Costas_23.webp" id="56"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Costas/Andar_Costas_24.webp" id="57"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Costas/Andar_Costas_25.webp" id="58"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Costas/Andar_Costas_26.webp" id="59"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Costas/Andar_Costas_27.webp" id="60"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Costas/Andar_Costas_28.webp" id="61"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Costas/Andar_Costas_29.webp" id="62"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Costas/Andar_Costas_30.webp" id="63"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Costas/Andar_Costas_31.webp" id="64"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Lado/Andar_Lado_00.webp" id="65"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Lado/Andar_Lado_01.webp" id="66"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Lado/Andar_Lado_02.webp" id="67"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Lado/Andar_Lado_03.webp" id="68"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Lado/Andar_Lado_04.webp" id="69"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Lado/Andar_Lado_05.webp" id="70"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Lado/Andar_Lado_06.webp" id="71"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Lado/Andar_Lado_07.webp" id="72"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Lado/Andar_Lado_08.webp" id="73"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Lado/Andar_Lado_09.webp" id="74"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Lado/Andar_Lado_10.webp" id="75"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Lado/Andar_Lado_11.webp" id="76"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Lado/Andar_Lado_12.webp" id="77"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Lado/Andar_Lado_13.webp" id="78"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Lado/Andar_Lado_14.webp" id="79"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Lado/Andar_Lado_15.webp" id="80"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Lado/Andar_Lado_16.webp" id="81"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Lado/Andar_Lado_17.webp" id="82"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Lado/Andar_Lado_18.webp" id="83"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Lado/Andar_Lado_19.webp" id="84"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Lado/Andar_Lado_20.webp" id="85"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Lado/Andar_Lado_21.webp" id="86"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Lado/Andar_Lado_22.webp" id="87"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Lado/Andar_Lado_23.webp" id="88"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Lado/Andar_Lado_24.webp" id="89"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Lado/Andar_Lado_25.webp" id="90"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Lado/Andar_Lado_26.webp" id="91"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Lado/Andar_Lado_27.webp" id="92"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Lado/Andar_Lado_28.webp" id="93"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Lado/Andar_Lado_29.webp" id="94"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Lado/Andar_Lado_30.webp" id="95"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Andar/Lado/Andar_Lado_31.webp" id="96"]
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8")
+}, {
+"duration": 1.0,
+"texture": ExtResource("9")
+}, {
+"duration": 1.0,
+"texture": ExtResource("10")
+}, {
+"duration": 1.0,
+"texture": ExtResource("11")
+}, {
+"duration": 1.0,
+"texture": ExtResource("12")
+}, {
+"duration": 1.0,
+"texture": ExtResource("13")
+}, {
+"duration": 1.0,
+"texture": ExtResource("14")
+}, {
+"duration": 1.0,
+"texture": ExtResource("15")
+}, {
+"duration": 1.0,
+"texture": ExtResource("16")
+}, {
+"duration": 1.0,
+"texture": ExtResource("17")
+}, {
+"duration": 1.0,
+"texture": ExtResource("18")
+}, {
+"duration": 1.0,
+"texture": ExtResource("19")
+}, {
+"duration": 1.0,
+"texture": ExtResource("20")
+}, {
+"duration": 1.0,
+"texture": ExtResource("21")
+}, {
+"duration": 1.0,
+"texture": ExtResource("22")
+}, {
+"duration": 1.0,
+"texture": ExtResource("23")
+}, {
+"duration": 1.0,
+"texture": ExtResource("24")
+}, {
+"duration": 1.0,
+"texture": ExtResource("25")
+}, {
+"duration": 1.0,
+"texture": ExtResource("26")
+}, {
+"duration": 1.0,
+"texture": ExtResource("27")
+}, {
+"duration": 1.0,
+"texture": ExtResource("28")
+}, {
+"duration": 1.0,
+"texture": ExtResource("29")
+}, {
+"duration": 1.0,
+"texture": ExtResource("30")
+}, {
+"duration": 1.0,
+"texture": ExtResource("31")
+}, {
+"duration": 1.0,
+"texture": ExtResource("32")
+}],
+"loop": true,
+"name": &"andar_frente",
+"speed": 24.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("33")
+}, {
+"duration": 1.0,
+"texture": ExtResource("34")
+}, {
+"duration": 1.0,
+"texture": ExtResource("35")
+}, {
+"duration": 1.0,
+"texture": ExtResource("36")
+}, {
+"duration": 1.0,
+"texture": ExtResource("37")
+}, {
+"duration": 1.0,
+"texture": ExtResource("38")
+}, {
+"duration": 1.0,
+"texture": ExtResource("39")
+}, {
+"duration": 1.0,
+"texture": ExtResource("40")
+}, {
+"duration": 1.0,
+"texture": ExtResource("41")
+}, {
+"duration": 1.0,
+"texture": ExtResource("42")
+}, {
+"duration": 1.0,
+"texture": ExtResource("43")
+}, {
+"duration": 1.0,
+"texture": ExtResource("44")
+}, {
+"duration": 1.0,
+"texture": ExtResource("45")
+}, {
+"duration": 1.0,
+"texture": ExtResource("46")
+}, {
+"duration": 1.0,
+"texture": ExtResource("47")
+}, {
+"duration": 1.0,
+"texture": ExtResource("48")
+}, {
+"duration": 1.0,
+"texture": ExtResource("49")
+}, {
+"duration": 1.0,
+"texture": ExtResource("50")
+}, {
+"duration": 1.0,
+"texture": ExtResource("51")
+}, {
+"duration": 1.0,
+"texture": ExtResource("52")
+}, {
+"duration": 1.0,
+"texture": ExtResource("53")
+}, {
+"duration": 1.0,
+"texture": ExtResource("54")
+}, {
+"duration": 1.0,
+"texture": ExtResource("55")
+}, {
+"duration": 1.0,
+"texture": ExtResource("56")
+}, {
+"duration": 1.0,
+"texture": ExtResource("57")
+}, {
+"duration": 1.0,
+"texture": ExtResource("58")
+}, {
+"duration": 1.0,
+"texture": ExtResource("59")
+}, {
+"duration": 1.0,
+"texture": ExtResource("60")
+}, {
+"duration": 1.0,
+"texture": ExtResource("61")
+}, {
+"duration": 1.0,
+"texture": ExtResource("62")
+}, {
+"duration": 1.0,
+"texture": ExtResource("63")
+}, {
+"duration": 1.0,
+"texture": ExtResource("64")
+}],
+"loop": true,
+"name": &"andar_costas",
+"speed": 24.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("65")
+}, {
+"duration": 1.0,
+"texture": ExtResource("66")
+}, {
+"duration": 1.0,
+"texture": ExtResource("67")
+}, {
+"duration": 1.0,
+"texture": ExtResource("68")
+}, {
+"duration": 1.0,
+"texture": ExtResource("69")
+}, {
+"duration": 1.0,
+"texture": ExtResource("70")
+}, {
+"duration": 1.0,
+"texture": ExtResource("71")
+}, {
+"duration": 1.0,
+"texture": ExtResource("72")
+}, {
+"duration": 1.0,
+"texture": ExtResource("73")
+}, {
+"duration": 1.0,
+"texture": ExtResource("74")
+}, {
+"duration": 1.0,
+"texture": ExtResource("75")
+}, {
+"duration": 1.0,
+"texture": ExtResource("76")
+}, {
+"duration": 1.0,
+"texture": ExtResource("77")
+}, {
+"duration": 1.0,
+"texture": ExtResource("78")
+}, {
+"duration": 1.0,
+"texture": ExtResource("79")
+}, {
+"duration": 1.0,
+"texture": ExtResource("80")
+}, {
+"duration": 1.0,
+"texture": ExtResource("81")
+}, {
+"duration": 1.0,
+"texture": ExtResource("82")
+}, {
+"duration": 1.0,
+"texture": ExtResource("83")
+}, {
+"duration": 1.0,
+"texture": ExtResource("84")
+}, {
+"duration": 1.0,
+"texture": ExtResource("85")
+}, {
+"duration": 1.0,
+"texture": ExtResource("86")
+}, {
+"duration": 1.0,
+"texture": ExtResource("87")
+}, {
+"duration": 1.0,
+"texture": ExtResource("88")
+}, {
+"duration": 1.0,
+"texture": ExtResource("89")
+}, {
+"duration": 1.0,
+"texture": ExtResource("90")
+}, {
+"duration": 1.0,
+"texture": ExtResource("91")
+}, {
+"duration": 1.0,
+"texture": ExtResource("92")
+}, {
+"duration": 1.0,
+"texture": ExtResource("93")
+}, {
+"duration": 1.0,
+"texture": ExtResource("94")
+}, {
+"duration": 1.0,
+"texture": ExtResource("95")
+}, {
+"duration": 1.0,
+"texture": ExtResource("96")
+}],
+"loop": true,
+"name": &"andar_lado",
+"speed": 24.0
+}]

@@ -4,6 +4,8 @@
 [ext_resource type="PackedScene" path="res://Scenes/Characters/Inimigo.tscn" id="2_inimigo"]
 [ext_resource type="Script" path="res://Scripts/Systems/CameraIsometrica.cs" id="3_camera"]
 [ext_resource type="Script" path="res://Scripts/Systems/GerarNavegacao.cs" id="4_nav"]
+[ext_resource type="Script" path="res://Scripts/Systems/AmbienteDaFase.cs" id="5_ambiente"]
+[ext_resource type="Script" path="res://Scripts/Systems/FonteDeLuz.cs" id="6_luz"]
 
 [sub_resource type="NavigationMesh" id="NavMesh"]
 geometry_parsed_geometry_type = 1
@@ -516,6 +518,48 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, 0.1, -3)
 ModoInicial = 4
 ChanceDeIdlePorSegundo = 0.0
 TempoEmIdle = 0.0
+
+[node name="AmbienteDaFase" type="Node" parent="."]
+script = ExtResource("5_ambiente")
+Tipo = 2
+
+[node name="Luzes" type="Node3D" parent="."]
+
+[node name="Fogueira" type="Node3D" parent="Luzes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0.4, 8)
+script = ExtResource("6_luz")
+Raio = 7
+CorDaLuz = Color(1, 0.62, 0.3, 1)
+
+[node name="LampadaTerreo" type="Node3D" parent="Luzes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 1.6, -12)
+script = ExtResource("6_luz")
+Raio = 5.5
+CorDaLuz = Color(1, 0.82, 0.55, 1)
+
+[node name="LampadaSegundo" type="Node3D" parent="Luzes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 4.8, -7)
+script = ExtResource("6_luz")
+Raio = 5
+CorDaLuz = Color(1, 0.82, 0.55, 1)
+
+[node name="LampadaEsquina" type="Node3D" parent="Luzes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 1.6, -22)
+script = ExtResource("6_luz")
+Raio = 6
+CorDaLuz = Color(0.7, 0.8, 1, 1)
+
+[node name="LampadaDivisoria" type="Node3D" parent="Luzes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16, 1.6, -18)
+script = ExtResource("6_luz")
+Raio = 5
+CorDaLuz = Color(1, 0.72, 0.42, 1)
+
+[node name="Lanterna" type="Node3D" parent="Player"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
+script = ExtResource("6_luz")
+Raio = 6.5
+MostrarMarca = false
 
 [node name="Camera" type="Camera3D" parent="." groups=["camera_isometrica"]]
 fov = 50.0

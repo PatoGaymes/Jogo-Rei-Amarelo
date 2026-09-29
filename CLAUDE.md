@@ -139,7 +139,9 @@ valores fixos no código, para o game designer balancear sem programar.
 | Efeito sonoro curto | `.wav` |
 | Animação | **nunca `.gif`** — o Godot não importa, e GIF só tem 256 cores |
 
-**Animação:** personagens por **ossos/recortes**; efeitos **quadro a quadro** em `Art/Effects/`.
+**Animação: tudo quadro a quadro** — combate, exploração e efeitos (decidido em 29/09/2026; a
+Quimera é produzida de outro jeito mas também chega quadro a quadro). Frente, costas e um lado,
+com o jogo espelhando o outro. Detalhes em [Assets/README.md](ContosDeOutrora/Assets/README.md).
 
 ---
 

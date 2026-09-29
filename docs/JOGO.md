@@ -243,58 +243,103 @@ esse ponto em todos eles (erro máximo de 0,2°).
 Em `ApontarComOMouse = false` o personagem volta a olhar para onde anda, que era o comportamento
 anterior.
 
-### Névoa de guerra — o jogador só vê o que o personagem veria
+### Névoa e escuridão — o jogador só vê o que o personagem veria
 
 **O problema que isso resolve:** num mapa 3D visto de cima, a câmera mostra o que está atrás das
-paredes — inclusive o outro lado da sala. O mapa inteiro se entrega de graça e não sobra tensão
-nenhuma.
+paredes — inclusive o outro lado da sala. O mapa inteiro se entrega de graça e não sobra tensão.
 
-O mundo fica **sempre coberto de névoa**, e ela abre só onde o personagem enxerga:
+**Nem todo mapa tem isso** (decidido em 29/09/2026). Cada fase escolhe o seu ambiente num nó
+`AmbienteDaFase`:
 
-| Faixa | O que o jogador vê |
-|---|---|
-| **Passiva 1** (3,5 m) | Claro, sem precisar olhar |
-| **Passiva 2** (6,0 m) | Levemente embaçado, sem precisar olhar |
-| **Cone nível 1** (até 6,1 m) | Claro |
-| **Cone nível 2** (até 11,2 m) | Levemente embaçado |
-| **Cone nível 3** (até 16,0 m) | Só um vulto: dá para ver que tem alguém, não quem é |
-| Fora de tudo | Névoa |
+| Ambiente | Como fica | Referência |
+|---|---|---|
+| **Limpo** (mapa sem o nó) | Tudo aparece normalmente, nada ofusca | — |
+| **Névoa** | Neblina clara que **esconde** o que está fora da visão, e que se move em massas | Silent Hill antigo |
+| **Escuridão** | **Breu total** onde não há luz — nem o próprio personagem aparece | Don't Starve Together |
+
+Nos dois últimos, o que está fora da visão **some de verdade**, não fica só mais escuro.
+
+#### O que o personagem enxerga
+
+| Faixa | Alcance | Como aparece |
+|---|---|---|
+| **Passiva 1** | 3,5 m em volta | Claro, sem precisar olhar |
+| **Passiva 2** | 6,0 m em volta | Levemente embaçado, sem precisar olhar |
+| **Cone nível 1** | até 6,1 m | Claro |
+| **Cone nível 2** | até 11,2 m | Levemente embaçado |
+| **Cone nível 3** | até 16,0 m | Só um vulto |
 
 > **Atenção à numeração:** no cone, **nível 1 é o mais perto e o mais claro**. É o contrário dos
-> raios de detecção, onde o nível 1 é o de fora. Lá o número cresce para fora, aqui cresce para
-> longe.
+> raios de detecção, onde o nível 1 é o de fora.
 
 **Os alcances da visão são números próprios**, separados dos raios de detecção. Ver e ser visto são
 coisas diferentes — e os raios de detecção encolhem ao agachar, então, se fossem os mesmos, agachar
 cegaria o jogador.
 
-**A parede esconde o que está atrás.** Não é só distância e ângulo: o personagem lança linhas
-imaginárias em roda e mede onde estão as paredes, e a névoa respeita esse contorno. Um inimigo a
-11 m, **dentro do cone de visão**, mas atrás de uma divisória, fica invisível.
+**Parede esconde o que está atrás**, inclusive dentro do cone de visão. Um inimigo a 11 m, na
+direção em que o personagem olha, mas atrás de uma divisória, não aparece.
 
-**A cor da névoa é o que separa neblina de escuridão.** Cinza claro dá névoa de exterior; quase
-preto dá porão sem lamparina. A mesma mecânica serve para iluminação, mudando só a cor.
+#### Escuridão
 
-**A memória visual:** o jogador não esquece o que viu.
+Vê-se só o que está **iluminado** e, ao mesmo tempo, **perto do personagem ou na direção em que ele
+olha**. Sem nenhuma luz, breu total.
 
-| O que | Como a memória se comporta |
-|---|---|
-| **Cenário** (paredes, casa, caixas) | Fica **para sempre**, apagado e sem cor. Casa não anda: saber onde ela está nunca fica errado |
-| **Inimigo** | Fica um **borrão** no último lugar visto, que envelhece e some em **5 s** — e some **na hora** se o jogador olhar para lá e não achar ninguém |
+As luzes são nós `FonteDeLuz`: fogueira, lamparina, tocha na mão. Cada uma tem alcance,
+intensidade e cor — fogo alaranjado tinge de leve o que ilumina. **A luz não atravessa parede**:
+medido, o chão do lado da lâmpada tinha brilho 0,239 e o chão do outro lado da divisória, dentro
+do alcance dela, 0,000. Chamas tremem de leve para não parecerem lâmpada.
 
-É a diferença entre "não sei o que tem lá" e "sei o que tem lá, só não estou olhando agora". O
-lembrado aparece **sem cor**, para o jogador distinguir de relance informação de agora de
-informação velha.
+`LuzAmbiente` acima de zero transforma o breu num lugar "muito escuro", onde ainda se adivinham
+vultos por perto.
 
-O borrão do inimigo é desenhado por cima da névoa e **atravessa parede** — a lembrança está na
-cabeça do jogador, não no mundo.
+#### Névoa
 
-**Ainda por fazer, já previsto:** inimigos que a névoa não afeta (o interruptor `IgnoraANevoa` já
-existe em cada inimigo) e itens que ampliam a visão do jogador — basta mexer nos alcances do
-sensor.
+Fora da visão, a névoa encobre **entre 70% e 100%**, e isso **muda com o tempo e de lugar para
+lugar**, como massas de ar passando. Medido num mesmo ponto ao longo de 12 segundos:
+**83% → 97% → 77%** — uma massa densa passando e abrindo de novo.
 
-**F4 liga e desliga a névoa** durante o jogo. Isso é ferramenta de teste, ao contrário da névoa em
-si, que é mecânica.
+Duas regras seguram o que a névoa pode revelar:
+
+- **Atrás de parede, sempre 100%.** A névoa rala não deixa espiar através de muro.
+- **Longe do personagem, sempre 100%.** A variação só aparece perto de onde ele enxerga — senão
+  daria para ver o mapa inteiro pelas brechas. A cor da névoa continua se mexendo mesmo longe, para
+  ela não parecer uma parede cinza parada.
+
+O inimigo que está longe, dentro da névoa, vira **silhueta escura**. Nos pontos em que a névoa
+afina, a silhueta aparece por um instante e some — a forma surgindo na neblina.
+
+#### Desempenho
+
+| | Mapa limpo | Névoa | Escuridão |
+|---|---|---|---|
+| Placa de vídeo | 1,12 ms | 1,51 ms | 1,52 ms |
+| Processador, parado | — | 0,002 ms | 0,04 ms |
+| Processador, andando | — | 0,17 ms | 0,33 ms |
+
+Em mapa limpo o sistema não aparece e **não calcula nada**. O que tornou o resto barato:
+
+- A névoa que se move é **um desenho de ruído gerado uma vez**, no início, e só deslizado pelo
+  mapa — duas leituras por ponto da tela, em vez de calcular a névoa a cada quadro.
+- As paredes em volta do personagem só são medidas de novo **quando ele se move**. Parede não anda.
+- Luz parada mede suas paredes **uma única vez**. Só a tocha na mão é medida de novo, e só ao andar.
+- No máximo 16 luzes contam ao mesmo tempo (as mais perto do jogador), então o custo não cresce
+  com o tamanho do mapa.
+
+#### Testar
+
+**F4** percorre os ambientes: limpo → névoa → escuridão → **breu total** (todas as luzes
+apagadas) → limpo. É ferramenta de teste; o ambiente de verdade de cada fase vem do nó
+`AmbienteDaFase`.
+
+#### Ainda por fazer
+
+- **A névoa e a escuridão ainda não afetam os inimigos.** Hoje o jogador não enxerga no escuro, mas
+  o inimigo enxerga o jogador normalmente. O interruptor `IgnoraANevoa` já existe em cada inimigo,
+  para os que não serão afetados.
+- Itens que ampliam a visão: basta mexer nos alcances do sensor.
+
+> As ideias de **lembrar do inimigo** e **desbravar o mapa** existiram e foram retiradas em
+> 29/09/2026. Estão registradas em [IDEIAS-ARQUIVADAS.md](IDEIAS-ARQUIVADAS.md).
 
 ### Agachar — a furtividade que o jogador liga na hora
 

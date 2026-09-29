@@ -28,16 +28,27 @@ pergunta em vez de chutar.
 |---|---|
 | 1 | Descobre de qual personagem, chefe, inimigo ou NPC é o material |
 | 2 | Converte para o formato do projeto, se precisar (`.webp` para imagem, `.ogg` para música) |
-| 3 | **Recorta o vazio em volta** das imagens, usando a mesma moldura em todos os quadros da animação |
+| 3 | **Recorta o vazio em volta**, com **os pés no centro e na base** — a mesma moldura para todos os quadros de uma mesma direção |
 | 4 | Renomeia sem espaço e sem acento, numerando os quadros em ordem |
 | 5 | Move para a pasta certa (ver [Assets/README.md](../ContosDeOutrora/Assets/README.md)) |
-| 6 | Registra o que foi feito em [docs/ALTERACOES-IA.md](../docs/ALTERACOES-IA.md) |
-| 7 | Apaga o que ficou aqui |
+| 6 | **Se for animação:** monta o `SpriteFrames`, liga ao personagem e **confere no jogo** que ela toca em todas as direções |
+| 7 | Registra o que foi feito em [docs/ALTERACOES-IA.md](../docs/ALTERACOES-IA.md) |
+| 8 | Apaga o que ficou aqui |
 
-**Por que recortar:** a arte costuma vir numa tela grande com o personagem pequeno no meio. Esse
-vazio não pesa quase nada em disco, mas **bagunça a posição do personagem no jogo** — o motor
-centraliza a imagem inteira, vazio incluído. A moldura é a mesma para todos os quadros da mesma
-entrega, senão a animação treme.
+**O passo 6 existe por causa de um erro.** Na primeira entrega do Desgarrado os quadros foram só
+movidos para a pasta, e a inserção foi dada como pronta — mas nada no jogo usava aqueles
+arquivos, e o personagem continuou com a imagem provisória. Arquivo no lugar certo não é animação
+funcionando: a inserção só termina quando ela aparece tocando no jogo.
+
+**Por que recortar, e por que pelos pés:** a arte costuma vir numa tela grande com o personagem em
+qualquer canto. Esse vazio quase não pesa em disco, mas **bagunça a posição do personagem no
+jogo** — o motor centraliza a imagem inteira, vazio incluído.
+
+E cada direção vem de um jeito: na entrega do Desgarrado, o corpo de frente e de costas estava
+**0,9 m à direita** do corpo de lado. Sem corrigir, o personagem pularia quase um metro ao virar. Com
+os pés no centro de cada direção, ele gira no lugar — e o lado espelhado cai exatamente em cima do
+desenhado. Dentro de uma mesma direção a moldura é a mesma para todos os quadros, senão a animação
+treme.
 
 ## O que **não** entra aqui
 
