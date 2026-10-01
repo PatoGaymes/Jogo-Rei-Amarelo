@@ -6,10 +6,12 @@
 [ext_resource type="Script" path="res://Scripts/Systems/GerarNavegacao.cs" id="4_nav"]
 [ext_resource type="Script" path="res://Scripts/Systems/AmbienteDaFase.cs" id="5_ambiente"]
 [ext_resource type="Script" path="res://Scripts/Systems/FonteDeLuz.cs" id="6_luz"]
+[ext_resource type="PackedScene" path="res://Scenes/Cenarios/Pinheiro.tscn" id="7_pinheiro"]
+[ext_resource type="PackedScene" path="res://Scenes/Cenarios/MuroDePedra.tscn" id="8_muro"]
 
 [sub_resource type="NavigationMesh" id="NavMesh"]
 geometry_parsed_geometry_type = 1
-geometry_collision_mask = 8
+geometry_collision_mask = 40
 agent_height = 1.75
 agent_radius = 0.5
 agent_max_climb = 0.25
@@ -478,6 +480,154 @@ surface_material_override/0 = SubResource("Mat_parede")
 
 [node name="Colisao" type="CollisionShape3D" parent="Navegacao/DivisoriaB"]
 shape = SubResource("Forma_12_0x3_0x0_6")
+
+[node name="Arvores" type="Node3D" parent="Navegacao"]
+
+[node name="Pinheiro1" parent="Navegacao/Arvores" instance=ExtResource("7_pinheiro")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -28, 0, 24)
+
+[node name="Pinheiro2" parent="Navegacao/Arvores" instance=ExtResource("7_pinheiro")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -24, 0, 28.5)
+
+[node name="Pinheiro3" parent="Navegacao/Arvores" instance=ExtResource("7_pinheiro")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -19.5, 0, 25)
+
+[node name="Pinheiro4" parent="Navegacao/Arvores" instance=ExtResource("7_pinheiro")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30.5, 0, 30.5)
+
+[node name="Pinheiro5" parent="Navegacao/Arvores" instance=ExtResource("7_pinheiro")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.5, 0, 30)
+
+[node name="Pinheiro6" parent="Navegacao/Arvores" instance=ExtResource("7_pinheiro")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -26.5, 0, 20.5)
+
+[node name="Pinheiro7" parent="Navegacao/Arvores" instance=ExtResource("7_pinheiro")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30, 0, -30)
+
+[node name="Pinheiro8" parent="Navegacao/Arvores" instance=ExtResource("7_pinheiro")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.5, 0, -32)
+
+[node name="Pinheiro9" parent="Navegacao/Arvores" instance=ExtResource("7_pinheiro")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -31, 0, -25.5)
+
+[node name="Pinheiro10" parent="Navegacao/Arvores" instance=ExtResource("7_pinheiro")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 31, 0, -12)
+
+[node name="Pinheiro11" parent="Navegacao/Arvores" instance=ExtResource("7_pinheiro")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 32, 0, -4.5)
+
+[node name="Pinheiro12" parent="Navegacao/Arvores" instance=ExtResource("7_pinheiro")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 31.5, 0, 29)
+
+[node name="Pinheiro13" parent="Navegacao/Arvores" instance=ExtResource("7_pinheiro")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 32.5, 0, 21.5)
+
+[node name="Pinheiro14" parent="Navegacao/Arvores" instance=ExtResource("7_pinheiro")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 30.5)
+
+[node name="Pinheiro15" parent="Navegacao/Arvores" instance=ExtResource("7_pinheiro")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, 32)
+
+[node name="Pinheiro16" parent="Navegacao/Arvores" instance=ExtResource("7_pinheiro")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 0, 32)
+
+[node name="EstruturaDePedra" type="Node3D" parent="Navegacao"]
+
+[node name="Bloco1" parent="Navegacao/EstruturaDePedra" instance=ExtResource("8_muro")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20.5, 0, 16.5)
+
+[node name="Bloco2" parent="Navegacao/EstruturaDePedra" instance=ExtResource("8_muro")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21.5, 0, 16.5)
+
+[node name="Bloco3" parent="Navegacao/EstruturaDePedra" instance=ExtResource("8_muro")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22.5, 0, 16.5)
+
+[node name="Bloco4" parent="Navegacao/EstruturaDePedra" instance=ExtResource("8_muro")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23.5, 0, 16.5)
+
+[node name="Bloco5" parent="Navegacao/EstruturaDePedra" instance=ExtResource("8_muro")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24.5, 0, 16.5)
+
+[node name="Bloco6" parent="Navegacao/EstruturaDePedra" instance=ExtResource("8_muro")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.5, 0, 16.5)
+
+[node name="Bloco7" parent="Navegacao/EstruturaDePedra" instance=ExtResource("8_muro")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 26.5, 0, 16.5)
+
+[node name="Bloco8" parent="Navegacao/EstruturaDePedra" instance=ExtResource("8_muro")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 27.5, 0, 16.5)
+
+[node name="Bloco9" parent="Navegacao/EstruturaDePedra" instance=ExtResource("8_muro")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 28.5, 0, 16.5)
+
+[node name="Bloco10" parent="Navegacao/EstruturaDePedra" instance=ExtResource("8_muro")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20.5, 0, 17.5)
+
+[node name="Bloco11" parent="Navegacao/EstruturaDePedra" instance=ExtResource("8_muro")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 28.5, 0, 17.5)
+
+[node name="Bloco12" parent="Navegacao/EstruturaDePedra" instance=ExtResource("8_muro")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20.5, 0, 18.5)
+
+[node name="Bloco13" parent="Navegacao/EstruturaDePedra" instance=ExtResource("8_muro")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 28.5, 0, 18.5)
+
+[node name="Bloco14" parent="Navegacao/EstruturaDePedra" instance=ExtResource("8_muro")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20.5, 0, 19.5)
+
+[node name="Bloco15" parent="Navegacao/EstruturaDePedra" instance=ExtResource("8_muro")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23.5, 0, 19.5)
+
+[node name="Bloco16" parent="Navegacao/EstruturaDePedra" instance=ExtResource("8_muro")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24.5, 0, 19.5)
+
+[node name="Bloco17" parent="Navegacao/EstruturaDePedra" instance=ExtResource("8_muro")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.5, 0, 19.5)
+
+[node name="Bloco18" parent="Navegacao/EstruturaDePedra" instance=ExtResource("8_muro")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 28.5, 0, 19.5)
+
+[node name="Bloco19" parent="Navegacao/EstruturaDePedra" instance=ExtResource("8_muro")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20.5, 0, 20.5)
+
+[node name="Bloco20" parent="Navegacao/EstruturaDePedra" instance=ExtResource("8_muro")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.5, 0, 20.5)
+
+[node name="Bloco21" parent="Navegacao/EstruturaDePedra" instance=ExtResource("8_muro")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 28.5, 0, 20.5)
+
+[node name="Bloco22" parent="Navegacao/EstruturaDePedra" instance=ExtResource("8_muro")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20.5, 0, 21.5)
+
+[node name="Bloco23" parent="Navegacao/EstruturaDePedra" instance=ExtResource("8_muro")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.5, 0, 21.5)
+
+[node name="Bloco24" parent="Navegacao/EstruturaDePedra" instance=ExtResource("8_muro")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 28.5, 0, 21.5)
+
+[node name="Bloco25" parent="Navegacao/EstruturaDePedra" instance=ExtResource("8_muro")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20.5, 0, 22.5)
+
+[node name="Bloco26" parent="Navegacao/EstruturaDePedra" instance=ExtResource("8_muro")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 28.5, 0, 22.5)
+
+[node name="Bloco27" parent="Navegacao/EstruturaDePedra" instance=ExtResource("8_muro")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20.5, 0, 23.5)
+
+[node name="Bloco28" parent="Navegacao/EstruturaDePedra" instance=ExtResource("8_muro")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21.5, 0, 23.5)
+
+[node name="Bloco29" parent="Navegacao/EstruturaDePedra" instance=ExtResource("8_muro")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22.5, 0, 23.5)
+
+[node name="Bloco30" parent="Navegacao/EstruturaDePedra" instance=ExtResource("8_muro")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 26.5, 0, 23.5)
+
+[node name="Bloco31" parent="Navegacao/EstruturaDePedra" instance=ExtResource("8_muro")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 27.5, 0, 23.5)
+
+[node name="Bloco32" parent="Navegacao/EstruturaDePedra" instance=ExtResource("8_muro")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 28.5, 0, 23.5)
 
 [node name="MarcasDaRonda" type="Node3D" parent="."]
 

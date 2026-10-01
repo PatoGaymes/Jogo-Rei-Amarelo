@@ -74,22 +74,10 @@ public partial class PlayerIsometrico : CharacterBody3D, IPersonagemQueOlha
 	public float VelocidadeDeAgachar { get; set; } = 9.0f;
 
 	// Alteração de IA - Revisar
-	// O que faz: liga e desliga a mira pelo mouse.
-	// Por quê: com ela desligada o personagem volta a olhar para onde anda, que é o
-	//          comportamento antigo. Serve para comparar os dois durante os testes e para o
-	//          caso de a equipe decidir depois que a mira no mouse não é para todo momento do
-	//          jogo (numa cena de diálogo, por exemplo).
-	[Export]
-	public bool ApontarComOMouse { get; set; } = true;
-
-	// Alteração de IA - Revisar
 	// O que faz: informa se o personagem está agachado agora.
 	// Por quê: o desenho de teste mostra isso na tela, e futuras mecânicas (passar por vãos
 	//          baixos, por exemplo) vão precisar perguntar.
 	public bool Agachado { get; private set; }
-
-	// o ponto do chão para onde o cursor está apontando — usado pelo desenho de teste
-	public Vector3 PontoParaOndeOlha { get; private set; }
 
 	private CameraIsometrica? _camera;
 	// Alteração de IA - Revisar
@@ -102,11 +90,44 @@ public partial class PlayerIsometrico : CharacterBody3D, IPersonagemQueOlha
 	private float _quantoEstaAgachado;
 
 	// Alteração de IA - Revisar
-	// O que faz: guarda para que lado o personagem está virado, em graus.
-	// Por quê: quando a arte definitiva chegar, o personagem terá desenhos diferentes para
-	//          cada direção. Comparar esta direção com o ângulo da câmera é o que diz qual
-	//          desenho mostrar. Com a arte provisória, por enquanto só vira o desenho.
+	// O que faz: guarda para que lado o personagem está virado, em graus — que é sempre o lado
+	//            para onde ele anda (parado, fica virado para onde andou por último).
+	// Por quê: comparar esta direção com o ângulo da câmera é o que diz se o desenho mostra o
+	//          personagem de frente, de costas ou de lado (ver AnimacaoDirecional).
+	//          (01/10/2026) Antes, o personagem olhava para onde o mouse apontava. Saiu junto com o
+	//          cone de visão do jogador — e com isso acabou o "moonwalk": mouse para um lado,
+	//          andando para o outro, o desenho mostrava o personagem de frente andando de costas.
 	public float DirecaoOlhando { get; private set; } = 270.0f;
+
+	// Alteração de IA - Revisar (30/09/2026)
+	// O que faz: quanta luz chega no personagem agora, de 0 a 1 — e o ambiente da fase, guardado.
+	// Por quê: ver o comentário onde é medida, em _PhysicsProcess.
+	public float LuzNoPersonagem { get; private set; } = 1.0f;
+
+	private AmbienteDaFase? _ambiente;
+	private FonteDeLuz? _lanterna;
+
+	// Alteração de IA - Revisar (30/09/2026)
+	// O que faz: acha a lanterna do personagem — a primeira fonte de luz presa a ele.
+	// Por quê: procurada pelo tipo, e não pelo nome, para funcionar com tocha, lampião ou o que a
+	//          fase der a ele, sem depender de como o nó foi batizado.
+	public FonteDeLuz? AcharLanterna()
+	{
+		if (_lanterna != null && IsInstanceValid(_lanterna))
+		{
+			return _lanterna;
+		}
+
+		foreach (Node filho in GetChildren())
+		{
+			if (filho is FonteDeLuz luz)
+			{
+				_lanterna = luz;
+				return luz;
+			}
+		}
+		return null;
+	}
 
 	public override void _Ready()
 	{
@@ -185,6 +206,30 @@ public partial class PlayerIsometrico : CharacterBody3D, IPersonagemQueOlha
 			_sensor.Agachado = Agachado;
 		}
 
+		// Alteração de IA - Revisar (30/09/2026)
+		// O que faz: a tecla L acende e apaga a lanterna do personagem, se ele carregar uma.
+		// Por quê: agora os inimigos também dependem de luz para ver. A lanterna ilumina o caminho,
+		//          mas **ilumina o próprio personagem** — com ela acesa, ele é visto de longe no
+		//          escuro. Apagar é a forma de se esconder na sombra. Sem poder apagar, não dava nem
+		//          para testar a escuridão contra os inimigos.
+		if (Input.IsActionJustPressed("lanterna"))
+		{
+			FonteDeLuz? lanterna = AcharLanterna();
+			if (lanterna != null)
+			{
+				lanterna.Acesa = !lanterna.Acesa;
+			}
+		}
+
+		// Alteração de IA - Revisar (30/09/2026)
+		// O que faz: mede quanta luz chega no personagem agora, de 0 (breu) a 1 (claro).
+		// Por quê: é a mesma conta que o inimigo faz para decidir se o vê. Fica exposto para o
+		//          desenho de teste mostrar e, no futuro, para a interface avisar o jogador de que
+		//          ele está visível — como a "joia de luz" dos jogos de furtividade.
+		_ambiente ??= AmbienteDaFase.DaFase(GetTree());
+		LuzNoPersonagem = _ambiente?.LuzEm(GlobalPosition + Vector3.Up, GetWorld3D().DirectSpaceState,
+			(uint)(_sensor?.CamadaQueBloqueiaVisao ?? 8)) ?? 1.0f;
+
 		// Alteração de IA - Revisar
 		// O que faz: converte o comando do teclado na direção correspondente dentro do mundo,
 		//            levando em conta para onde a câmera está apontando **neste momento**.
@@ -252,61 +297,8 @@ public partial class PlayerIsometrico : CharacterBody3D, IPersonagemQueOlha
 		Velocity = velocidade;
 		MoveAndSlide();
 
-		ApontarOlharParaOMouse();
 		AtualizarDirecaoVisual(direcao);
 		AtualizarDesenhoAgachado((float)delta);
-	}
-
-	// Alteração de IA - Revisar
-	// O que faz: vira o olhar do personagem para onde o cursor do mouse está apontando no chão.
-	// Por quê: separa **para onde ele anda** de **para onde ele olha**. Antes o personagem
-	//          olhava sempre na direção em que andava, o que impedia andar para um lado
-	//          vigiando o outro — que é justamente o que a névoa exige, já que só se enxerga
-	//          o que está dentro do cone de visão.
-	//
-	//          A câmera **não gira junto**: ela continua nos 8 ângulos fixos, girada só por
-	//          Q e E. Quem gira é o personagem. Misturar as duas coisas deixaria o
-	//          enquadramento instável e enjoativo.
-	//
-	//          Como funciona: joga-se uma linha imaginária da câmera, passando pelo cursor,
-	//          até o chão na altura dos pés do personagem. O ponto em que ela encosta é
-	//          "para onde o jogador está apontando".
-	private void ApontarOlharParaOMouse()
-	{
-		if (_camera == null || !ApontarComOMouse)
-		{
-			return;
-		}
-
-		Vector2 cursor = GetViewport().GetMousePosition();
-		Vector3 origem = _camera.ProjectRayOrigin(cursor);
-		Vector3 rumo = _camera.ProjectRayNormal(cursor);
-
-		// a linha precisa estar descendo para cruzar o chão; se estiver na horizontal, desiste
-		if (Mathf.Abs(rumo.Y) < 0.0001f)
-		{
-			return;
-		}
-
-		float quanto = (GlobalPosition.Y - origem.Y) / rumo.Y;
-		if (quanto <= 0.0f)
-		{
-			return;
-		}
-
-		Vector3 alvo = origem + rumo * quanto;
-		Vector3 ate = alvo - GlobalPosition;
-		ate.Y = 0.0f;
-
-		// cursor praticamente em cima do personagem: mantém o olhar onde estava, para não
-		// ficar girando à toa com qualquer tremida do mouse
-		if (ate.LengthSquared() < 0.04f)
-		{
-			return;
-		}
-
-		DirecaoOlhando = Mathf.PosMod(Mathf.RadToDeg(Mathf.Atan2(-ate.Z, ate.X)), 360.0f);
-		PontoParaOndeOlha = alvo;
 	}
 
 	// Alteração de IA - Revisar
@@ -334,35 +326,21 @@ public partial class PlayerIsometrico : CharacterBody3D, IPersonagemQueOlha
 	}
 
 	// Alteração de IA - Revisar
-	// O que faz: guarda para que lado o personagem está indo e vira o desenho dele.
-	// Por quê: por enquanto só espelha a imagem para a esquerda ou para a direita, porque a
-	//          arte provisória tem um desenho só.
+	// O que faz: vira o personagem para o lado em que ele está andando.
+	// Por quê: quem escolhe o desenho (frente, costas ou lado) é a AnimacaoDirecional, comparando
+	//          esta direção com o ângulo da câmera — a mesma técnica usada no Doom.
 	//
-	//          Quando a arte definitiva chegar, com desenhos para 8 direções, é aqui que
-	//          entra a escolha do desenho certo: compara-se a direção do personagem com o
-	//          ângulo da câmera para descobrir se ele está sendo visto de frente, de costas
-	//          ou de lado. É a mesma técnica usada no Doom.
+	//          (01/10/2026) Voltou a ser sempre a direção da caminhada: a mira pelo mouse foi
+	//          retirada junto com o cone de visão do jogador. Parado, ele continua virado para
+	//          onde andou por último.
 	private void AtualizarDirecaoVisual(Vector3 direcao)
 	{
-		if (_sprite == null)
+		if (_sprite == null || direcao == Vector3.Zero)
 		{
 			return;
 		}
 
-		// Alteração de IA - Revisar
-		// O que faz: com a mira no mouse ligada, a direção do olhar **já foi decidida** pelo
-		//            cursor e não é mais sobrescrita pela direção da caminhada.
-		// Por quê: é o que permite andar para um lado vigiando o outro. Sem esta condição, o
-		//          personagem voltaria a encarar para onde anda no instante em que desse um
-		//          passo, e a mira no mouse não valeria de nada enquanto ele estivesse andando.
-		if (!ApontarComOMouse)
-		{
-			if (direcao == Vector3.Zero)
-			{
-				return;
-			}
-			DirecaoOlhando = Mathf.PosMod(Mathf.RadToDeg(Mathf.Atan2(-direcao.Z, direcao.X)), 360.0f);
-		}
+		DirecaoOlhando = Mathf.PosMod(Mathf.RadToDeg(Mathf.Atan2(-direcao.Z, direcao.X)), 360.0f);
 
 		// Alteração de IA - Revisar
 		// O que faz: espelhar e escolher o desenho saiu daqui.

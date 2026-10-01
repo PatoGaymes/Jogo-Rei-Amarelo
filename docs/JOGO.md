@@ -28,6 +28,47 @@ Isométrica, **girando em torno do personagem**, que fica sempre no centro.
 - Poder girar a câmera é **mecânica de jogo**, não enfeite: serve para olhar atrás de paredes e
   descobrir o que está escondido
 
+### Cenário: objetos 2D que encaram a câmera (30/09/2026)
+
+É o jeito do Don't Starve de fazer um mundo 3D com arte 2D:
+
+- **Objeto de uma casa só** — uma árvore, uma pedra: **uma imagem** que fica sempre de frente
+  para a **câmera** (e não para o personagem). Girando a câmera, a árvore continua de frente; o que
+  muda na tela é a posição dela no mapa, e é isso que dá a impressão de 3D.
+- **Estrutura de várias casas** — um muro, uma cerca, uma construção sem teto: **uma imagem por
+  casa**, cada peça encarando a câmera. As peças vizinhas se sobrepõem e formam um muro contínuo, e
+  a planta da estrutura (o desenho dela no chão) gira junto com a câmera.
+
+No sandbox: **16 pinheiros** e uma **estrutura sem teto de 32 blocos de pedra** (9 × 8 casas,
+entrada ao sul e uma parede interna em L), no espírito da do exemplo do Don't Starve.
+
+| Peça | Cena | Bloqueia passagem | Bloqueia visão |
+|---|---|---|---|
+| Pinheiro | `Scenes/Cenarios/Pinheiro.tscn` | sim (o tronco) | não — um tronco fino não deve riscar a névoa |
+| Bloco de muro | `Scenes/Cenarios/MuroDePedra.tscn` | sim | sim |
+
+Os inimigos contornam os dois sozinhos. Para isso foi criada a 6ª camada de física, **Obstacle**:
+o que bloqueia a passagem mas não a visão.
+
+**Por que as imagens ficam em pé, e não inclinadas de frente para a câmera como no Don't Starve:**
+o nosso mapa tem **paredes 3D de verdade** (a casa). Uma imagem inclinada para trás atravessaria a
+parede — um personagem encostado na casa teria a cabeça cortada por ela. Em pé, personagens,
+árvores, muros e paredes 3D se escondem uns atrás dos outros na ordem certa. O efeito colateral vem
+da perspectiva da câmera: **nas bordas da tela, objetos altos parecem levemente tortos para fora**.
+Diminuir o campo de visão da câmera (hoje 50°) e afastá-la reduz isso — fica como sugestão para
+testar.
+
+**Sombra:** cada objeto tem uma **sombra redonda e suave no pé**, como no Don't Starve. O sol não
+projeta a sombra das imagens: projetaria triângulos pretos que mudam de forma quando a câmera gira.
+A sombra redonda aparece no mapa limpo; na névoa e na escuridão, a camada que esconde o mapa pinta
+por cima dela.
+
+**Arte:** o pinheiro e o bloco são **provisórios**, desenhados por código
+(`Assets/Art/Cenarios/<Objeto>/Provisorio/`). Para a arte definitiva vale a mesma regra dos
+personagens: a base do objeto no centro, embaixo da imagem. E imagens em pé, vistas pela câmera a
+50°, aparecem com cerca de **64% da altura desenhada** — vale desenhar muros um pouco mais altos do
+que se quer ver na tela.
+
 ### Combate no lugar onde começou
 
 **Não há tela separada de combate.** O encontro acontece no ponto do mapa onde foi disparado, como
@@ -227,22 +268,6 @@ desconfiado** — o segundo barulho é percebido mais rápido que o primeiro.
 
 Os números ficam no nó `MedidorDeSuspeita` de cada inimigo, ajustáveis um a um no editor.
 
-### A visão do personagem segue o mouse
-
-O personagem **vira para onde o cursor aponta**, e a câmera **não gira junto** — ela continua nos
-8 ângulos fixos, movida só por Q e E.
-
-Isso separa duas coisas que antes eram a mesma: **para onde ele anda** e **para onde ele olha**.
-Dá para atravessar um corredor de costas para a parede vigiando a porta, ou recuar sem tirar os
-olhos do inimigo. É o que torna a névoa jogável: como só se enxerga dentro do cone, o jogador
-precisa poder escolher para onde olhar sem abrir mão de para onde vai.
-
-Verificado nos 8 ângulos da câmera: com o cursor sobre um ponto fixo do mapa, o personagem encara
-esse ponto em todos eles (erro máximo de 0,2°).
-
-Em `ApontarComOMouse = false` o personagem volta a olhar para onde anda, que era o comportamento
-anterior.
-
 ### Névoa e escuridão — o jogador só vê o que o personagem veria
 
 **O problema que isso resolve:** num mapa 3D visto de cima, a câmera mostra o que está atrás das
@@ -254,89 +279,156 @@ paredes — inclusive o outro lado da sala. O mapa inteiro se entrega de graça 
 | Ambiente | Como fica | Referência |
 |---|---|---|
 | **Limpo** (mapa sem o nó) | Tudo aparece normalmente, nada ofusca | — |
-| **Névoa** | Neblina clara que **esconde** o que está fora da visão, e que se move em massas | Silent Hill antigo |
+| **Névoa** | Neblina clara que vai **escondendo** tudo com a distância, e que se move em massas | Silent Hill antigo |
 | **Escuridão** | **Breu total** onde não há luz — nem o próprio personagem aparece | Don't Starve Together |
 
-Nos dois últimos, o que está fora da visão **some de verdade**, não fica só mais escuro.
+Nos dois últimos, o que não se vê **some de verdade**, não fica só mais escuro.
 
-#### O que o personagem enxerga
+#### Só um círculo em volta do personagem (01/10/2026)
 
-| Faixa | Alcance | Como aparece |
+**O jogador não tem cone de visão.** Ele enxerga num **círculo em volta de si**, igual em todas as
+direções — não importa para onde está virado. Foi decidido depois dos testes da escuridão: só o
+círculo passa melhor a ideia dos mapas com névoa e escuridão, mantendo a lanterna. A **mira pelo
+mouse saiu junto**, e com ela o "moonwalk" (mouse para um lado, andando para o outro, o desenho
+mostrava o personagem de frente andando de costas). O personagem olha sempre para onde anda.
+
+> O cone do jogador e a mira pelo mouse existiram de 21/09 a 01/10/2026 — estão registrados em
+> [IDEIAS-ARQUIVADAS.md](IDEIAS-ARQUIVADAS.md). **Os inimigos continuam com o cone deles.**
+
+- **Na névoa, tudo vai sumindo aos poucos com a distância.** Não existe borda: a passagem de
+  "vejo" para "não vejo" ocupa uns 5 metros.
+- **Na escuridão, quem revela é a luz.** A lanterna do jogador desenha o círculo em volta dele.
+- **Parede esconde o que está atrás**, com uma **penumbra de pouco mais de um metro** em vez de corte
+  seco — a cabeça mexe, e quem está numa quina enxerga um pouco além dela.
+
+Medido na tela, em campo aberto, com a névoa na densidade normal (porcentagem encoberta, em qualquer
+direção — a diferença entre olhar para o norte ou para o sul ficou em até 4 pontos, que é a própria
+névoa se mexendo):
+
+| Distância | Névoa |
+|---|---|
+| 2 m | 6 a 7% |
+| 3,5 m | 13 a 15% |
+| 6 m | 40 a 49% |
+| 8,5 m | 72 a 84% |
+
+As duas faixas do círculo continuam como referência: `VisaoPassiva1` (3,5 m) limpa e
+`VisaoPassiva2` (6 m) levemente embaçada. Saem do `SensorDeteccao` do jogador — **mudar no inspetor
+muda a névoa junto**.
+
+| Antes × depois (medido) | 29/09 | 30/09 |
 |---|---|---|
-| **Passiva 1** | 3,5 m em volta | Claro, sem precisar olhar |
-| **Passiva 2** | 6,0 m em volta | Levemente embaçado, sem precisar olhar |
-| **Cone nível 1** | até 6,1 m | Claro |
-| **Cone nível 2** | até 11,2 m | Levemente embaçado |
-| **Cone nível 3** | até 16,0 m | Só um vulto |
-
-> **Atenção à numeração:** no cone, **nível 1 é o mais perto e o mais claro**. É o contrário dos
-> raios de detecção, onde o nível 1 é o de fora.
-
-**Os alcances da visão são números próprios**, separados dos raios de detecção. Ver e ser visto são
-coisas diferentes — e os raios de detecção encolhem ao agachar, então, se fossem os mesmos, agachar
-cegaria o jogador.
-
-**Parede esconde o que está atrás**, inclusive dentro do cone de visão. Um inimigo a 11 m, na
-direção em que o personagem olha, mas atrás de uma divisória, não aparece.
+| Borda da sombra de uma caixa, na névoa | de 0% a 96% em 25 cm | passagem de mais de 1 m |
+| Maior salto de névoa, a cada 1° em volta de uma caixa | 61% | 9% |
+| Chão em volta da fogueira, de costas para ela | preto | igual a olhando para ela |
 
 #### Escuridão
 
-Vê-se só o que está **iluminado** e, ao mesmo tempo, **perto do personagem ou na direção em que ele
-olha**. Sem nenhuma luz, breu total.
+**Tudo o que está iluminado aparece**, olhando ou não — só parede esconde. Medido com a lanterna
+apagada: o chão em volta da fogueira aparece com o mesmo brilho olhando para ela e de costas (0,243
+nos dois casos; antes, de costas, era 0). Uma fogueira no canto da tela aparece.
+
+Sem luz nenhuma, breu total. A **lanterna do jogador (tecla L)** ilumina o caminho, mas **ilumina o
+próprio jogador** — com ela acesa, os inimigos o veem de longe (ver abaixo).
 
 As luzes são nós `FonteDeLuz`: fogueira, lamparina, tocha na mão. Cada uma tem alcance,
-intensidade e cor — fogo alaranjado tinge de leve o que ilumina. **A luz não atravessa parede**:
-medido, o chão do lado da lâmpada tinha brilho 0,239 e o chão do outro lado da divisória, dentro
-do alcance dela, 0,000. Chamas tremem de leve para não parecerem lâmpada.
+intensidade e cor — fogo alaranjado tinge de leve o que ilumina. **A luz não atravessa parede**, e a
+sombra que a parede faz na luz também tem penumbra. Chamas tremem de leve para não parecerem lâmpada.
 
 `LuzAmbiente` acima de zero transforma o breu num lugar "muito escuro", onde ainda se adivinham
 vultos por perto.
 
 #### Névoa
 
-Fora da visão, a névoa encobre **entre 70% e 100%**, e isso **muda com o tempo e de lugar para
-lugar**, como massas de ar passando. Medido num mesmo ponto ao longo de 12 segundos:
-**83% → 97% → 77%** — uma massa densa passando e abrindo de novo.
+A névoa **muda com o tempo e de lugar para lugar**, como massas de ar passando: numa brecha ela é
+40% mais rala, numa massa densa 60% mais grossa (`DensidadeMinima` 0,6 e `DensidadeMaxima` 1,6 —
+1 é a névoa normal). Numa distância média isso dá os **70% a 100%** combinados: a 8,5 m vai de
+63% a 92% conforme a massa que passa.
 
 Duas regras seguram o que a névoa pode revelar:
 
 - **Atrás de parede, sempre 100%.** A névoa rala não deixa espiar através de muro.
-- **Longe do personagem, sempre 100%.** A variação só aparece perto de onde ele enxerga — senão
-  daria para ver o mapa inteiro pelas brechas. A cor da névoa continua se mexendo mesmo longe, para
-  ela não parecer uma parede cinza parada.
+- **Longe demais, sempre 100%** (a partir de uns 14 m), mesmo numa brecha — senão daria para ver o
+  mapa inteiro pelas brechas. A cor da névoa continua se mexendo mesmo longe, para ela não parecer
+  uma parede cinza parada.
 
-O inimigo que está longe, dentro da névoa, vira **silhueta escura**. Nos pontos em que a névoa
-afina, a silhueta aparece por um instante e some — a forma surgindo na neblina.
+O inimigo que está longe, dentro da névoa, vira **silhueta escura** — escurece aos poucos conforme
+a névoa entre ele e o jogador engrossa, e reaparece por um instante quando uma brecha passa.
+
+#### Os inimigos também são afetados (30/09/2026)
+
+**Só a visão do inimigo muda.** Ouvir (os círculos de detecção) e "quase esbarrar" funcionam igual
+no escuro e na névoa: barulho não precisa de luz. Por isso, no escuro, chegar perto demais continua
+sendo perigoso.
+
+Antes de "ver" o jogador, o inimigo pergunta o quanto o ambiente deixa enxergar até ele (de 0 a
+100%). Abaixo de 15% (`VisaoMinimaParaEnxergar`) não vê; acima, vê, mas **demora na mesma
+proporção**: com metade da visão, o dobro do tempo. A conta é a mesma que decide o que o jogador vê
+na tela — um lugar que parece escuro para o jogador está escuro para o inimigo.
+
+Medido com o inimigo parado olhando para o jogador:
+
+| Situação | Reconhece o jogador em |
+|---|---|
+| Mapa limpo, 10,5 m | 0,87 s |
+| Escuro, lanterna **acesa** | 0,87 s |
+| Escuro, lanterna **apagada** | **nunca** (suspeita fica em 0%) |
+| Escuro, lanterna apagada, jogador **ao lado da fogueira** | 0,87 s |
+| Névoa, 8,5 m | 2,3 s |
+| Névoa, 10,5 m | 5,1 s |
+
+**Cada tipo de inimigo pode sofrer de um jeito.** São dois números no `SensorDeteccao` de cada
+inimigo, de 0 a 1:
+
+| Campo | 0 (padrão) | 0,5 | 1 |
+|---|---|---|---|
+| `EnxergaNoEscuro` | precisa de luz, como gente | distingue vultos no breu (reconheceu em 1,7 s) | enxerga no breu como de dia (0,87 s) |
+| `EnxergaNaNevoa` | a névoa atrapalha por inteiro | atrapalha pela metade | a névoa não atrapalha (0,87 s a 10,5 m) |
+
+> **A definir pela equipe:** quais inimigos enxergam no escuro ou ignoram a névoa. A documentação
+> ainda não diz, então os dois inimigos do sandbox estão com os valores de gente comum (0 e 0).
+
+O campo `IgnoraANevoa`, da aparência do inimigo, é outra coisa: faz o inimigo **aparecer** por cima
+da névoa e da escuridão para o jogador (olhos que brilham no escuro, uma aparição).
 
 #### Desempenho
 
 | | Mapa limpo | Névoa | Escuridão |
 |---|---|---|---|
-| Placa de vídeo | 1,12 ms | 1,51 ms | 1,52 ms |
-| Processador, parado | — | 0,002 ms | 0,04 ms |
-| Processador, andando | — | 0,17 ms | 0,33 ms |
+| Placa de vídeo, por quadro | 1,04 ms | 1,50 ms | 1,56 ms |
+| Processador, parado | — | 0,003 ms | 0,04 ms |
+| Processador, andando | — | 0,16 a 0,21 ms | 0,34 a 0,38 ms |
+
+A penumbra custou **0,04 a 0,05 ms** na placa de vídeo. No processador, o custo andando ficou igual ao
+de antes mesmo com as linhas indo mais longe (32 m na escuridão, para enxergar luzes distantes;
+24 m na névoa, onde além disso tudo já some — e, desde que o jogador ficou só com o círculo, uns
+14 m), porque as paredes passaram a ser medidas de novo a cada
+**12 cm andados** em vez de a cada dois passos da física.
 
 Em mapa limpo o sistema não aparece e **não calcula nada**. O que tornou o resto barato:
 
 - A névoa que se move é **um desenho de ruído gerado uma vez**, no início, e só deslizado pelo
-  mapa — duas leituras por ponto da tela, em vez de calcular a névoa a cada quadro.
-- As paredes em volta do personagem só são medidas de novo **quando ele se move**. Parede não anda.
+  mapa — em vez de calcular a névoa a cada quadro.
+- As paredes em volta do personagem só são medidas de novo **quando ele anda**. Parede não anda.
 - Luz parada mede suas paredes **uma única vez**. Só a tocha na mão é medida de novo, e só ao andar.
 - No máximo 16 luzes contam ao mesmo tempo (as mais perto do jogador), então o custo não cresce
   com o tamanho do mapa.
 
+> A janela de teste nesta máquina fica travada em 30 quadros por segundo em qualquer modo, então os
+> números acima são o tempo medido pelo próprio Godot, e não quadros por segundo.
+
 #### Testar
 
 **F4** percorre os ambientes: limpo → névoa → escuridão → **breu total** (todas as luzes
-apagadas) → limpo. É ferramenta de teste; o ambiente de verdade de cada fase vem do nó
-`AmbienteDaFase`.
+apagadas) → limpo. **L** acende e apaga a lanterna. Com **F3** ligado, aparecem sobre o jogador a
+luz que chega nele e o estado da lanterna, e sobre o inimigo o quanto ele enxerga o jogador
+(`enxerga 35%`, ou `não enxerga`). É ferramenta de teste; o ambiente de verdade de cada fase vem do
+nó `AmbienteDaFase`.
 
 #### Ainda por fazer
 
-- **A névoa e a escuridão ainda não afetam os inimigos.** Hoje o jogador não enxerga no escuro, mas
-  o inimigo enxerga o jogador normalmente. O interruptor `IgnoraANevoa` já existe em cada inimigo,
-  para os que não serão afetados.
 - Itens que ampliam a visão: basta mexer nos alcances do sensor.
+- Definir, por inimigo, `EnxergaNoEscuro` e `EnxergaNaNevoa` (ver acima).
 
 > As ideias de **lembrar do inimigo** e **desbravar o mapa** existiram e foram retiradas em
 > 29/09/2026. Estão registradas em [IDEIAS-ARQUIVADAS.md](IDEIAS-ARQUIVADAS.md).
@@ -425,7 +517,7 @@ isso que faz a Furtividade valer: encolher o círculo do jogador reduz o alcance
 | **Externo (nível 1)** | os dois | Quando os externos se tocam, o inimigo **ouve** — a barra sobe devagar, até no máximo 50% |
 | **Interno (nível 2)** | só o jogador | Quando o externo do inimigo alcança este, não há dúvida — a barra sobe rápido, sem teto. É sempre metade do externo |
 | **Encontro** | só o inimigo | Distância em que o combate começa. Varia com a arma — arco alcança mais que espada |
-| **Visão** | os dois | Cone na direção em que olha. Alcança mais longe que o externo, por ser focado. Enche a barra sem teto |
+| **Visão** | só o inimigo | Cone na direção em que olha. Alcança mais longe que o externo, por ser focado. Enche a barra sem teto (o jogador não tem cone desde 01/10/2026) |
 
 Nenhum deles vira detecção sozinho: **os três alimentam a barra de suspeita**, e é ela que decide.
 A Furtividade **aumenta** o tempo de cone necessário para encher a barra; a Reação do inimigo, por
@@ -456,9 +548,10 @@ tirá-la da camada considerada.
 ### Testar
 
 A cena `Scenes/Levels/Sandbox.tscn` é o mapa de testes: **70 x 70 m**, com uma casa de dois
-andares e rampa (para testar interiores e elevação), caixas e divisórias soltas, e **dois
-inimigos** — um em ronda por cinco pontos e um parado em Idle dentro da casa.
-**F3 liga e desliga o desenho dos raios.**
+andares e rampa (para testar interiores e elevação), caixas e divisórias soltas, **16 pinheiros e
+uma estrutura de muro de pedra sem teto** no estilo Don't Starve (ver "Cenário", no começo deste
+documento), e **dois inimigos** — um em ronda por cinco pontos e um parado em Idle dentro da casa.
+**F3 liga e desliga o desenho dos raios; F4 troca o ambiente; L acende e apaga a lanterna.**
 
 > **Ao montar uma sala:** o nó que guarda os pontos da ronda deve se chamar **`MarcasDaRonda`** —
 > é por esse nome que o inimigo acha o trajeto sozinho, sem precisar ligar nada na cena. Salas com
@@ -469,7 +562,8 @@ inimigos** — um em ronda por cinco pontos e um parado em Idle dentro da casa.
 | Amarelo | Raio externo (desconfiança) |
 | Laranja | Raio interno do jogador (certeza) |
 | Vermelho | Raio de encontro do inimigo (combate) |
-| Azul | Cone de visão |
+| Azul | Cone de visão (só nos inimigos) |
+| Verde | Os dois círculos de visão do jogador |
 
 Sobre a cabeça do inimigo aparecem o modo em que ele está, a etapa da reação ao barulho e a barra
 de suspeita — por exemplo `[====......] 41% ouvindo`. A palavra do fim diz **qual** dos alcances

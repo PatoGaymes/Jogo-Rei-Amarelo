@@ -130,6 +130,15 @@ public partial class InimigoIA : CharacterBody3D
 	[Export]
 	public Modo ModoInicial { get; set; } = Modo.Ronda;
 
+	// Alteração de IA - Revisar (30/09/2026)
+	// O que faz: abaixo de quanto o inimigo simplesmente não enxerga o jogador, mesmo com ele
+	//            dentro do cone. É a mesma escala de 0 a 1 do "quanto o ambiente deixa ver".
+	// Por quê: sem um piso, um jogador quase no breu ainda seria reconhecido — só que muito
+	//          devagar. Com o piso, a sombra esconde de verdade. Acima dele, quanto pior a visão,
+	//          mais demora: com metade da visão, o dobro do tempo.
+	[Export(PropertyHint.Range, "0,1,0.01")]
+	public float VisaoMinimaParaEnxergar { get; set; } = 0.15f;
+
 	public Modo ModoAtual { get; private set; } = Modo.Ronda;
 	public float DirecaoOlhando { get; private set; } = 270.0f;
 
@@ -159,7 +168,21 @@ public partial class InimigoIA : CharacterBody3D
 
 	public Vector3 UltimaPosicaoPercebida { get; private set; }
 
+	// Alteração de IA - Revisar (30/09/2026)
+	// O que faz: o quanto a névoa ou a escuridão deixam ele enxergar o jogador agora (0 a 1), e se
+	//            o jogador está dentro do cone de visão dele.
+	// Por quê: o desenho de teste mostra esse número sobre a cabeça do inimigo. Sem ele, não dá
+	//          para saber se o inimigo não reagiu porque o jogador estava no escuro ou porque
+	//          nem estava na frente dele.
+	public float VisaoNoAmbiente { get; private set; } = 1.0f;
+	public bool JogadorNoCone { get; private set; }
+
 	private SensorDeteccao _sensor = null!;
+
+	// Alteração de IA - Revisar (30/09/2026)
+	// O que faz: guarda o ambiente da fase (limpo, névoa ou escuridão).
+	// Por quê: o inimigo pergunta a ele o quanto consegue enxergar o jogador (ver AvaliarOQuePercebe).
+	private AmbienteDaFase? _ambiente;
 	private NavigationAgent3D _navegacao = null!;
 	private MedidorDeSuspeita _medidor = null!;
 	private RotaRonda? _rota;
@@ -306,9 +329,30 @@ public partial class InimigoIA : CharacterBody3D
 
 		bool ouviu = semParedeNoMeio && _sensor.CirculosExternosSeTocam(_sensorJogador);
 		bool estaPerto = semParedeNoMeio && _sensor.AlcancaCirculoInterno(_sensorJogador);
-		bool vendo = semParedeNoMeio && _sensor.DentroDoConeDeVisao(_sensorJogador, DirecaoOlhando);
+		JogadorNoCone = semParedeNoMeio && _sensor.DentroDoConeDeVisao(_sensorJogador, DirecaoOlhando);
 
-		_medidor.Atualizar(ouviu, estaPerto, vendo, _sensorJogador.TempoParaSerVistoEfetivo, dt);
+		// Alteração de IA - Revisar (30/09/2026)
+		// O que faz: antes de "ver" o jogador, o inimigo pergunta o quanto a névoa ou a escuridão
+		//            deixam ele enxergar até lá. Abaixo do piso, não vê. Acima, vê — mas o tempo
+		//            até reconhecer cresce na mesma proporção em que a visão piora.
+		// Por quê: é a névoa e a escuridão valendo também para os inimigos. No escuro, o jogador
+		//          sem luz passa na frente de um guarda sem ser visto; com a lanterna acesa, ele
+		//          mesmo se ilumina e é visto de longe. Na névoa, quanto mais longe e mais densa a
+		//          massa de ar, mais o inimigo demora a reconhecer.
+		//
+		//          Ouvir e esbarrar não mudam: barulho e presença não dependem de luz. Por isso,
+		//          no escuro, chegar perto demais continua sendo perigoso.
+		//
+		//          Cada tipo de inimigo sofre de um jeito — isso vem do sensor dele (EnxergaNoEscuro
+		//          e EnxergaNaNevoa), ajustado na cena de cada inimigo.
+		_ambiente ??= AmbienteDaFase.DaFase(GetTree());
+		VisaoNoAmbiente = JogadorNoCone
+			? _sensor.QuantoEnxergaPeloCone(_sensorJogador.GlobalPosition, _ambiente)
+			: 1.0f;
+		bool vendo = JogadorNoCone && VisaoNoAmbiente >= VisaoMinimaParaEnxergar;
+		float tempoParaSerVisto = _sensorJogador.TempoParaSerVistoEfetivo / Mathf.Max(VisaoNoAmbiente, 0.05f);
+
+		_medidor.Atualizar(ouviu, estaPerto, vendo, tempoParaSerVisto, dt);
 
 		// --- barra cheia: não é mais suspeita, ele reconheceu o jogador ---
 		if (_medidor.AcabouDeDetectar && ModoAtual != Modo.Perseguicao)

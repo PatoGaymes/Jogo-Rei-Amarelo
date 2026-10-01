@@ -29,23 +29,34 @@ Todo trecho criado ou alterado leva o comentário `Alteração de IA - Revisar`,
 Arquivos que **não aceitam comentário** (JSON puro, `.tscn`, `.tres` — o Godot apaga comentários ao
 salvar): registrar em [docs/ALTERACOES-IA.md](docs/ALTERACOES-IA.md).
 
-### Regra 3 — Nunca alterar a documentação externa
+### Regra 3 — Documentação externa: o Claude só grava na pasta de revisão
 
-Trello e Google Drive são a fonte de verdade e o Claude não os altera. Sugestões vão para
+Trello e Google Drive são a fonte de verdade. **O Claude nunca altera um documento oficial
+diretamente** (decidido em 01/10/2026; até então ele não gravava nada no Drive):
+
+| Onde | O que o Claude pode fazer |
+|---|---|
+| **Drive — pasta oficial** | Só ler |
+| **Drive — pasta "Para revisão"** | Gravar as alterações. Um dev revisa e, dando o ok, leva para a pasta oficial |
+| **Trello** | Só ler os cards |
+
+Sugestões que não são alteração de documento vão para
 [docs/SUGESTOES-PARA-DOCUMENTACAO.md](docs/SUGESTOES-PARA-DOCUMENTACAO.md).
 
 **Arquivos com sufixo `DoRepositorio`:** são o espelho do que está no Drive. O Claude edita **apenas
 os arquivos sem esse sufixo**. Havendo divergência, **perguntar qual lado vale antes de aplicar** —
 nunca escolher sozinho.
 
-**O caminho de volta para o Drive** (já que o Claude não escreve lá):
+**Enquanto o Claude não tiver acesso ao Drive** (em 01/10/2026 ainda não tinha neste ambiente), o
+caminho é manual:
 
 ```bash
 python docs/ferramentas/sincronizar-docs.py         # o que está diferente?
 python docs/ferramentas/atualizar-documentacao.py   # gera os .docx atualizados
 ```
 
-Os arquivos saem em `docs/para-repositorio/`, prontos para substituir os do Drive.
+Os arquivos saem em `docs/para-repositorio/`. O dev revisa e sobe para o Drive — é a mesma revisão
+da pasta "Para revisão", feita à mão.
 
 **Regra da formatação:** os documentos são lidos por outras pessoas da equipe, então os `.docx`
 **nunca são gerados do zero** — o script abre o original e altera só o texto, mantendo estilos,
@@ -111,7 +122,7 @@ Detalhes e pendências: [docs/AMBIENTE.md](docs/AMBIENTE.md).
 
 ```
 ContosDeOutrora/          # projeto Godot
-├── Scenes/               # Characters/ UI/ Combat/ Levels/
+├── Scenes/               # Characters/ UI/ Combat/ Levels/ Cenarios/
 ├── Scripts/              # Characters/ Combat/ UI/ Systems/
 ├── Assets/               # arte e som POR PERSONAGEM — ver Assets/README.md
 ├── Resources/            # dados .tres — heróis, habilidades, inimigos

@@ -39,11 +39,14 @@ public partial class VisibilidadeDoInimigo : Node
 	[Export]
 	public bool IgnoraANevoa { get; set; }
 
-	public int NivelAtual { get; private set; }
+	// Alteração de IA - Revisar (30/09/2026)
+	// O que faz: o quanto o jogador enxerga este inimigo através da névoa agora, de 0 a 1.
+	// Por quê: substituiu o "nível" inteiro (1, 2 ou 3). Com degraus, a silhueta trocava de cor
+	//          aos saltos ao cruzar uma faixa; contínuo, ela escurece aos poucos conforme ele se
+	//          afasta ou uma massa de névoa passa na frente — e bate com o que a tela mostra.
+	public float QuantoOJogadorVe { get; private set; } = 1.0f;
 
 	private SensorDeteccao? _sensorDoJogador;
-	private SensorDeteccao? _meuSensor;
-	private PlayerIsometrico? _jogador;
 	private SpriteBase3D? _desenho;
 	private AmbienteDaFase? _ambiente;
 	private Color _corAtual = Colors.White;
@@ -58,12 +61,9 @@ public partial class VisibilidadeDoInimigo : Node
 				break;
 			}
 		}
-		_meuSensor = GetParent()?.GetNodeOrNull<SensorDeteccao>("SensorDeteccao");
-
 		var achados = GetTree().GetNodesInGroup("player");
 		if (achados.Count > 0)
 		{
-			_jogador = achados[0] as PlayerIsometrico;
 			_sensorDoJogador = (achados[0] as Node)?.GetNodeOrNull<SensorDeteccao>("SensorDeteccao");
 		}
 
@@ -88,42 +88,29 @@ public partial class VisibilidadeDoInimigo : Node
 		Color alvo = Colors.White;
 		bool naNevoa = _ambiente != null && _ambiente.Tipo == AmbienteDaFase.TipoDeAmbiente.Nevoa;
 
-		if (naNevoa && !IgnoraANevoa)
+		if (naNevoa && !IgnoraANevoa && _sensorDoJogador != null)
 		{
-			NivelAtual = CalcularNivel(corpo.GlobalPosition);
+			// Alteração de IA - Revisar (01/10/2026)
+			// O que faz: pergunta o quanto o jogador enxerga este inimigo pelo círculo de visão dele.
+			// Por quê: o jogador não tem mais cone de visão, então não importa mais para onde ele
+			//          está virado — só a distância e a névoa no caminho.
+			QuantoOJogadorVe = _sensorDoJogador.QuantoEnxergaEmVolta(corpo.GlobalPosition, _ambiente);
 
-			// Alteração de IA - Revisar
-			// O que faz: de perto (nível 1) cor normal; no meio (nível 2) já meio apagado; longe ou
-			//            fora da visão, silhueta escura.
-			// Por quê: fora da visão a camada da névoa encobre de 70% a 100%. Nos pontos em que ela
-			//          afina, a silhueta escura aparece por um instante e some de novo — é a forma
-			//          surgindo na neblina.
-			alvo = NivelAtual switch
-			{
-				1 => Colors.White,
-				2 => Colors.White.Lerp(CorDoVulto, 0.45f),
-				_ => CorDoVulto
-			};
+			// Alteração de IA - Revisar (30/09/2026)
+			// O que faz: enxergando bem (acima de 75%), cor normal; enxergando pouco (abaixo de
+			//            30%), silhueta escura; entre os dois, uma mistura suave.
+			// Por quê: é a forma surgindo na neblina. Longe, a névoa já cobre quase tudo — o vulto
+			//          escuro é o que sobra dele. Quando uma massa de névoa rala passa, o vulto
+			//          aparece por um instante e some de novo. Parede não precisa ser olhada aqui:
+			//          atrás de parede a camada da névoa já cobre o inimigo por inteiro.
+			alvo = CorDoVulto.Lerp(Colors.White, Mathf.SmoothStep(0.30f, 0.75f, QuantoOJogadorVe));
 		}
 		else
 		{
-			NivelAtual = 1;
+			QuantoOJogadorVe = 1.0f;
 		}
 
 		_corAtual = _corAtual.Lerp(alvo, Mathf.Clamp((float)delta * VelocidadeDaTransicao, 0.0f, 1.0f));
 		_desenho.Modulate = _corAtual;
-	}
-
-	private int CalcularNivel(Vector3 onde)
-	{
-		if (_sensorDoJogador == null)
-		{
-			return 1;
-		}
-		if (_meuSensor != null && !_sensorDoJogador.TemLinhaDeVisao(_meuSensor))
-		{
-			return 0;
-		}
-		return _sensorDoJogador.NivelDeVisaoDe(onde, _jogador?.DirecaoOlhando ?? 270.0f);
 	}
 }

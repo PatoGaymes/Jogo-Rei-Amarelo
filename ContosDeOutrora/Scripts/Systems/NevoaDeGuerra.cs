@@ -35,6 +35,30 @@ public partial class NevoaDeGuerra : MeshInstance3D
 	[Export(PropertyHint.Range, "0,6,0.1")]
 	public float ForcaDoBorrao { get; set; } = 3.0f;
 
+	// Alteração de IA - Revisar (30/09/2026)
+	// O que faz: até onde as linhas que procuram paredes vão, em metros, na escuridão.
+	// Por quê: na escuridão, **tudo o que está iluminado aparece**, mesmo longe — uma fogueira no
+	//          canto da tela tem que ser vista. As linhas precisam ir até lá para saber se há parede
+	//          no meio. Antes iam só até o fim do cone de visão (16 m), e o que estava além disso
+	//          sumia mesmo iluminado. 32 m cobre a tela inteira, até os cantos, com a câmera atual.
+	//
+	//          Na névoa elas vão menos longe (ver MedirParedesDoJogador): depois de uns 14 m a
+	//          névoa já cobre tudo, e medir além disso só gastaria processador. Medido andando:
+	//          cada 10 m a mais de alcance custa cerca de 0,06 ms por passo da física.
+	[Export]
+	public float AlcanceDasParedes { get; set; } = 32.0f;
+
+	// Alteração de IA - Revisar (30/09/2026)
+	// O que faz: a largura da penumbra atrás das quinas, em metros, e em quanto espaço o
+	//            "escondido" termina de fechar depois da parede.
+	// Por quê: é o que acabou com as quinas duras na névoa. Largura maior deixa a passagem mais
+	//          suave, mas deixa espiar um pouco mais além da quina; 1,2 m foi o equilíbrio.
+	[Export]
+	public float LarguraDaPenumbra { get; set; } = 1.2f;
+
+	[Export]
+	public float PassagemDaParede { get; set; } = 1.5f;
+
 	// Alteração de IA - Revisar
 	// O que faz: o máximo de fontes de luz consideradas ao mesmo tempo, e quantas linhas cada uma
 	//            usa para saber onde as paredes a bloqueiam.
@@ -46,7 +70,6 @@ public partial class NevoaDeGuerra : MeshInstance3D
 	private const int RaiosPorLuz = 64;
 
 	private SensorDeteccao? _sensor;
-	private PlayerIsometrico? _jogador;
 	private AmbienteDaFase? _ambiente;
 	private ShaderMaterial _material = null!;
 
@@ -67,8 +90,6 @@ public partial class NevoaDeGuerra : MeshInstance3D
 	private readonly Vector4[] _coresDasLuzes = new Vector4[MaximoDeLuzes];
 	private int _quantasLuzes;
 
-	private ImageTexture? _texturaDaNevoa;
-	private float _tempo;
 
 	// Alteração de IA - Revisar
 	// O que faz: uma única "pergunta ao mundo" reaproveitada para todas as linhas até as paredes,
@@ -76,11 +97,10 @@ public partial class NevoaDeGuerra : MeshInstance3D
 	// Por quê: **desempenho.** Criar uma pergunta nova para cada uma das 128 linhas, 60 vezes por
 	//          segundo, custava mais do que as linhas em si. E parede não anda: se o jogador está
 	//          parado, a medida anterior continua certa e não há por que refazê-la. Andando, ela é
-	//          refeita um passo sim, um não — 30 vezes por segundo, o que a olho nu é igual.
+	//          refeita a cada 12 cm (ver MedirParedesDoJogador).
 	private readonly PhysicsRayQueryParameters3D _consulta = new() { HitFromInside = false };
 	private Vector3 _ondeMediuOJogador = new(float.MaxValue, 0.0f, 0.0f);
 	private float _alcanceMedido;
-	private bool _pularEstePasso;
 
 	public override void _Ready()
 	{
@@ -107,7 +127,6 @@ public partial class NevoaDeGuerra : MeshInstance3D
 		var achados = GetTree().GetNodesInGroup("player");
 		if (achados.Count > 0)
 		{
-			_jogador = achados[0] as PlayerIsometrico;
 			_sensor = (achados[0] as Node)?.GetNodeOrNull<SensorDeteccao>("SensorDeteccao");
 		}
 
@@ -116,11 +135,10 @@ public partial class NevoaDeGuerra : MeshInstance3D
 
 	// Alteração de IA - Revisar
 	// O que faz: prepara as tiras de imagem onde as distâncias até as paredes são entregues ao
-	//            desenho, e gera **uma única vez** o desenho de ruído que dá forma à névoa.
+	//            desenho.
 	// Por quê: o desenho da tela só consegue consultar números rapidamente se eles vierem como
-	//          imagem. E a névoa que se move é esse mesmo ruído deslizando pelo mapa — gerado uma
-	//          vez só, no início, em vez de calculado a cada ponto da tela a cada quadro. É isso
-	//          que deixa a névoa volátil praticamente de graça.
+	//          imagem. (30/09/2026) O desenho de ruído que dá forma à névoa saiu daqui e foi para o
+	//          AmbienteDaFase, porque os inimigos agora também precisam dele.
 	private void PrepararTexturas()
 	{
 		int raios = Mathf.Max(8, QuantidadeDeRaios);
@@ -131,18 +149,6 @@ public partial class NevoaDeGuerra : MeshInstance3D
 
 		_imagemDasLuzes = Image.CreateEmpty(RaiosPorLuz, MaximoDeLuzes, false, Image.Format.Rf);
 		_texturaDasLuzes = ImageTexture.CreateFromImage(_imagemDasLuzes);
-
-		var ruido = new FastNoiseLite
-		{
-			NoiseType = FastNoiseLite.NoiseTypeEnum.SimplexSmooth,
-			Frequency = 0.012f,
-			FractalType = FastNoiseLite.FractalTypeEnum.Fbm,
-			FractalOctaves = 3,
-			Seed = 7
-		};
-		// "sem emenda": a imagem se repete lado a lado sem deixar costura visível no mapa
-		Image imagem = ruido.GetSeamlessImage(256, 256);
-		_texturaDaNevoa = ImageTexture.CreateFromImage(imagem);
 	}
 
 	public override void _PhysicsProcess(double delta)
@@ -167,28 +173,33 @@ public partial class NevoaDeGuerra : MeshInstance3D
 			return;
 		}
 
-		_tempo += (float)delta;
 		var amb = _ambiente!;
 		var s = _sensor!;
 
+		// Alteração de IA - Revisar (30/09/2026, revisto em 01/10/2026)
+		// O que faz: entrega ao desenho até onde o personagem enxerga na névoa — um alcance só,
+		//            igual em todas as direções.
+		// Por quê: o número vem do SensorDeteccao, a mesma fonte que decide como os inimigos
+		//          aparecem para o jogador. O desenho não guarda nenhum número de alcance próprio.
+		//          Antes eram dois (frente e lados) e mais a direção do olhar, porque o jogador
+		//          tinha cone de visão; o cone foi retirado em 01/10/2026.
 		_material.SetShaderParameter("modo", amb.Tipo == AmbienteDaFase.TipoDeAmbiente.Escuridao ? 2 : 1);
 		_material.SetShaderParameter("jogador", s.GlobalPosition);
-		_material.SetShaderParameter("olhando", Mathf.DegToRad(_jogador?.DirecaoOlhando ?? 270.0f));
-		_material.SetShaderParameter("meia_abertura", Mathf.DegToRad(s.AberturaVisao * 0.5f));
-		_material.SetShaderParameter("passiva_clara", s.VisaoPassiva1);
-		_material.SetShaderParameter("passiva_embacada", s.VisaoPassiva2);
-		_material.SetShaderParameter("cone_claro", s.AlcanceVisao1);
-		_material.SetShaderParameter("cone_embacado", s.AlcanceVisao2);
-		_material.SetShaderParameter("cone_vulto", s.AlcanceVisao3);
+		_material.SetShaderParameter("alcance_da_nevoa", s.AlcanceNaNevoaEmVolta);
 		_material.SetShaderParameter("paredes", _texturaDoJogador!);
+		_material.SetShaderParameter("centro_das_paredes", _ondeMediuOJogador);
 		_material.SetShaderParameter("folga_da_parede", FolgaDaParede);
+		_material.SetShaderParameter("largura_da_penumbra", LarguraDaPenumbra);
+		_material.SetShaderParameter("passagem_da_parede", PassagemDaParede);
 		_material.SetShaderParameter("forca_do_borrao", ForcaDoBorrao);
 
-		_material.SetShaderParameter("ruido", _texturaDaNevoa!);
-		_material.SetShaderParameter("tempo", _tempo);
+		_material.SetShaderParameter("ruido", amb.TexturaDaNevoa!);
+		_material.SetShaderParameter("tempo", amb.TempoDaNevoa);
 		_material.SetShaderParameter("cor_da_nevoa", amb.CorDaNevoa);
 		_material.SetShaderParameter("densidade_minima", amb.DensidadeMinima);
 		_material.SetShaderParameter("densidade_maxima", amb.DensidadeMaxima);
+		_material.SetShaderParameter("nevoa_colada", amb.NevoaColada);
+		_material.SetShaderParameter("curva", AmbienteDaFase.CurvaDaNevoa);
 		_material.SetShaderParameter("tamanho_das_massas", Mathf.Max(1.0f, amb.TamanhoDasMassas));
 		_material.SetShaderParameter("vento", amb.Vento);
 
@@ -206,8 +217,8 @@ public partial class NevoaDeGuerra : MeshInstance3D
 	//          que garante que ter o sistema no jogo não custa desempenho onde ele não é usado.
 	private bool EstaAtiva()
 	{
-		return _sensor != null && _texturaDoJogador != null && _texturaDaNevoa != null &&
-			   _ambiente != null && _ambiente.EscondeOQueNaoSeVe;
+		return _sensor != null && _texturaDoJogador != null && _ambiente != null &&
+			   _ambiente.TexturaDaNevoa != null && _ambiente.EscondeOQueNaoSeVe;
 	}
 
 	// Alteração de IA - Revisar
@@ -217,19 +228,24 @@ public partial class NevoaDeGuerra : MeshInstance3D
 	private void MedirParedesDoJogador()
 	{
 		Vector3 olhos = _sensor!.PosicaoDosOlhos;
-		float alcance = Mathf.Max(1.0f, _sensor.AlcanceVisao3);
-
-		bool parado = olhos.DistanceTo(_ondeMediuOJogador) < 0.03f && Mathf.IsEqualApprox(alcance, _alcanceMedido);
-		if (parado)
+		float alcance = Mathf.Max(1.0f, AlcanceDasParedes);
+		if (_ambiente!.Tipo == AmbienteDaFase.TipoDeAmbiente.Nevoa)
 		{
-			return;   // nada mudou: a medida anterior continua valendo
+			// é a mesma distância em que o desenho passa a cobrir tudo, mesmo numa brecha
+			alcance = Mathf.Min(alcance, _sensor.AlcanceNaNevoaEmVolta * 1.9f);
 		}
 
-		_pularEstePasso = !_pularEstePasso;
-		bool primeiraVez = _ondeMediuOJogador.X == float.MaxValue;
-		if (_pularEstePasso && !primeiraVez)
+		// Alteração de IA - Revisar (30/09/2026)
+		// O que faz: só mede de novo depois que os olhos andaram 12 cm (ou o alcance mudou).
+		// Por quê: antes media a cada dois passos da física, mesmo andando devagar. Agora a
+		//          tela sabe de onde a última medida foi feita (ver "centro_das_paredes" no
+		//          desenho), então a sombra das paredes fica no lugar certo mesmo entre uma medida
+		//          e outra — e medir menos vezes não aparece na tela. Caminhando, dá umas 25
+		//          medidas por segundo, em vez de 30.
+		bool parado = olhos.DistanceTo(_ondeMediuOJogador) < 0.12f && Mathf.IsEqualApprox(alcance, _alcanceMedido);
+		if (parado)
 		{
-			return;   // andando: mede um passo sim, um não
+			return;   // nada mudou o bastante: a medida anterior continua valendo
 		}
 
 		_ondeMediuOJogador = olhos;
@@ -237,10 +253,37 @@ public partial class NevoaDeGuerra : MeshInstance3D
 
 		var espaco = GetWorld3D().DirectSpaceState;
 		MedirEmRoda(espaco, olhos, alcance, _paredesDoJogador, 0, _paredesDoJogador.Length);
+		TirarEspinhos(_paredesDoJogador);
 
 		Buffer.BlockCopy(_paredesDoJogador, 0, _bytesDoJogador, 0, _bytesDoJogador.Length);
 		_imagemDoJogador!.SetData(_paredesDoJogador.Length, 1, false, Image.Format.Rf, _bytesDoJogador);
 		_texturaDoJogador!.Update(_imagemDoJogador);
+	}
+
+	// Alteração de IA - Revisar (30/09/2026)
+	// O que faz: quando uma linha sozinha vai longe no meio de vizinhas que bateram perto, encurta
+	//            ela até a vizinha mais longe.
+	// Por quê: é o "vazamento" pela emenda de duas paredes — uma linha passa exatamente pela fresta
+	//          entre dois blocos encostados e desenha um risco fino de visão atravessando o muro.
+	//          Uma abertura de verdade (porta, janela) tem várias linhas seguidas indo longe, e não
+	//          é afetada.
+	private static void TirarEspinhos(float[] distancias)
+	{
+		int n = distancias.Length;
+		if (n < 3)
+		{
+			return;
+		}
+
+		float primeira = distancias[0];
+		float anterior = distancias[n - 1];
+		for (int i = 0; i < n; i++)
+		{
+			float atual = distancias[i];
+			float proxima = i == n - 1 ? primeira : distancias[i + 1];
+			distancias[i] = Mathf.Min(atual, Mathf.Max(anterior, proxima));
+			anterior = atual;
+		}
 	}
 
 	private void MedirEmRoda(PhysicsDirectSpaceState3D espaco, Vector3 origem, float alcance,

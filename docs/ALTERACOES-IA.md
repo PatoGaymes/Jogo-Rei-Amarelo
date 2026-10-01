@@ -999,3 +999,155 @@ aparece por um instante onde a névoa afina.
 luzes (fogueira perto do início, lamparinas nos dois andares da casa, numa esquina da ronda e atrás
 de uma divisória) e uma lanterna na mão do jogador.
 
+## 30/09/2026 — Bugs da luz e da névoa, névoa e escuridão nos inimigos, cenário no estilo Don't Starve
+
+### Os bugs do vídeo (`debug/bugsiluminacao...mp4`)
+
+| Bug relatado | Causa | O que mudou |
+|---|---|---|
+| A luz só aparecia olhando para ela | Na escuridão, o que aparecia era "iluminado **e** dentro do cone ou do círculo passivo" | Agora aparece tudo o que está iluminado e sem parede no meio, olhando ou não |
+| Faixa escura entre a visão e a luz | O cone recortava a área iluminada com bordas retas | Some junto com o item acima. Entre duas luzes que não se alcançam continua escuro — é o Don't Starve |
+| Artefatos ao olhar por quinas | A sombra da parede tinha corte seco, desenhando polígonos duros na névoa | Penumbra de pouco mais de 1 m; cada linha medida é comparada antes de misturar |
+| Círculos visíveis na névoa | A névoa tinha degraus: círculo passivo, cone e anéis | Névoa contínua que fecha aos poucos com a distância, sem borda |
+
+Medidas de antes e depois estão em `docs/JOGO.md`, seção "Névoa e escuridão".
+
+### `AmbienteDaFase.cs` — passou a ser a fonte das contas do ambiente
+
+**O que foi feito:** o desenho de ruído e o relógio da névoa saíram da camada da tela e vieram para
+cá, junto com as contas "quanto de névoa existe aqui", "quanta luz chega aqui" e "o quanto se
+enxerga através disso". A tela e os inimigos usam as mesmas contas.
+
+**O que revisar:**
+
+- **`DensidadeMinima` e `DensidadeMaxima` mudaram de sentido.** Antes eram a porcentagem encoberta
+  (0,70 e 1,0); agora dizem o quão grossa a névoa está (**0,6 e 1,6**, sendo 1 a normal). Nenhuma
+  cena mudava esses números, então nada quebrou — mas quem for ajustar precisa saber.
+- `NevoaColada` (5%): o véu que existe até colado no personagem, para ele estar **dentro** da névoa.
+- `CurvaDaNevoa` (3): o formato com que a névoa fecha com a distância.
+
+### `NevoaDeGuerra.gdshader` e `NevoaDeGuerra.cs` — a visão virou olhos, e não lanterna
+
+**O que foi feito:** a névoa e a escuridão foram reescritas (ver a tabela dos bugs). Também:
+
+- As linhas que procuram paredes vão até **32 m** na escuridão (antes 16 m), para enxergar luzes
+  longe, e até ~24 m na névoa (além disso tudo já some).
+- Linhas isoladas que "vazam" pela emenda de duas paredes são encurtadas (`TirarEspinhos`).
+- As paredes são medidas de novo a cada **12 cm andados**, e a tela sabe de onde a última medida foi
+  feita. Com isso o custo no processador ficou igual ao de antes, mesmo com as linhas mais longas.
+
+**O que revisar:** `LarguraDaPenumbra` (1,2 m) e `PassagemDaParede` (1,5 m). Maior deixa a quina mais
+suave, mas deixa espiar um pouco mais além dela.
+
+### `SensorDeteccao.cs` — quanto o ambiente deixa ver, e ajuste por tipo de inimigo
+
+**O que foi feito:** `EnxergaNoEscuro` e `EnxergaNaNevoa` (0 a 1, padrão 0), os alcances na névoa
+(saem dos alcances da visão que já existiam) e `QuantoOAmbienteDeixaVer`, a pergunta que o inimigo
+faz antes de ver o jogador. `NivelDeVisaoDe` (as faixas 1, 2 e 3) continua existindo, mas a névoa
+não usa mais — os degraus dele é que desenhavam os círculos na tela.
+
+### `InimigoIA.cs` — a névoa e a escuridão valem para os inimigos
+
+**O que foi feito:** a visão do inimigo passa pelo ambiente. Abaixo de 15% (`VisaoMinimaParaEnxergar`)
+ele não vê; acima, vê, mas o tempo até reconhecer cresce na mesma proporção em que a visão piora.
+Ouvir e "quase esbarrar" não mudaram.
+
+**O que revisar:** os tempos medidos estão em `docs/JOGO.md`. **Falta a equipe decidir** quais
+inimigos enxergam no escuro ou ignoram a névoa — os dois do sandbox estão como gente comum.
+
+### `VisibilidadeDoInimigo.cs` — a silhueta ficou contínua
+
+**O que foi feito:** o inimigo escurece aos poucos até virar vulto conforme a névoa entre ele e o
+jogador engrossa, em vez de trocar de cor aos saltos por faixa (`NivelAtual` virou
+`QuantoOJogadorVe`, de 0 a 1).
+
+### `PlayerIsometrico.cs` e `DebugDeteccao.cs` — lanterna e informações de teste
+
+**O que foi feito:** a tecla **L** acende e apaga a lanterna (a primeira `FonteDeLuz` presa ao
+jogador). O jogador passou a medir a luz que chega nele (`LuzNoPersonagem`), a mesma conta do
+inimigo. Com F3 ligado aparecem, sobre o jogador, a luz e o estado da lanterna; sobre o inimigo, o
+quanto ele enxerga o jogador.
+
+**O que revisar:** a lanterna ilumina o próprio jogador — acesa, ele é visto de longe no escuro.
+É uma decisão de jogo que vale confirmar.
+
+### `project.godot` (não aceita comentário)
+
+- Ação nova **`lanterna`**, tecla **L**.
+- Camada de física 6 batizada de **`Obstacle`**: o que bloqueia a passagem mas não a visão (hoje,
+  as árvores).
+
+### `Player.tscn` e `Inimigo.tscn` (não aceitam comentário)
+
+- `collision_mask` passou de 8 para **40** (8 = Wall, mais 32 = Obstacle), para os personagens
+  esbarrarem nas árvores.
+
+### Cenário no estilo Don't Starve — `Scenes/Cenarios/` (novo)
+
+**O que foi feito:**
+
+- `Pinheiro.tscn`: imagem que encara a câmera, tronco que bloqueia a passagem (camada Obstacle) e
+  sombra redonda no pé.
+- `MuroDePedra.tscn`: um bloco de muro de 1 casa, que bloqueia passagem e visão (camada Wall). Blocos
+  vizinhos se sobrepõem e formam um muro contínuo.
+- Nos dois, a imagem **não projeta sombra do sol** (virava um triângulo preto que mudava ao girar a
+  câmera).
+- Arte **provisória**, desenhada por código: `Assets/Art/Cenarios/Pinheiro/Provisorio/Pinheiro.webp`
+  e `Assets/Art/Cenarios/MuroDePedra/Provisorio/MuroDePedra.webp`. Os `.import` usam a mesma
+  compressão e as mesmas miniaturas (mipmaps) da arte dos personagens.
+
+**O que revisar:** as imagens ficam em pé (como os personagens) e não inclinadas para a câmera como
+no Don't Starve — o motivo está em `docs/JOGO.md`, seção "Cenário".
+
+### `Sandbox.tscn` (não aceita comentário)
+
+- **16 pinheiros** e uma **estrutura sem teto de 32 blocos** (9 × 8 casas, entrada ao sul, parede
+  interna em L), a sudeste da casa.
+- A malha de navegação passou a contornar também a camada Obstacle (`geometry_collision_mask` de 8
+  para 40).
+- Conferido: o jogador para encostado no muro e no tronco, o caminho do inimigo entra pela abertura
+  da estrutura, e a ronda andou 112 m em 45 s por quatro pontos sem parar nenhuma vez.
+
+### Documentação
+
+- `Assets/README.md`: regras para arte de cenário (uma pasta por objeto, uma peça por casa nas
+  estruturas, base no centro embaixo, desenhar ~1,5 vez mais alto por causa do ângulo da câmera).
+- `CLAUDE.md`: a pasta `Scenes/Cenarios/` entrou na estrutura do projeto.
+- `docs/JOGO.md`: seções "Cenário" e "Névoa e escuridão" reescritas com os números medidos.
+
+## 01/10/2026 — Fim do cone de visão do jogador e da mira pelo mouse
+
+**O que foi feito (decisão do PO):** o jogador deixou de ter cone de visão. Na névoa, ele enxerga
+só num **círculo em volta** (`VisaoPassiva1` e `2`); na escuridão nada mudou (quem revela é a luz,
+a lanterna). A **mira pelo mouse** saiu junto: o personagem volta a olhar sempre para onde anda, o
+que acaba com o "moonwalk" (mouse para um lado, andando para o outro). **Os inimigos mantêm o cone.**
+
+- `PlayerIsometrico.cs`: saíram `ApontarComOMouse`, `PontoParaOndeOlha` e a mira pelo mouse.
+- `SensorDeteccao.cs`: saíram as três faixas do cone (`FracaoDaVisao1/2`, `AlcanceVisao1/2/3`) e
+  `NivelDeVisaoDe`. A conta do ambiente virou `QuantoEnxergaEmVolta` (jogador) e
+  `QuantoEnxergaPeloCone` (inimigos).
+- `NevoaDeGuerra.cs` e `.gdshader`: a névoa usa um alcance só, igual em todas as direções.
+- `DebugDeteccao.cs`: o cone (F3) aparece só nos inimigos, numa faixa só.
+- `Player.tscn` (não aceita comentário): saíram `AlcanceVisao = 16` e `AberturaVisao = 80`, que só
+  serviam ao cone do jogador.
+
+**Conferido:** o personagem olha para onde anda com o mouse do lado oposto (direita = lado, esquerda
+= lado espelhado, W = costas, S = frente); a névoa ficou igual em todas as direções (13 a 15% aos
+3,5 m, 40 a 49% aos 6 m, diferença máxima de 4 pontos olhando para lados opostos); os tempos dos
+inimigos ficaram idênticos; névoa 1,50 ms e escuridão 1,56 ms na placa de vídeo.
+
+**Documentação:** `docs/JOGO.md` atualizado (a seção da mira pelo mouse saiu; a névoa descreve só o
+círculo; a tabela "Os raios" e a legenda do F3 dizem que o cone é só dos inimigos). O cone do jogador
+e a mira pelo mouse foram registrados em `docs/IDEIAS-ARQUIVADAS.md`.
+
+### Regra 3 — o Claude pode gravar no Drive, só na pasta "Para revisão"
+
+**O que foi feito (decisão do PO):** a Regra 3 do `CLAUDE.md` mudou. O Claude continua sem alterar
+nenhum documento oficial, mas pode gravar alterações na pasta **"Para revisão"** do Drive; um dev
+revisa e, dando o ok, leva para a pasta oficial. Do Trello, só lê. Também ajustados os textos que
+repetiam a regra antiga: `docs/README.md` e `docs/SUGESTOES-PARA-DOCUMENTACAO.md`.
+
+**O que revisar:** em 01/10/2026 o Claude ainda **não tem acesso** ao Drive nem ao Trello neste
+ambiente (VS Code), então por enquanto vale o caminho manual de sempre (`docs/para-repositorio/`). O
+nome e o lugar exatos da pasta "Para revisão" no Drive precisam ser definidos quando o acesso
+funcionar.

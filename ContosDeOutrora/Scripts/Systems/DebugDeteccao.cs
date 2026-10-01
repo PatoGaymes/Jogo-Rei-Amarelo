@@ -122,25 +122,18 @@ public partial class DebugDeteccao : Node3D
 			Circulo(centro, _sensor.RaioEncontro, CorEncontro);
 		}
 
-		float olhando = EhInimigo
-			? (_inimigo?.DirecaoOlhando ?? 270.0f)
-			: (_jogador?.DirecaoOlhando ?? 270.0f);
-
-		// Alteração de IA - Revisar
-		// O que faz: desenha as três faixas do cone de visão, uma dentro da outra, cada uma mais
-		//            apagada que a anterior.
-		// Por quê: o cone deixou de ser "vê ou não vê" e virou três qualidades de visão. Com um
-		//          traço só, não dava para conferir onde termina o claro e começa o vulto — que
-		//          é justamente o que a névoa mostra ao jogador.
-		Cone(centro, _sensor.AlcanceVisao1, _sensor.AberturaVisao, olhando, CorVisao);
-		Cone(centro, _sensor.AlcanceVisao2, _sensor.AberturaVisao, olhando, CorVisao * 0.75f);
-		Cone(centro, _sensor.AlcanceVisao3, _sensor.AberturaVisao, olhando, CorVisao * 0.5f);
-
-		// Alteração de IA - Revisar
-		// O que faz: só no jogador, desenha também o que ele percebe em volta sem olhar.
-		// Por quê: são os círculos que impedem a névoa de cegá-lo para os próprios pés. Nos
-		//          inimigos não aparecem porque a névoa é sempre do ponto de vista do jogador.
-		if (!EhInimigo)
+		// Alteração de IA - Revisar (01/10/2026)
+		// O que faz: o cone de visão só é desenhado nos inimigos, numa faixa só. No jogador
+		//            aparecem os dois círculos de visão em volta dele.
+		// Por quê: o jogador não tem mais cone — enxerga num círculo em volta de si, e é esse
+		//          círculo que a névoa usa. As três faixas do cone (claro, embaçado, vulto) eram
+		//          da visão do jogador e saíram junto; o cone do inimigo sempre foi "vê ou não vê".
+		if (EhInimigo)
+		{
+			Cone(centro, _sensor.AlcanceVisaoEfetivo, _sensor.AberturaVisao,
+				 _inimigo?.DirecaoOlhando ?? 270.0f, CorVisao);
+		}
+		else
 		{
 			Circulo(centro, _sensor.VisaoPassiva1, CorVisaoPassiva);
 			Circulo(centro, _sensor.VisaoPassiva2, CorVisaoPassiva * 0.6f);
@@ -219,6 +212,19 @@ public partial class DebugDeteccao : Node3D
 			_texto.Text = agachado
 				? $"AGACHADO\nraio {_sensor.Raio1Efetivo:0.0} m · visto em {_sensor.TempoParaSerVistoEfetivo:0.0}s"
 				: $"jogador\nraio {_sensor.Raio1Efetivo:0.0} m · visto em {_sensor.TempoParaSerVistoEfetivo:0.0}s";
+
+			// Alteração de IA - Revisar (30/09/2026)
+			// O que faz: no escuro, mostra quanta luz chega no jogador e se a lanterna está acesa.
+			// Por quê: é o número que decide se os inimigos conseguem vê-lo. Sem ele, não dá para
+			//          saber se passar na frente de um guarda deu certo por causa da sombra ou por
+			//          sorte.
+			var ambiente = AmbienteDaFase.DaFase(GetTree());
+			if (_jogador != null && ambiente?.Tipo == AmbienteDaFase.TipoDeAmbiente.Escuridao)
+			{
+				bool acesa = _jogador.AcharLanterna()?.Acesa ?? false;
+				_texto.Text += $"\nluz {_jogador.LuzNoPersonagem * 100.0f:0}% · lanterna {(acesa ? "acesa" : "apagada")} (L)";
+			}
+
 			_texto.Modulate = agachado ? new Color(0.5f, 0.9f, 1.0f) : Colors.White;
 			return;
 		}
@@ -250,11 +256,29 @@ public partial class DebugDeteccao : Node3D
 		//          ser conferido ao ajustar os tempos.
 		if (_inimigo.ModoAtual == InimigoIA.Modo.Alerta)
 		{
-			_texto.Text = $"{modo}\n{_inimigo.EtapaDoAlertaTexto}\n{Barra()}";
+			_texto.Text = $"{modo}\n{_inimigo.EtapaDoAlertaTexto}\n{Barra()}{Visao()}";
 			return;
 		}
 
-		_texto.Text = $"{modo}\n{Barra()}";
+		_texto.Text = $"{modo}\n{Barra()}{Visao()}";
+	}
+
+	// Alteração de IA - Revisar (30/09/2026)
+	// O que faz: com o jogador na frente do inimigo, mostra o quanto a névoa ou a escuridão deixam
+	//            o inimigo enxergá-lo — "enxerga 35%", ou "não enxerga" abaixo do mínimo.
+	// Por quê: sem isso, o inimigo parado olhando para o jogador sem reagir parece defeito. Com o
+	//          número na tela, fica claro que é a sombra ou a névoa escondendo o jogador.
+	private string Visao()
+	{
+		if (_inimigo == null || !_inimigo.JogadorNoCone || _inimigo.VisaoNoAmbiente >= 0.995f)
+		{
+			return "";
+		}
+
+		float por = _inimigo.VisaoNoAmbiente;
+		return por < _inimigo.VisaoMinimaParaEnxergar
+			? "\nnão enxerga (sombra/névoa)"
+			: $"\nenxerga {por * 100.0f:0}%";
 	}
 
 	// Alteração de IA - Revisar

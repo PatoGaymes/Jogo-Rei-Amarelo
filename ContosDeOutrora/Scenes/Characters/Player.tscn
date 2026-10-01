@@ -11,7 +11,7 @@ height = 1.8
 
 [node name="Player" type="CharacterBody3D" groups=["player"]]
 collision_layer = 1
-collision_mask = 8
+collision_mask = 40
 script = ExtResource("1_script")
 
 [node name="Desenho" type="AnimatedSprite3D" parent="."]
@@ -34,8 +34,6 @@ script = ExtResource("3_sensor")
 RaioDeteccao1 = 5.0
 RaioDeteccao2 = 2.5
 RaioEncontro = 0.0
-AlcanceVisao = 16.0
-AberturaVisao = 80.0
 Furtividade = 0
 Reacao = 0
 

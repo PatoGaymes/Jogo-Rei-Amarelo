@@ -71,3 +71,40 @@ revelado contradiz isso.
   visão ficavam parecidas demais e o jogador confiava em informação velha.
 - A anotação rodava a cada 3 passos da física, percorrendo só o pedaço da grade ao alcance da
   visão.
+
+---
+
+## Cone de visão do jogador e mira pelo mouse
+
+**Existiu de:** 21/09/2026 · **Retirada em:** 01/10/2026, por decisão do PO
+**Código:** commit `890fb15` — `Scripts/Characters/PlayerIsometrico.cs` (mira pelo mouse) e
+`Scripts/Systems/SensorDeteccao.cs` (as faixas do cone)
+
+### A ideia
+
+Além do círculo em volta, o jogador tinha um **cone de visão** na direção em que olhava, que
+enxergava mais longe dentro da névoa, em três faixas: claro até 6,1 m, levemente embaçado até 11,2 m
+e só vulto até 16 m, com 80° de abertura. Para escolher para onde olhar sem abrir mão de para onde
+ia, o personagem **virava para onde o mouse apontava**, e a câmera continuava nos 8 ângulos fixos.
+Dava para atravessar um corredor vigiando a porta, ou recuar sem tirar os olhos do inimigo.
+
+### Como funcionava
+
+| Parte | Como |
+|---|---|
+| Mira | Uma linha imaginária saía da câmera, passava pelo cursor e ia até o chão na altura dos pés; o ponto onde ela encostava era para onde o personagem olhava. Conferido nos 8 ângulos da câmera: erro máximo de 0,2° |
+| Névoa | A névoa fechava mais devagar na direção do olhar: o alcance ia de uns 7 m nos lados a uns 13 m na frente, com uma passagem suave de 14° a 88° |
+
+### Por que saiu
+
+Nos testes da escuridão, o PO viu que **só o círculo em volta** passa melhor a ideia dos mapas com
+névoa e escuridão, mantendo a lanterna. E a mira pelo mouse criava o **"moonwalk"**: com o mouse
+para um lado e o personagem andando para o outro, o desenho mostrava o personagem de frente andando
+de costas.
+
+### Se um dia voltar
+
+- O moonwalk precisa de solução própria: animações de andar de costas e de lado, ou o desenho
+  seguir a caminhada e só a visão seguir o mouse.
+- A névoa estava calibrada para as três faixas, olhando para a frente: 13% aos 6 m, 46% aos
+  11,2 m e 89% aos 16 m.

@@ -1,8 +1,9 @@
 # Sugestões para a documentação externa
 
-A Regra 3 diz que o Claude **nunca altera** a documentação do Trello e do Google Drive. Quando
+A Regra 3 diz que o Claude **nunca altera** um documento oficial do Trello ou do Google Drive. Quando
 ele identificar algo que precisa ser corrigido lá, a sugestão vem para cá, e um dev decide se
-sobe ou não.
+sobe ou não. (Desde 01/10/2026, alteração de documento já pronta pode ir direto para a pasta
+"Para revisão" do Drive, quando o Claude tiver acesso a ele — ver a Regra 3 no `CLAUDE.md`.)
 
 **Nada nesta página foi aplicado nos sites.**
 

@@ -105,7 +105,7 @@ Art/
 ├── Enemies/       # inimigos comuns
 ├── Npcs/          # personagens que não entram em combate
 ├── Effects/       # explosões, magias, partículas (sprite sheets)
-├── Cenarios/      # salas, corredores, fundos
+├── Cenarios/      # árvores, muros, pedras, salas — uma pasta por objeto
 └── UI/            # botões, molduras, ícones, menus
 ```
 
@@ -117,6 +117,20 @@ Dentro da pasta de cada personagem:
 | `Dialogue/` | Retrato usado nas conversas |
 | `Map/` | Os quadros das animações no mapa (andar, parar...) e o `SpriteFrames` do personagem |
 | `Provisorio/` | Arte temporária, só para testar. **Sai quando a definitiva ficar pronta** |
+
+### Cenário — árvores, muros, construções (30/09/2026)
+
+O cenário segue o jeito do Don't Starve: **objetos 2D que ficam sempre de frente para a câmera**.
+Cada objeto tem a sua pasta em `Cenarios/` (`Cenarios/Pinheiro/`, `Cenarios/MuroDePedra/`), com
+`Provisorio/` dentro para a arte temporária.
+
+| Regra | Por quê |
+|---|---|
+| **Objeto de uma casa** (árvore, pedra): uma imagem só | A mesma imagem serve para todos os ângulos da câmera |
+| **Estrutura de várias casas** (muro, cerca): **uma peça por casa**, desenhada um pouco mais larga que a casa | As peças vizinhas se sobrepõem e formam um muro contínuo em qualquer ângulo |
+| **Base do objeto no centro, embaixo** da imagem | A mesma regra dos personagens: é por esse ponto que o objeto fica em pé no chão |
+| Desenhar **cerca de 1,5 vez mais alto** do que se quer ver na tela | Em pé e vista pela câmera a 50°, a imagem aparece com ~64% da altura desenhada |
+| **Sem sombra desenhada** no chão | O objeto já ganha uma sombra redonda no pé, na cena |
 
 ### Como nomear
 

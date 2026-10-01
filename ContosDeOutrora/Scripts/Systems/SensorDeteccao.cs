@@ -43,6 +43,9 @@ public partial class SensorDeteccao : Node3D
 	// Por quê: a visão é um cone na direção em que o personagem está olhando, não um
 	//          círculo. Alcança mais longe que o raio externo justamente por ser focada
 	//          numa direção só — de frente se enxerga longe, de lado não se enxerga nada.
+	//
+	//          (01/10/2026) **Só os inimigos usam o cone.** O jogador não tem mais cone de visão:
+	//          ele enxerga num círculo em volta de si (VisaoPassiva1 e 2, logo abaixo).
 	[Export]
 	public float AlcanceVisao { get; set; } = 12.0f;
 
@@ -50,27 +53,15 @@ public partial class SensorDeteccao : Node3D
 	public float AberturaVisao { get; set; } = 80.0f;
 
 	// Alteração de IA - Revisar
-	// O que faz: divide o cone de visão em três faixas de qualidade, da mais perto para a mais
-	//            longe. O `AlcanceVisao` acima passa a ser o alcance **total** (a faixa 3).
-	// Por quê: enxergar não é sim ou não. De perto se vê com clareza; mais longe se distingue
-	//          menos; no limite do alcance só se percebe que **tem alguma coisa ali**, sem saber
-	//          o quê. As frações dizem onde cada faixa termina, em proporção do alcance total —
-	//          assim, mudar o alcance total reorganiza as três juntas, sem contas à mão.
-	//
-	//          **Nível 1 é o mais perto e o mais claro**, seguindo a numeração que a equipe
-	//          combinou para o cone. Repare que é o contrário dos raios de detecção, onde o
-	//          nível 1 é o de fora — lá o número cresce para fora, aqui cresce para longe.
-	[Export]
-	public float FracaoDaVisao1 { get; set; } = 0.38f;
-
-	[Export]
-	public float FracaoDaVisao2 { get; set; } = 0.70f;
-
-	// Alteração de IA - Revisar
 	// O que faz: o que o personagem enxerga em volta de si **sem precisar olhar**, em duas faixas.
 	// Por quê: ninguém precisa virar a cabeça para saber o que está encostado nele. A faixa 1 é
 	//          clara e a 2 é levemente embaçada — é o que impede a névoa de virar uma coleira,
 	//          deixando o jogador cego para os próprios pés.
+	//
+	//          (01/10/2026) **Este círculo passou a ser toda a visão do jogador** na névoa: o cone
+	//          dele foi retirado, junto com as três faixas do cone (as antigas FracaoDaVisao1 e 2).
+	//          Os testes da escuridão mostraram que só o círculo em volta passa melhor a ideia dos
+	//          mapas com névoa e escuridão. Na escuridão quem revela é a luz — a lanterna.
 	//
 	//          **São números próprios, separados dos raios de detecção**, por dois motivos: ver
 	//          e ser visto são coisas diferentes, e os raios de detecção encolhem ao agachar —
@@ -162,6 +153,24 @@ public partial class SensorDeteccao : Node3D
 	//          se esconder atrás de mureta, caixa ou parapeito quando o cenário tiver disso.
 	[Export]
 	public float AlturaDosOlhosAgachado { get; set; } = 0.8f;
+
+	// Alteração de IA - Revisar (30/09/2026)
+	// O que faz: o quanto este personagem enxerga no escuro e na névoa, de 0 a 1.
+	//            0 = é afetado por inteiro (olhos comuns). 1 = não é afetado (enxerga como se
+	//            fosse dia limpo). Valores no meio atenuam: 0,5 no escuro é alguém que distingue
+	//            vultos sem luz nenhuma.
+	// Por quê: **cada tipo de inimigo pode reagir diferente** à névoa e à escuridão. Um humano
+	//          precisa de luz para ver; uma criatura das minas pode enxergar no breu; algo que
+	//          caça pelo cheiro não se importa com a névoa. São dois números por inimigo, ajustados
+	//          na cena dele — sem código novo para cada tipo.
+	//
+	//          Só a **visão** é afetada. Ouvir (os círculos de detecção) funciona igual no escuro e
+	//          na névoa: barulho não precisa de luz.
+	[Export(PropertyHint.Range, "0,1,0.05")]
+	public float EnxergaNoEscuro { get; set; } = 0.0f;
+
+	[Export(PropertyHint.Range, "0,1,0.05")]
+	public float EnxergaNaNevoa { get; set; } = 0.0f;
 
 	// ---------------------------------------------------------------------------
 
@@ -275,6 +284,66 @@ public partial class SensorDeteccao : Node3D
 		return anguloAteOutro <= AberturaVisao * 0.5f;
 	}
 
+	// Alteração de IA - Revisar (30/09/2026, revisto em 01/10/2026)
+	// O que faz: até onde este personagem enxerga dentro da névoa. É a distância em que a névoa
+	//            já cobre cerca de dois terços do que está lá.
+	//
+	//              Em volta (o jogador): sai do círculo de visão. A névoa cobre uns 15% no fim da
+	//                                    faixa 1 (3,5 m) e uns 45% no fim da faixa 2 (6 m) — a
+	//                                    faixa 1 continua limpa e a 2 levemente embaçada.
+	//              Pelo cone (os inimigos): sai do alcance do cone. No fim dele a névoa já cobre
+	//                                       uns 87%.
+	//
+	// Por quê: saem dos alcances que já existiam, para que mudar a visão no inspetor mude também
+	//          a névoa, sem ajuste em dois lugares. **O do jogador é o mesmo número que o desenho
+	//          da tela usa** (Shaders/NevoaDeGuerra.gdshader, "alcance_da_nevoa").
+	public float AlcanceNaNevoaEmVolta => VisaoPassiva2 * 1.22f;
+
+	public float AlcanceNaNevoaPeloCone => AlcanceVisaoEfetivo * 0.79f;
+
+	// Alteração de IA - Revisar (30/09/2026, revisto em 01/10/2026)
+	// O que faz: responde o quanto o **ambiente** deixa este personagem enxergar um ponto, de 0
+	//            (nada) a 1 (como num dia limpo). Não olha cone nem parede — só névoa e escuridão.
+	//
+	//              Mapa limpo: sempre 1.
+	//              Escuridão: a luz que chega no ponto. Sem luz, 0 — a não ser que o personagem
+	//                         enxergue no escuro.
+	//              Névoa: o quanto a névoa deixa passar até o ponto, pela distância e pela
+	//                     grossura da massa de ar ali.
+	//
+	//            São duas versões: "em volta", a do jogador, que enxerga num círculo; e "pelo
+	//            cone", a dos inimigos. A diferença está só no alcance usado na névoa.
+	//
+	// Por quê: é a pergunta que o inimigo faz antes de "ver" o jogador, e a mesma que decide se o
+	//          inimigo aparece nítido ou como vulto na tela do jogador. Uma conta só para os dois
+	//          lados.
+	public float QuantoEnxergaEmVolta(Vector3 ponto, AmbienteDaFase? ambiente) =>
+		QuantoOAmbienteDeixaVer(ponto, ambiente, AlcanceNaNevoaEmVolta);
+
+	public float QuantoEnxergaPeloCone(Vector3 ponto, AmbienteDaFase? ambiente) =>
+		QuantoOAmbienteDeixaVer(ponto, ambiente, AlcanceNaNevoaPeloCone);
+
+	private float QuantoOAmbienteDeixaVer(Vector3 ponto, AmbienteDaFase? ambiente, float alcanceNaNevoa)
+	{
+		if (ambiente == null || ambiente.Tipo == AmbienteDaFase.TipoDeAmbiente.Limpo)
+		{
+			return 1.0f;
+		}
+
+		if (ambiente.Tipo == AmbienteDaFase.TipoDeAmbiente.Escuridao)
+		{
+			// a luz é medida na altura do peito de quem está no ponto, não no chão
+			var espaco = GetWorld3D().DirectSpaceState;
+			float luz = ambiente.LuzEm(ponto + new Vector3(0.0f, 1.0f, 0.0f), espaco, (uint)CamadaQueBloqueiaVisao);
+			return Mathf.Max(luz, Mathf.Clamp(EnxergaNoEscuro, 0.0f, 1.0f));
+		}
+
+		Vector3 ate = ponto - GlobalPosition;
+		ate.Y = 0.0f;
+		float passa = ambiente.TransparenciaDaNevoa(ponto, ate.Length(), alcanceNaNevoa);
+		return Mathf.Lerp(passa, 1.0f, Mathf.Clamp(EnxergaNaNevoa, 0.0f, 1.0f));
+	}
+
 	// Alteração de IA - Revisar
 	// O que faz: responde se existe parede entre este personagem e o outro.
 	// Por quê: **é o que impede o inimigo de enxergar através de um muro.** Sem isso, ele
@@ -283,77 +352,6 @@ public partial class SensorDeteccao : Node3D
 	//
 	//          Funciona como um "raio de luz" entre os olhos dos dois: se ele esbarra em
 	//          algo da camada Parede antes de chegar, a visão está bloqueada.
-	// Alteração de IA - Revisar
-	// O que faz: os alcances de cada faixa do cone, já em metros.
-	// Por quê: o desenho de teste e a névoa precisam desses três números prontos; calcular a
-	//          fração em cada um deles seria repetir a mesma conta em lugares diferentes, com
-	//          risco de um sair do passo do outro.
-	public float AlcanceVisao1 => AlcanceVisaoEfetivo * Mathf.Clamp(FracaoDaVisao1, 0.0f, 1.0f);
-	public float AlcanceVisao2 => AlcanceVisaoEfetivo * Mathf.Clamp(FracaoDaVisao2, 0.0f, 1.0f);
-	public float AlcanceVisao3 => AlcanceVisaoEfetivo;
-
-	// Alteração de IA - Revisar
-	// O que faz: responde o quanto este personagem enxerga um ponto qualquer do mapa, numa escala
-	//            de 0 a 3 — 0 é névoa (não vê nada), 1 é claro, 2 é levemente embaçado, 3 é só
-	//            um vulto.
-	// Por quê: é a mesma regra usada pela névoa na tela e pelos inimigos para decidirem como
-	//          aparecer. Tendo os dois a mesma fonte, não dá para o desenho mostrar uma coisa e
-	//          a mecânica valer outra.
-	//
-	//          Vale o melhor entre o que ele enxerga em volta sem olhar (passiva) e o que o cone
-	//          alcança na direção em que está olhando.
-	public int NivelDeVisaoDe(Vector3 ponto, float direcaoOlhandoGraus)
-	{
-		Vector3 ate = ponto - GlobalPosition;
-		ate.Y = 0.0f;
-		float distancia = ate.Length();
-
-		int porPerto = 0;
-		if (distancia <= VisaoPassiva1)
-		{
-			porPerto = 1;
-		}
-		else if (distancia <= VisaoPassiva2)
-		{
-			porPerto = 2;
-		}
-
-		int porOlhar = 0;
-		if (distancia <= AlcanceVisao3 && distancia > 0.001f)
-		{
-			float rad = Mathf.DegToRad(direcaoOlhandoGraus);
-			var frente = new Vector3(Mathf.Cos(rad), 0.0f, -Mathf.Sin(rad));
-			float angulo = Mathf.RadToDeg(frente.AngleTo(ate.Normalized()));
-
-			if (angulo <= AberturaVisao * 0.5f)
-			{
-				if (distancia <= AlcanceVisao1)
-				{
-					porOlhar = 1;
-				}
-				else if (distancia <= AlcanceVisao2)
-				{
-					porOlhar = 2;
-				}
-				else
-				{
-					porOlhar = 3;
-				}
-			}
-		}
-
-		// 0 significa "não vê"; entre os que veem, vale o menor número, que é o mais nítido
-		if (porPerto == 0)
-		{
-			return porOlhar;
-		}
-		if (porOlhar == 0)
-		{
-			return porPerto;
-		}
-		return Mathf.Min(porPerto, porOlhar);
-	}
-
 	public bool TemLinhaDeVisao(SensorDeteccao outro)
 	{
 		var espaco = GetWorld3D().DirectSpaceState;

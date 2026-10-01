@@ -51,8 +51,8 @@ public partial class AnimacaoDirecional : Node
 
 	// Alteração de IA - Revisar
 	// O que faz: quanto o ângulo precisa passar do limite entre duas vistas para o desenho trocar.
-	// Por quê: sem essa folga, com o mouse bem na divisa entre "de frente" e "de lado" o desenho
-	//          ficaria trocando sem parar a cada tremida da mão.
+	// Por quê: sem essa folga, andando bem na divisa entre "de frente" e "de lado" (na diagonal,
+	//          ou com a câmera no meio de um giro) o desenho ficaria trocando sem parar.
 	[Export]
 	public float FolgaParaTrocarDeVista { get; set; } = 8.0f;
 
@@ -167,8 +167,8 @@ public partial class AnimacaoDirecional : Node
 	// O que faz: toca a animação da vista atual no ritmo da caminhada, ou para no primeiro quadro
 	//            quando o personagem está parado.
 	// Por quê: ao trocar de vista no meio do passo, o quadro em que a perna estava é mantido.
-	//          Sem isso, cada virada de mouse recomeçaria o passo do zero e as pernas dariam um
-	//          tranco.
+	//          Sem isso, cada mudança de direção (ou giro da câmera) recomeçaria o passo do zero e
+	//          as pernas dariam um tranco.
 	private void TocarAnimacao(float velocidade)
 	{
 		string nome = $"{Acao}_{NomeDaVista(VistaAtual)}";

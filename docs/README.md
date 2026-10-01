@@ -5,7 +5,8 @@ Google Drive são privados e exigem login. A equipe **exporta** o conteúdo para
 e é de lá que o Claude lê — ele abre PDF, Markdown, DOCX e JSON direto do repositório.
 
 > Os sites continuam sendo a fonte de verdade. Esta pasta é uma **cópia de leitura**. O Claude
-> nunca altera nada nos sites (Regra 3).
+> nunca altera um documento oficial nos sites (Regra 3) — desde 01/10/2026 ele pode gravar só na
+> pasta "Para revisão" do Drive, e um dev leva para a pasta oficial depois de revisar.
 
 > **OneNote e Canva foram descartados** pela equipe em 11/09/2026 por estarem desatualizados.
 
