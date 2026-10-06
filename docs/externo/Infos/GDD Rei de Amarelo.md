@@ -38,13 +38,13 @@ Sumário
 
    4. ## [Gael Nebraska (Hemomante)](#bookmark=id.kecromg05k5x)
 
-   5. ## [Thao A’Bajal (Peregrino)](#bookmark=id.g23nbhmvy4h3)
+   5. ## [Tao A’Bajal (Peregrino)](#bookmark=id.g23nbhmvy4h3)
 
    6. ## [Uzhan N’Daka (Desgarrado](#bookmark=id.22o1zbkitalv))
 
    7. ## [Lancelot Claivar (Escudeiro)](#bookmark=id.ngg8n93sc3mp)
 
-   8. ## [Jedah, Filho de Tauron (Brutamonte)](#bookmark=id.e8rr8amuj7g3)
+   8. ## [Jedara, Filho de Tauron (Brutamonte)](#bookmark=id.e8rr8amuj7g3)
 
    9. ## [Homem Misterioso(Bruxo)](#bookmark=id.ujmi80y6qx2f)
 
@@ -166,7 +166,7 @@ Uma área que tenha as propriedades de vermelho e verde ao mesmo tempo tem uma c
 
 ***Exploração***
 
-A movimentação é de apenas para trás e frente, com interações específicas e também escondidas no cenário.
+A movimentação é livre pelo mapa 3D isométrico, com a câmera girando em 8 ângulos em volta do personagem (referência: Don't Starve Together), com interações específicas e também escondidas no cenário.
 
 * Cadáveres, dejetos e destroços contendo materiais para carfting;  
 * Estátuas do rei para salvar o jogo e para fast-travel;  
@@ -175,7 +175,7 @@ A movimentação é de apenas para trás e frente, com interações específicas
 * Corpos de bosses derrotados que contém loot único e material para Level up;  
 * Locais de descanso para level up de personagem.
 
-Transicionar de uma área para outra reseta a sala anterior, com novos loots e Spawn de inimigos, porém inimigos únicos e chefes não reaparecem.
+Inimigos e loot são fixos e não respawnam. Está previsto criar, depois da demo, um item ou mecânica que faça um inimigo ou uma área inteira voltar a aparecer — mas isso não entra no escopo da demo.
 
 *Habilidades de interlúdio*
 
@@ -197,7 +197,7 @@ Os atributos são divididos em 3 categorias:
 
 \-**Corpo**: responsável por administrar vida, ataques não mágicos e perícias de combate, sendo elas Precisão, Furtividade, Reação e Robustez.
 
-\-**Mente**: responsável por administrar Sanidade, e perícias para comunicação, sendo elas Lábia, Intuição, Análise e Vontade.  
+\-**Mente**: responsável por administrar Sanidade e a perícia Vontade.  
 
 \-**Essência**: responsável por administrar Foco, e perícias para espiritualismo, sendo elas  Energia e Aura.  
 
@@ -205,17 +205,13 @@ Os atributos são divididos em 3 categorias:
 
 Precisão: Capacidade de executar ataques e habilidades físicas. Sua chance de acertar aumenta conforme a precisão;
 
-Furtividade: Capacidade de se esconder. Diminui passivamente o agro inimigo e aumenta a chance de sucesso de “furto”;
+Furtividade: Capacidade de se esconder. Diminui passivamente o agro inimigo em combate e, na exploração, reduz o raio em que os inimigos percebem o personagem — quanto maior a Furtividade, mais perto dá para chegar sem ser notado;
+
+Iniciativa: atributo focado exclusivamente para iniciativa em combates
 
  Reação: Capacidade de evitar golpes, tanto em área quanto individuais. É afetado pela ação de defender;
 
  Robustez: Capacidade para mitigar danos físicos. Quanto maior a robustez, mais dano é negado. É afetado pela ação de defender;
-
-Lábia: Capacidade para persuadir npcs e inimigos. Aumenta a chance de sucesso em “Ameaçar”.
-
-Intuição: Capacidade para entender cenários, npcs e inimigos. Aumenta a chance de sucesso em “Enganar”.
-
-Análise: Capacidade para analisar cenários, npcs e inimigos. Aumenta a chance de sucesso em “Expor”.
 
  Vontade: A capacidade de resistir a efeitos.
 
@@ -323,7 +319,7 @@ Mais alguns anos para frente, você se torna comandante, um feito e tanto pra su
 
   \-
 
-***Amana A’Bajal/Amana K'Ushim(Cartomante)***
+***Amana A’Bajal/Amana K'Ushim (Xamã)***
 
 Amana e seu irmão varossa eram de uma família de um grande rei, e viviam com grandes regalias e luxos em uma distante era, onde o deserto estava em paz. Porém, o irmão de amana, de repente começou a falar coisas sobre destino, e profetizou uma calamidade em uma conferência entre os reis, o que causou um alvoroço, que quase quebrou a paz duradoura. E um dia, numa calorosa noite, os Adareshina (Futuros N’Daka) começaram uma onda de violência contra as outras tribos, por aparentemente nenhum motivo. Ela e o irmão foram caçados pelo palácio, até serem salvos por um homem misterioso, mas não tinham pra onde fugir, estavam cercados. E então, seu irmão teve a ideia de trocar de corpo com os soldados mortos pra sobreviver. E então, ela começou a questionar como e por que ele sabia feitiçarias e podia prever o futuro. Ele explicou que o próprio destino falava com ele, e que o próprio reservou um lugar para que eles testemunhassem o fim juntos, no topo de tudo. Apesar de achar loucura por parte de seu irmão, Amana abraçou a loucura de seu irmão, e junto dele, se tronou arauto do destino.
 
@@ -389,9 +385,9 @@ Lore in-game
 
 Gael tinha a alcunha de “Monarca Escarlate” em Valterna, antes dos navegadores chegarem por aquelas terras e começarem a instigar conflitos entre seu povo pra dividí-los. No fim do dia, não importava, ele matou todos eles sem nenhum esforço. Porém, um tempo mais tarde, foi dado a ele um acordo, onde um regente deu a mão de sua filha para um pacto de não agressão. Eles então viveram em uma relação mútua e vivendo em harmonia, e com o tempo ele começou a gostar da garota, que era fascinada pelos vampiros, além de muito carinhosa. Mas inevitavelmente, ela envelheceu, oque fez gael lembrar o quanto a vida humana era frágil. Ele não podia trazer ela de volta mas existe uma coisa que podia: O trono da criação. Mas pra ele pusesse as mãos nele, era necessário um mapa dos astros que guiam até ele, e que estavam na ilha de Carcosa. Ele então marchou com tropas até ela, e no fim, apesar das décadas de guerra, foi derrotado, e aprisionado, sem nem se lembrar quem é.
 
-***Thao A’Bajal (Peregrino)*** 
+***Tao A’Bajal (Peregrino)*** 
 
-Thao desde cedo era problemático. Tendo Nascido da união de S’Haeri e A’Bajal, ele naturalmente já era repudiado, mas ele desde cedo era alguém que adorava plantar discórdia nas pessoas, pois a vida cotidiana não o interessava, e ele usava isso para acender o fogo em seu coração. Mas, com o tempo, as pessoas ficaram cicatrizadas de suas rebeldias, então sequer se importavam mais, e o tédio voltava a consumi-lo. Porém, quase como se fosse uma coincidência, ele conhece um homem misterioso que apresentou a ele o ocultismo, e o exterior. Tao então, vagou para o exterior em busca de mais caos pra alimentar seu fogo. Ele acabou amando o exterior, e o quanto aquilo tinha a oferecer, pois sua jornada estava apenas começando, até que ele decidiu ir mais longe do que já havia ido: Ele roubou tesouros da realeza de Nortumbria, e foi severamente caçado e rapidamente seu rosto foi conhecido por todo o continente, ao ponto que o Supremo Magistrado de Nemora pessoalmente viesse a sua caça. Ele então, fugiu num navio cargueiro rumo a Carcosa, e por lá ficou por uns dias, continuando suas artimanhas, até novamente tentar assaltar a realeza da ilha. Porém, o rei se interessou em um tesouro em particular que tao tinha no seu espólio: A Lâmina Klaivar, que o fascinava de um jeito macabro, e se recusando a dar a espada, Tao é preso e jogado no poço.
+Tao desde cedo era problemático. Tendo Nascido da união de S’Haeri e A’Bajal, ele naturalmente já era repudiado, mas ele desde cedo era alguém que adorava plantar discórdia nas pessoas, pois a vida cotidiana não o interessava, e ele usava isso para acender o fogo em seu coração. Mas, com o tempo, as pessoas ficaram cicatrizadas de suas rebeldias, então sequer se importavam mais, e o tédio voltava a consumi-lo. Porém, quase como se fosse uma coincidência, ele conhece um homem misterioso que apresentou a ele o ocultismo, e o exterior. Tao então, vagou para o exterior em busca de mais caos pra alimentar seu fogo. Ele acabou amando o exterior, e o quanto aquilo tinha a oferecer, pois sua jornada estava apenas começando, até que ele decidiu ir mais longe do que já havia ido: Ele roubou tesouros da realeza de Nortumbria, e foi severamente caçado e rapidamente seu rosto foi conhecido por todo o continente, ao ponto que o Supremo Magistrado de Nemora pessoalmente viesse a sua caça. Ele então, fugiu num navio cargueiro rumo a Carcosa, e por lá ficou por uns dias, continuando suas artimanhas, até novamente tentar assaltar a realeza da ilha. Porém, o rei se interessou em um tesouro em particular que tao tinha no seu espólio: A Lâmina Klaivar, que o fascinava de um jeito macabro, e se recusando a dar a espada, Tao é preso e jogado no poço.
 
 Lore in-game
 

@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="Habilidade" format=3]
+
+[ext_resource type="Script" path="res://Scripts/Combat/Dados/EfeitoDeHabilidade.cs" id="1_ura3l"]
+[ext_resource type="Script" path="res://Scripts/Combat/Dados/Habilidade.cs" id="2_2vxao"]
+
+[sub_resource type="Resource" id="Resource_7qhnk"]
+script = ExtResource("1_ura3l")
+Efeito = 5
+
+[resource]
+script = ExtResource("2_2vxao")
+Nome = "Voz amaldiçoada"
+Descricao = "Causa dano em área e aplica efeito de raio."
+CustoDeFoco = 4
+Alcance = 3
+RaioDaArea = 1
+DanoMinimo = 2
+DanoMaximo = 4
+Forma = 1
+Efeitos = Array[ExtResource("1_ura3l")]([SubResource("Resource_7qhnk")])

@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="Habilidade" format=3]
+
+[ext_resource type="Script" path="res://Scripts/Combat/Dados/EfeitoDeHabilidade.cs" id="1_q0mec"]
+[ext_resource type="Script" path="res://Scripts/Combat/Dados/Habilidade.cs" id="2_1saia"]
+
+[sub_resource type="Resource" id="Resource_vgntm"]
+script = ExtResource("1_q0mec")
+Efeito = 11
+Duracao = 1
+
+[sub_resource type="Resource" id="Resource_pc6ea"]
+script = ExtResource("1_q0mec")
+Efeito = 7
+
+[resource]
+script = ExtResource("2_1saia")
+Nome = "Sermão divino"
+Descricao = "Atordoa o alvo e aplica luz."
+CustoDeFoco = 3
+Alcance = 2
+Forma = 1
+Efeitos = Array[ExtResource("1_q0mec")]([SubResource("Resource_vgntm"), SubResource("Resource_pc6ea")])

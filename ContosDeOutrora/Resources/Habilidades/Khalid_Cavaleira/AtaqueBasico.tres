@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="Habilidade" format=3]
+
+[ext_resource type="Script" path="res://Scripts/Combat/Dados/EfeitoDeHabilidade.cs" id="1_ihpx8"]
+[ext_resource type="Script" path="res://Scripts/Combat/Dados/Habilidade.cs" id="2_hay5a"]
+
+[resource]
+script = ExtResource("2_hay5a")
+Nome = "Ataque básico"
+Descricao = "Golpe de mangual."
+DanoMinimo = 3
+DanoMaximo = 6

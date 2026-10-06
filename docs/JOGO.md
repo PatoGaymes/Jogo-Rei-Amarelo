@@ -27,6 +27,9 @@ Isométrica, **girando em torno do personagem**, que fica sempre no centro.
 - **Q** gira anti-horário, **E** gira horário — 45° por toque, com transição suave
 - Poder girar a câmera é **mecânica de jogo**, não enfeite: serve para olhar atrás de paredes e
   descobrir o que está escondido
+- **No combate** (06/10/2026): a câmera se aproxima suavemente ao começar a luta (de 9 para 8 m, sem
+  corte de tela), acompanha quem está na vez, continua girando com Q/E e a roda do mouse afasta e
+  aproxima (de 5 a 16 m). Ao terminar a luta, volta à exploração e cola de novo no personagem.
 
 ### Cenário: objetos 2D que encaram a câmera (30/09/2026)
 
@@ -76,7 +79,7 @@ em Baldur's Gate e Divinity. A entrada no combate é a **câmera se aproximando*
 Metal Gear antigos — e nunca um corte com tela preta.
 
 Isso dá continuidade: o cenário, a posição dos inimigos e os obstáculos do mapa continuam valendo
-durante a luta.
+durante a luta. Desde 06/10/2026 a luta é em **hexágonos**, no estilo do Pit People — ver "Combate".
 
 ---
 
@@ -123,22 +126,147 @@ gameplay (Amana, Gael, Jedara, Varossa, Rosaria) **não precisam** de lore exten
 
 ## Combate
 
-> A **Árvore de Habilidades é a fonte oficial**, não o GDD. As seções de combate e status do GDD
-> estão desatualizadas e já levam aviso.
+> **Desde 06/10/2026 a documentação do projeto (esta) vale mais que a do Drive** quando as duas
+> divergem — com exceções indicadas pela equipe (a primeira: o atributo Iniciativa, que veio do GDD
+> do Drive). A Árvore de Habilidades continua sendo a lista oficial de habilidades, efeitos e
+> condições; as decisões abaixo, tomadas pelo PO em 06/10/2026, corrigem o que ela dizia sobre
+> ações, Vanguarda e o recurso das habilidades. A versão corrigida foi para a pasta **Revisão** do
+> Drive.
 
-### As 5 ações do turno
+> **Os números do combate são simbólicos.** O balanceamento ainda está sendo feito; o que existe
+> hoje serve para testar a mecânica, as animações e a jogabilidade.
 
-**Atacar · Habilidades · Defender · Itens · Fugir**
+### Como é a luta — hexágonos no próprio mapa (06/10/2026)
 
-**1 ação por turno**, salvo item ou habilidade que contorne isso.
+Referência de disposição e movimentação: **Pit People**. A luta acontece **no lugar do mapa onde
+começou**, como no Baldur's Gate 3: o cenário daquele ponto é o campo de batalha, com terreno mais
+alto e mais baixo, obstáculos e construções valendo.
 
-**Conversar foi removida** (não seria viável em boa parte do jogo), junto com Enganar, Ameaçar,
-Furtar e Expor. **Não existe ação de "mover"**: a movimentação na formação acontece pelas próprias
-habilidades (*Avanço Tático* avança e empurra, etc.).
+- O chão é dividido em **casas hexagonais** (1 m do centro à ponta; 1,73 m de uma casa à vizinha).
+- **Os hexágonos só aparecem durante o combate**, numa área de 9 casas em volta da luta.
+- **A grade é fixa por mapa**: é calculada uma vez quando a fase carrega (no sandbox, 1.863 casas em
+  ~0,3 s), e não na hora em que a luta começa. Assim os hexágonos caem sempre nos mesmos lugares e
+  não ficam cortados de um jeito diferente a cada luta. Cada mapa tem um nó `GradeDeCombate`; quem
+  monta a fase confere a grade inteira com **F6** e, se uma porta ou rampa ficar sem passagem, ajusta
+  a posição do nó (no sandbox ela foi deslocada 0,5 m para oeste, para a rampa funcionar).
+- **Andares e rampas contam.** O mesmo hexágono pode ter uma casa no térreo e outra no andar de cima.
+  Dá para subir de uma casa para a vizinha num degrau de até 0,6 m, ou numa rampa de até 1,2 m por
+  casa (a rampa do sandbox tem 20°: 0,63 m por casa).
+- **Parede** some com a casa só se encostar no centro dela; **árvore e outros obstáculos ocupam a casa
+  inteira** em que estão. Topo de caixa e de muro existe, mas não se liga ao chão.
+
+### O turno
+
+As **5 ações**: **Atacar · Habilidades · Defender · Itens · Fugir** — 1 por turno, salvo item ou
+habilidade que contorne isso.
+
+**Mover (06/10/2026):** todos, aliados e inimigos, andam **até 3 casas por turno**, e andar **não
+gasta a ação**. Dá para andar, atacar e andar o resto. Enraizado impede de andar naquele turno;
+Atordoado perde o turno inteiro. Dá para passar pela casa de um aliado, mas não parar nela; casa de
+inimigo bloqueia.
+
+**Alcance em casas.** O alcance de ataques e habilidades é contado em casas. Ataque corpo a corpo não
+alcança outro andar (mais de 1,2 m de diferença); nada atravessa parede. Árvore não bloqueia a visão
+(mesma regra da exploração).
+
+**A animação do golpe encosta no alvo.** O ataque é montado a partir da distância até o alvo e de quem
+é o alvo: no corpo a corpo, o atacante anda até a **distância de encaixe** da arma (espada 0,9 m,
+lança 1,6 m) e só então golpeia; à distância, o disparo voa até o alvo. **O dano aparece no instante
+do impacto.** Hoje isso é feito com a arte provisória (um passo, um tranco, uma bolinha voando); os
+quadros de ataque de verdade usam o mesmo plano quando chegarem — o PO vai detalhar essa parte.
+
+| Ação | Hoje |
+|---|---|
+| Atacar | O ataque básico da ficha. Atalho: clicar direto num inimigo marcado em vermelho; se ele estiver fora do alcance, o personagem anda até uma casa de onde alcança (se o movimento der) e ataca |
+| Habilidades | As 3 habilidades padrão de cada personagem, com custo em Foco e alcance |
+| Defender | +3 de Reação e +3 de Robustez até o começo do próximo turno (provisório) |
+| Itens | Botão presente; o inventário ainda não existe |
+| Fugir | Botão presente, **não faz nada** (em desenvolvimento, PO 06/10/2026) |
+
+### Quem entra na luta
+
+**Os dois lados podem começar.** O inimigo começa quando chega no alcance da arma dele (o aviso
+`CombateDeveComecar`); o jogador começa **clicando num inimigo** a até 8 m e à vista. Emboscada e
+ataque surpresa vêm depois (o PO vai explicar).
+
+**O grito de aviso.** Cada inimigo tem um alcance de grito (campo `AlcanceDoGrito` da ficha, 10 m no
+Rasgador, provisório). Quando a luta começa com ele, **todo inimigo dentro desse alcance e sem parede
+no meio entra junto** — funciona como a detecção, não atravessa parede. Quem entrou pelo grito
+**não grita de novo**: não há efeito em cadeia, então não dá para puxar o mapa inteiro numa luta só.
+Futuramente o "início de combate furtivo" vai mexer nesse alcance.
+
+Os inimigos que **não** entraram na luta ficam parados onde estão até ela acabar (provisório — ver
+as perguntas no fim).
+
+**A equipe: 5 personagens.** Na exploração só o líder anda pelo mapa; quando a luta começa, os outros
+quatro entram nas casas da **formação** montada no menu de equipe.
+
+**Menu de equipe (tecla T, fora do combate).** Por enquanto só a formação: uma mini-região de 19
+hexágonos onde dá para **arrastar** cada personagem para outra casa (soltar em cima de alguém troca os
+dois). A frente da formação (para cima no menu) é **virada para o lado dos inimigos** quando a luta
+começa, de 60 em 60 graus. Se a casa prevista tiver parede, árvore ou alguém no mapa, o personagem
+fica na casa livre mais próxima — **os obstáculos contam**.
+
+**Atacar primeiro num diálogo.** Quando o jogador dá o primeiro golpe num NPC, quem atacou ganha
+**Vantagem só no primeiro ataque** (só ele). O combate já aceita isso; falta o sistema de diálogo.
+
+### Iniciativa
+
+No começo da luta **cada um rola um dado de 20 lados e soma o atributo Iniciativa**; a ordem vai do
+maior para o menor, misturando aliados e inimigos. **Quem tira 20 no dado joga 2 turnos seguidos
+sempre que chega a vez dele.** Empate: ganha quem tem mais Iniciativa; persistindo, sorteio.
+
+> O que acontece com quem tira **1** ainda não foi definido — a frase da decisão ficou incompleta.
+> Por enquanto, nada (o registro só avisa "tirou 1").
+
+### Vanguarda (06/10/2026)
+
+**Vanguarda é a condição de quem protege**; quem é protegido fica com a condição **Protegido**:
+
+- todo o dano que o protegido receberia vai para a Vanguarda;
+- em **dano de área**, metade fica com o protegido e metade vai para a Vanguarda;
+- dá para proteger **vários aliados, um por uso** (1 por turno, já que é 1 ação).
+
+Provisório: a proteção da habilidade Protetora dura 3 rodadas, e os efeitos do golpe (veneno etc.)
+continuam caindo no protegido — só o dano é desviado.
+
+### Foco
+
+**O recurso das habilidades é o Foco** (PO, 06/10/2026). A Árvore falava em "gastar e recuperar
+energia"; a versão corrigida diz Foco. O **atributo** Energia continua sendo o que reduz o custo de
+Foco (GDD). Provisório: o Foco começa cheio em cada luta.
+
+### Morte, sanidade e fim de jogo
+
+- **Vida em 0: morre.** Inimigo morto sai do mapa (não há respawn na demo). Membro da equipe morto fica
+  morto. Se o líder morre e o grupo vence, o próximo vivo assume e passa a andar pelo mapa.
+- A **vida** e a **sanidade** continuam de uma luta para a outra.
+- **Grupo inteiro caído: tela de fim de jogo**, perguntando se o jogador quer voltar ao último save ou
+  ao menu. São provisórios: como o save e o menu ainda não existem, os dois botões recomeçam o mapa
+  com a equipe inicial.
+
+**Sanidade baixa — alucinações (regra definida em 06/10/2026, ainda não implementada):**
+
+| Sanidade | O que acontece |
+|---|---|
+| 30% ou menos (por enquanto) | Alucinações aparecem no mapa e vagam de forma neutra: não atacam se o jogador não atacar. No combate, entram na iniciativa normalmente, mas ficam paradas ou só andam a esmo |
+| 0 | Todas ficam hostis: atacam e perseguem o jogador, com a mesma mecânica dos inimigos comuns |
+
+As alucinações são vultos/borrões pretos, cópias **mais fracas em tudo** dos inimigos que existem no
+jogo (dependendo da área).
+
+### O ambiente no combate
+
+Em desenvolvimento (WIP): a névoa e a escuridão vão afetar o combate, além de outras mudanças que a
+equipe ainda está desenhando. Hoje elas continuam valendo durante a luta como na exploração, e a grade
+é desenhada por cima delas para continuar legível.
 
 ### Formação
 
-5 posições. A posição importa: há habilidades que só funcionam em certos lugares da formação.
+A antiga "formação de 5 posições" deu lugar à formação em hexágonos do menu de equipe (ver "Quem entra
+na luta"). As habilidades que falam de "adjacente", "a sua frente", "primeira posição", "empurrar"
+passam a valer na grade: adjacente é a casa vizinha; empurrar afasta o alvo casa a casa (se não houver
+casa livre atrás, ele não sai do lugar).
 
 ### Efeitos de status
 
@@ -150,16 +278,20 @@ habilidades (*Avanço Tático* avança e empurra, etc.).
 ### Condições
 
 Desarmado, Desvantagem, Vantagem, Atordoado, Enraizado, **Vulnerável** (não pode receber buffs),
-Couraça, **Vanguarda** (protege os aliados e toma o dano no lugar deles), Furtivo, Cego e
-**Espinhos** (devolve parte do dano recebido).
+Couraça, **Vanguarda** (quem protege — ver acima) e **Protegido**, Furtivo, Cego e **Espinhos**
+(devolve parte do dano recebido).
 
 ### Atributos
 
-- **Corpo** — vida, Precisão, **Furtividade**, Reação, Robustez
+- **Corpo** — vida, Precisão, **Furtividade**, **Iniciativa**, Reação, Robustez
 - **Mente** — sanidade, Vontade
 - **Essência** — foco, Energia, Aura
 
 **PF (Pontos de Foco)** é o recurso gasto pelas habilidades.
+
+> **Iniciativa** entrou no GDD do Drive em 06/10/2026 ("atributo focado exclusivamente para
+> iniciativa em combates"), na lista logo depois de Furtividade. O GDD não diz de qual grupo ela é;
+> aqui ficou em Corpo, pela posição na lista.
 
 > **Decisão do PO em 18/09/2026:** **Lábia, Intuição e Análise foram removidas** de vez. Elas só
 > serviam à ação Conversar, que saiu do jogo. Não entram na ficha do personagem.
@@ -168,7 +300,8 @@ Couraça, **Vanguarda** (protege os aliados e toma o dano no lugar deles), Furti
 
 A Furtividade **ficou**, e agora faz duas coisas:
 
-1. **Em combate:** reduz o agro inimigo, como já fazia.
+1. **Em combate:** reduz o agro inimigo. Implementado na escolha de alvo dos inimigos: cada ponto de
+   Furtividade faz o personagem parecer meia casa mais longe.
 2. **Na exploração:** entra na **detecção dos inimigos** — e se soma a **agachar**, que é o efeito
    que o jogador liga na hora (ver "Agachar" mais abaixo). Cada inimigo tem um **raio de agro** —
    a distância em que percebe o personagem. Quanto maior a Furtividade, **menor fica esse raio**,
@@ -176,6 +309,87 @@ A Furtividade **ficou**, e agora faz duas coisas:
 
 Isso liga a Furtividade direto à mecânica de **perseguidores** e às **safe zones** da demo: um
 personagem furtivo consegue atravessar trajetos vigiados que um barulhento não conseguiria.
+
+### O que foi implementado (06/10/2026)
+
+**Equipe de teste:** Uzhan (Desgarrado, líder), Khalid (Cavaleira), Lancelot (Escudeiro), Emi
+(Caçadora) e Tao (Peregrino), cada um com ataque básico e as 3 habilidades padrão da Árvore. Inimigo:
+o Rasgador (ataque básico). Todos são arquivos de dados em `Resources/`, para o game designer ajustar
+sem programar.
+
+| Personagem | Ataque básico | Habilidades padrão (Foco · alcance) |
+|---|---|---|
+| Desgarrado | 4–7, corpo a corpo | Postura oculta (2 · em si) · Rasga-ossos (3 · 1) · Alma imaculada (2 · em si) |
+| Cavaleira | 3–6, corpo a corpo | Protetora (2 · 3) · Avanço tático (3 · 3) · Compasso (2 · em si) |
+| Escudeiro | 3–5, lança, alcance 2 | Lança sagrada (2 · 2) · Fogo acolhedor (3 · 3) · Sermão divino (3 · 2) |
+| Caçadora | 3–6, arco, alcance 5 | Embuste (2 · 4) · Técnica secreta (2 · em si) · Matadora de Yokais (3 · 5) |
+| Peregrino | 2–5, disparo, alcance 3 | Energia comprimida (2 · 3) · Transfiguração térmica (3 · 4) · Voz amaldiçoada (4 · 3, área 1) |
+| Rasgador | 3–6, garras | — |
+
+**Números simbólicos** (em `Scripts/Combat/RegrasDeCombate.cs`):
+
+| Regra | Valor provisório |
+|---|---|
+| Chance de acerto | 75% + 5% por ponto de Precisão do atacante acima da Reação do alvo (entre 10% e 95%) |
+| Vantagem / Desvantagem | ±15% de acerto e ±25% de dano |
+| Cego | −30% de acerto |
+| Dano | sorteado entre o mínimo e o máximo da habilidade, menos a Robustez do alvo (mínimo 1). Crítico + dano máximo ignora a Robustez |
+| Veneno / Fogo | 2 de dano por acúmulo no começo do turno; perde 1 acúmulo por turno. Fogo com 5+ acúmulos passa 1 aos vizinhos |
+| Sangramento | 1 por acúmulo, até o triplo quanto menos vida o alvo tem |
+| Gelo | atordoa 1 turno; ao sair, 3 de dano |
+| Corrosão | −1 de Robustez por acúmulo (até 5) |
+| Raio | trava 1 habilidade ao acaso por acúmulo (até 2), por 2 rodadas |
+| Escuridão | −10% de vida máxima por acúmulo (até 2) |
+| Luz | −25% de cura recebida por acúmulo (até 3) |
+| Couraça | bloqueia um golpe inteiro (os efeitos do golpe ainda pegam) |
+| Espinhos | devolve metade do dano recebido |
+
+**Efeitos que aparecem nas habilidades e não são explicados em lugar nenhum** (pedido do PO em
+06/10/2026). Os que as habilidades padrão usam receberam um valor provisório; os outros ainda não
+existem no jogo:
+
+| Efeito | Onde aparece | Hoje |
+|---|---|---|
+| Maldição | Postura oculta, Destrinchar (Desgarrado) | aplicada pelo contra-ataque da Postura oculta, **sem efeito** |
+| Postura oculta | Desgarrado | dano −30%, +2 Reação, +2 Robustez, contra-ataca golpes corpo a corpo com metade do dano |
+| Esquiva | Técnica secreta, Um contra todos, Navalhas voadoras... | "+3 de Reação até o próximo turno" na Técnica secreta |
+| Marca / marcado | Flanquear, Morte lenta, Prismático, Acusação | não implementado |
+| Medo | Cheiro de medo, Maré de medo | não implementado |
+| Náusea | Corpo doente | não implementado |
+| Taunt (provocação) | Todos de uma vez | não implementado |
+| Fúria | Poder e fúria, Falange, Todos de uma vez | não implementado |
+| Camuflagem | Sentidos Shinobi | não implementado (é o Furtivo?) |
+| Frio / congelamento | Sangue frio, Fratura terminal | não implementado (é o Gelo?) |
+| Indestrutível | Indestrutível (Desgarrado) | não implementado |
+| Dano verdadeiro | várias | não implementado (ignora a defesa?) |
+| Dano massivo / margem de dano massivo | várias | não implementado (é o dano máximo?) |
+| Vida temporária, regeneração, sobre-cura, roubo de vida, corta cura | várias | não implementado |
+| Invencível | Exaltação | não implementado |
+| Imunidade a status | "Inútil", Mandíbula firme | não implementado |
+| Estatura (grande, membro) | Propagação, Matador de colossos, Necrosar | não implementado |
+| Movimento como número ("perde 1 de movimento", "+1 movimento") | Pesado, Pés arrastados | **agora tem sentido**: são as 3 casas por turno |
+
+**Decisões provisórias tomadas para dar para testar** (a confirmar): Transfiguração térmica sorteia
+entre Gelo e Fogo; Técnica secreta recua até 2 casas; Alma imaculada mostra quem cada inimigo vai
+atacar, e ele cumpre; Protetora dura 3 rodadas.
+
+### Testar o combate
+
+No sandbox (`Scenes/Levels/Sandbox.tscn`), que começa no escuro: **F4 duas vezes** deixa o mapa limpo.
+Há um grupo de dois inimigos parados a oeste do ponto de partida, perto o bastante para um ouvir o grito
+do outro.
+
+| Tecla / clique | O que faz |
+|---|---|
+| T | Menu de equipe (fora do combate) |
+| Clique num inimigo a até 8 m | Começa a luta |
+| Clique numa casa azul | Anda até ela (a casa mais clara mostra o caminho) |
+| Clique num inimigo em vermelho | Ataque básico |
+| Botões Atacar / Habilidades | Escolhe o golpe; as casas dos alvos válidos acendem; a área aparece em laranja |
+| Botão direito ou X | Cancela a escolha |
+| Enter ou "Encerrar turno" | Passa a vez |
+| Q / E e roda do mouse | Giram e afastam a câmera durante a luta |
+| F6 | Mostra a grade do mapa inteiro (fora do combate) |
 
 ---
 
@@ -550,7 +764,9 @@ tirá-la da camada considerada.
 A cena `Scenes/Levels/Sandbox.tscn` é o mapa de testes: **70 x 70 m**, com uma casa de dois
 andares e rampa (para testar interiores e elevação), caixas e divisórias soltas, **16 pinheiros e
 uma estrutura de muro de pedra sem teto** no estilo Don't Starve (ver "Cenário", no começo deste
-documento), e **dois inimigos** — um em ronda por cinco pontos e um parado em Idle dentro da casa.
+documento), e **quatro inimigos** — um em ronda por cinco pontos, um parado em Idle dentro da casa e,
+desde 06/10/2026, um grupo de dois parados a oeste do ponto de partida, para testar o grito de aviso
+do combate.
 **F3 liga e desliga o desenho dos raios; F4 troca o ambiente; L acende e apaga a lanterna.**
 
 > **Ao montar uma sala:** o nó que guarda os pontos da ronda deve se chamar **`MarcasDaRonda`** —
@@ -573,7 +789,6 @@ números.
 ### Ainda não implementado
 
 - **Ouvir** — a estrutura prevê "última posição percebida", mas só a visão alimenta isso hoje
-- **Início do combate** — ao chegar na distância de encontro o inimigo **para, encara o jogador e
-  emite o aviso `CombateDeveComecar`**, uma vez por encontro. Quem for fazer o combate por turnos
-  escuta esse aviso. Até lá ele fica parado ali de arma em punho: não é travamento, é a espera. Se
-  o jogador correr, ele volta a perseguir; se sumir, ele desiste e retoma a ronda
+- ~~**Início do combate**~~ — **feito em 06/10/2026.** Ao chegar na distância de encontro o inimigo
+  emite o aviso `CombateDeveComecar`, uma vez por encontro, e o combate (nó global "Combate") começa
+  a luta ali mesmo. Ver a seção "Combate".

@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="Habilidade" format=3]
+
+[ext_resource type="Script" path="res://Scripts/Combat/Dados/EfeitoDeHabilidade.cs" id="1_eefxv"]
+[ext_resource type="Script" path="res://Scripts/Combat/Dados/Habilidade.cs" id="2_rtwtv"]
+
+[sub_resource type="Resource" id="Resource_d50et"]
+script = ExtResource("1_eefxv")
+Efeito = 16
+Duracao = 3
+
+[resource]
+script = ExtResource("2_rtwtv")
+Nome = "Protetora"
+Descricao = "Aplica \"Vanguarda\" a um aliado: a Cavaleira vira a Vanguarda e o aliado, o Protegido. Todo o dano do protegido vai para ela; em dano de área, metade para cada um.
+(Provisório: dura 3 rodadas.)"
+CustoDeFoco = 2
+Alvo = 1
+Alcance = 3
+Forma = 2
+Efeitos = Array[ExtResource("1_eefxv")]([SubResource("Resource_d50et")])

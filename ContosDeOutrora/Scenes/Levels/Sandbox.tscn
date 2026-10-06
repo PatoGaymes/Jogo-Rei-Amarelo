@@ -8,6 +8,7 @@
 [ext_resource type="Script" path="res://Scripts/Systems/FonteDeLuz.cs" id="6_luz"]
 [ext_resource type="PackedScene" path="res://Scenes/Cenarios/Pinheiro.tscn" id="7_pinheiro"]
 [ext_resource type="PackedScene" path="res://Scenes/Cenarios/MuroDePedra.tscn" id="8_muro"]
+[ext_resource type="Script" path="res://Scripts/Combat/GradeDeCombate.cs" id="9_grade"]
 
 [sub_resource type="NavigationMesh" id="NavMesh"]
 geometry_parsed_geometry_type = 1
@@ -669,9 +670,25 @@ ModoInicial = 4
 ChanceDeIdlePorSegundo = 0.0
 TempoEmIdle = 0.0
 
+[node name="InimigoGrupo1" parent="." instance=ExtResource("2_inimigo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -19, 0.1, 14.5)
+ModoInicial = 4
+ChanceDeIdlePorSegundo = 0.0
+TempoEmIdle = 0.0
+
+[node name="InimigoGrupo2" parent="." instance=ExtResource("2_inimigo")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18, 0.1, 18.5)
+ModoInicial = 4
+ChanceDeIdlePorSegundo = 0.0
+TempoEmIdle = 0.0
+
 [node name="AmbienteDaFase" type="Node" parent="."]
 script = ExtResource("5_ambiente")
 Tipo = 2
+
+[node name="GradeDeCombate" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 0, 0)
+script = ExtResource("9_grade")
 
 [node name="Luzes" type="Node3D" parent="."]
 

@@ -107,6 +107,34 @@ public partial class PlayerIsometrico : CharacterBody3D, IPersonagemQueOlha
 	private AmbienteDaFase? _ambiente;
 	private FonteDeLuz? _lanterna;
 
+	// Alteração de IA - Revisar (06/10/2026)
+	// O que faz: liga e desliga o controle pelo teclado — durante o combate, quem move o personagem
+	//            é o combate, de casa em casa.
+	// Por quê: sem isso, as teclas de andar continuariam empurrando o personagem para fora da casa
+	//          dele no meio da luta.
+	public bool ControladoPeloCombate { get; set; }
+
+	// Alteração de IA - Revisar (06/10/2026)
+	// O que faz: vira o personagem para um ângulo (o combate usa para encarar o alvo de um golpe).
+	public void OlharPara(float graus)
+	{
+		DirecaoOlhando = Mathf.PosMod(graus, 360.0f);
+	}
+
+	// Alteração de IA - Revisar (06/10/2026)
+	// O que faz: troca o desenho do personagem pelo de outra ficha.
+	// Por quê: quando o líder morre e o grupo vence, o próximo personagem vivo passa a andar pelo
+	//          mapa. A altura de referência do desenho é guardada de novo para o agachar continuar certo.
+	public void TrocarDesenho(FichaDeCombatente ficha)
+	{
+		if (_sprite is AnimatedSprite3D animado)
+		{
+			_alturaNormalDoDesenho = CorpoDeCombate.AplicarDesenho(animado, ficha);
+			animado.Modulate = Colors.White;
+			animado.Scale = Vector3.One;
+		}
+	}
+
 	// Alteração de IA - Revisar (30/09/2026)
 	// O que faz: acha a lanterna do personagem — a primeira fonte de luz presa a ele.
 	// Por quê: procurada pelo tipo, e não pelo nome, para funcionar com tocha, lampião ou o que a
@@ -177,6 +205,20 @@ public partial class PlayerIsometrico : CharacterBody3D, IPersonagemQueOlha
 
 	public override void _PhysicsProcess(double delta)
 	{
+		// Alteração de IA - Revisar (06/10/2026)
+		// O que faz: no combate, o personagem fica em pé e não lê as teclas — só o desenho continua
+		//            sendo atualizado (para desfazer um agachado que estivesse no meio).
+		if (ControladoPeloCombate)
+		{
+			Agachado = false;
+			if (_sensor != null)
+			{
+				_sensor.Agachado = false;
+			}
+			AtualizarDesenhoAgachado((float)delta);
+			return;
+		}
+
 		// Alteração de IA - Revisar
 		// O que faz: lê as teclas de andar e monta a direção em duas dimensões.
 		// Por quê: X é esquerda/direita e Y é frente/trás vistos da tela — ainda não é a

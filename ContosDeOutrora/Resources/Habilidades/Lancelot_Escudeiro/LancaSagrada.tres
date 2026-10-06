@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="Habilidade" format=3]
+
+[ext_resource type="Script" path="res://Scripts/Combat/Dados/EfeitoDeHabilidade.cs" id="1_u7tf7"]
+[ext_resource type="Script" path="res://Scripts/Combat/Dados/Habilidade.cs" id="2_lnx5e"]
+
+[sub_resource type="Resource" id="Resource_j2gbx"]
+script = ExtResource("1_u7tf7")
+Efeito = 7
+
+[resource]
+script = ExtResource("2_lnx5e")
+Nome = "Lança sagrada"
+Descricao = "Causa dano e aplica luz."
+CustoDeFoco = 2
+Alcance = 2
+DanoMinimo = 3
+DanoMaximo = 6
+DistanciaDeEncaixe = 1.6
+Efeitos = Array[ExtResource("1_u7tf7")]([SubResource("Resource_j2gbx")])

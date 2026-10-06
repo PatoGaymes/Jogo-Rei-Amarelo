@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="FichaDeCombatente" format=3]
+
+[ext_resource type="Resource" path="res://Resources/Habilidades/Khalid_Cavaleira/AtaqueBasico.tres" id="1_amdbl"]
+[ext_resource type="Script" path="res://Scripts/Combat/Dados/Habilidade.cs" id="2_qu8d3"]
+[ext_resource type="Resource" path="res://Resources/Habilidades/Khalid_Cavaleira/Protetora.tres" id="3_aa720"]
+[ext_resource type="Resource" path="res://Resources/Habilidades/Khalid_Cavaleira/AvancoTatico.tres" id="4_6f4xm"]
+[ext_resource type="Resource" path="res://Resources/Habilidades/Khalid_Cavaleira/Compasso.tres" id="5_6be1d"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Khalid_Cavaleira/Provisorio/Khalid_Cavaleira.webp" id="6_oslmp"]
+[ext_resource type="Script" path="res://Scripts/Combat/Dados/FichaDeCombatente.cs" id="7_cb5hh"]
+
+[resource]
+script = ExtResource("7_cb5hh")
+Nome = "Khalid de Nortumbria"
+Classe = "Cavaleira"
+Imagem = ExtResource("6_oslmp")
+Vida = 30
+Iniciativa = 1
+Robustez = 2
+Vontade = 1
+AtaqueBasico = ExtResource("1_amdbl")
+Habilidades = Array[ExtResource("2_qu8d3")]([ExtResource("3_aa720"), ExtResource("4_6f4xm"), ExtResource("5_6be1d")])

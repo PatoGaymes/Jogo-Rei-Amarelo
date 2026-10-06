@@ -2,8 +2,9 @@
 
 A Regra 3 diz que o Claude **nunca altera** um documento oficial do Trello ou do Google Drive. Quando
 ele identificar algo que precisa ser corrigido lá, a sugestão vem para cá, e um dev decide se
-sobe ou não. (Desde 01/10/2026, alteração de documento já pronta pode ir direto para a pasta
-"Para revisão" do Drive, quando o Claude tiver acesso a ele — ver a Regra 3 no `CLAUDE.md`.)
+sobe ou não. Correção de documento já pronta vai para a pasta **Pato Games/Revisão** do Drive (desde
+06/10/2026 o Claude tem acesso a ela) — ver a Regra 3 no `CLAUDE.md`. Aqui ficam as **perguntas**:
+o que precisa de decisão da equipe antes de virar texto.
 
 **Nada nesta página foi aplicado nos sites.**
 
@@ -109,4 +110,23 @@ atributo deixou de ser secundário e virou escolha de estilo de jogo.
 
 # ⚠️ PENDENTES
 
-Nenhuma pendência aberta no momento.
+## 06/10/2026 — Combate básico: o que ficou provisório ou em aberto
+
+Tudo isto já funciona no jogo com um valor provisório (ver `docs/JOGO.md`, seção "Combate"); a
+equipe só precisa dizer se fica assim ou como deve ser.
+
+| # | Pergunta | Como está hoje |
+|---|---|---|
+| 1 | **Quem tira 1 no dado de iniciativa** — o que acontece? (a frase da decisão ficou incompleta) | Nada; o registro só avisa "tirou 1" |
+| 2 | Os inimigos que **não** entraram na luta: ficam parados até ela acabar, continuam a ronda, ou podem entrar se perceberem a luta? | Ficam parados onde estão |
+| 3 | A **vida e a sanidade** continuam de uma luta para a outra? E o **Foco**: começa cheio a cada luta ou também continua? | Vida e sanidade continuam; Foco começa cheio |
+| 4 | **Vanguarda**: quanto tempo dura a proteção da Protetora? Os **efeitos** do golpe (veneno, enraizar) também vão para a Vanguarda, ou só o dano? | 3 rodadas; só o dano vai para a Vanguarda |
+| 5 | **Transfiguração térmica** "aplica gelo ou fogo": o jogador escolhe, ou é sorteado? | Sorteado |
+| 6 | **Alucinações** (sanidade em 30% ou menos): a sanidade que conta é a de quem — do líder, da média do grupo, ou de cada personagem? | Ainda não implementado |
+| 7 | Na exploração, os outros 4 da equipe **seguem o líder** pelo mapa, ou só aparecem quando a luta começa? | Só aparecem na luta, nas casas da formação |
+| 8 | Começar a luta **pelo clique**: a que distância o jogador pode atacar um inimigo? (o ataque surpresa vem depois) | Até 8 m, com o inimigo à vista |
+| 9 | Os efeitos que aparecem nas habilidades mas não são explicados (lista em `docs/JOGO.md`): maldição, medo, náusea, marca, fúria, taunt, camuflagem, frio, dano verdadeiro, dano massivo... | Só a maldição existe, sem efeito |
+| 10 | **Nomes com duas grafias** na Árvore: Pouco Espaço / Espaço aberto; Fera / Besta vampírica; Negrosar / Necrosar; dois "Cruel" no Desgarrado; "Cartas de baralho" / "Roda dos 6 Desejos" na Xamã | Não alterados |
+| 11 | **Rosaria**: "Aberração" (Árvore e projeto) ou "Abominação" (Demo e Interações)? | "Aberração" |
+| 12 | **Iniciativa** é atributo de Corpo, Mente ou Essência? | Corpo (pela posição na lista do GDD) |
+| 13 | A **Criança** (recrutável na Demo) não tem árvore de habilidades | — |

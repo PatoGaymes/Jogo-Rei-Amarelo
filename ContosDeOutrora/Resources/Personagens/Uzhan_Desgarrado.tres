@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="FichaDeCombatente" format=3]
+
+[ext_resource type="Resource" path="res://Resources/Habilidades/Uzhan_Desgarrado/AtaqueBasico.tres" id="1_6eyhg"]
+[ext_resource type="SpriteFrames" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Map/Uzhan_Desgarrado_Mapa.tres" id="1_neujo"]
+[ext_resource type="Script" path="res://Scripts/Combat/Dados/Habilidade.cs" id="2_neujo"]
+[ext_resource type="Resource" path="res://Resources/Habilidades/Uzhan_Desgarrado/PosturaOculta.tres" id="3_nlwwo"]
+[ext_resource type="Resource" path="res://Resources/Habilidades/Uzhan_Desgarrado/RasgaOssos.tres" id="4_ily6l"]
+[ext_resource type="Resource" path="res://Resources/Habilidades/Uzhan_Desgarrado/AlmaImaculada.tres" id="5_eg1la"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Uzhan_Desgarrado/Provisorio/Uzhan_Desgarrado.webp" id="6_t8msu"]
+[ext_resource type="Script" path="res://Scripts/Combat/Dados/FichaDeCombatente.cs" id="7_ynqoq"]
+
+[resource]
+script = ExtResource("7_ynqoq")
+Nome = "Uzhan N'Daka"
+Classe = "Desgarrado"
+Animacoes = ExtResource("1_neujo")
+Imagem = ExtResource("6_t8msu")
+Vida = 26
+Precisao = 2
+Furtividade = 1
+Iniciativa = 2
+Reacao = 1
+Robustez = 1
+Vontade = 1
+AtaqueBasico = ExtResource("1_6eyhg")
+Habilidades = Array[ExtResource("2_neujo")]([ExtResource("3_nlwwo"), ExtResource("4_ily6l"), ExtResource("5_eg1la")])

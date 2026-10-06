@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="EquipeInicial" format=3]
+
+[ext_resource type="Script" path="res://Scripts/Combat/Dados/FichaDeCombatente.cs" id="1_diqlo"]
+[ext_resource type="Resource" path="res://Resources/Personagens/Uzhan_Desgarrado.tres" id="2_suivv"]
+[ext_resource type="Resource" path="res://Resources/Personagens/Khalid_Cavaleira.tres" id="3_k7bu5"]
+[ext_resource type="Resource" path="res://Resources/Personagens/Lancelot_Escudeiro.tres" id="4_s5fhj"]
+[ext_resource type="Resource" path="res://Resources/Personagens/Emi_Cacadora.tres" id="5_tahci"]
+[ext_resource type="Resource" path="res://Resources/Personagens/Tao_Peregrino.tres" id="6_oucd5"]
+[ext_resource type="Script" path="res://Scripts/Combat/Dados/EquipeInicial.cs" id="7_rlo5r"]
+
+[resource]
+script = ExtResource("7_rlo5r")
+Membros = Array[ExtResource("1_diqlo")]([ExtResource("2_suivv"), ExtResource("3_k7bu5"), ExtResource("4_s5fhj"), ExtResource("5_tahci"), ExtResource("6_oucd5")])
+Formacao = Array[Vector2i]([Vector2i(0, 0), Vector2i(0, -1), Vector2i(0, 1), Vector2i(-1, 1), Vector2i(1, 0)])

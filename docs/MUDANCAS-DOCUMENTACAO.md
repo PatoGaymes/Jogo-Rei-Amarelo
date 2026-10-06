@@ -1,9 +1,54 @@
 # Mudanças aplicadas na documentação
 
 Registro do que foi alterado nos documentos oficiais e por quê. Os arquivos prontos ficam em
-`docs/para-repositorio/`, com a **formatação original preservada** — é só substituir no Drive.
+`docs/para-repositorio/` (a rodada de 06/10/2026 em `docs/para-repositorio/2026-10-06/`), com a
+**formatação original preservada** — o dev confere e sobe para a pasta Revisão do Drive.
 
-Para regerar: `python docs/ferramentas/atualizar-documentacao.py`
+Para regerar: `python docs/ferramentas/atualizar-documentacao.py` (18/09) e
+`python docs/ferramentas/revisao-2026-10-06.py --gdd "<GDD baixado do Drive>"` (06/10).
+
+---
+
+## 06/10/2026 — decisões de combate e grafias oficiais
+
+Base: a versão **atual do Drive** de cada documento (a Árvore está igual à de 18/09; o GDD do Drive
+ganhou o atributo Iniciativa em 06/10). Arquivos corrigidos em `docs/para-repositorio/2026-10-06/`,
+gerados por `python docs/ferramentas/revisao-2026-10-06.py --gdd "<GDD baixado do Drive>"`. A lista
+abaixo também foi para a pasta **Pato Games/Revisão** do Drive.
+
+**Por quê:** desde 06/10/2026 a documentação do projeto vale mais que a do Drive quando divergem (ver
+a Regra 3 do `CLAUDE.md`); o que estava diferente no Drive foi corrigido para revisão.
+
+### Árvores de Habilidades
+
+| Onde | Antes | Agora | Motivo |
+|---|---|---|---|
+| Ações | "Os personagens tem 4 ações: atacar/usar habilidades, usar itens, defender, fugir" | "Os personagens têm 5 ações: atacar, usar habilidades, usar itens, defender e fugir" | As 5 ações combinadas em 12/09 |
+| Ações (linhas novas, depois de "uma ação por turno") | — | Mover até 3 casas por turno sem gastar a ação · alcance contado em casas · iniciativa d20 + Iniciativa, quem tira 20 joga 2 turnos seguidos · o recurso das habilidades é o Foco | Decisões do PO em 06/10 |
+| Condição Vanguarda | "a unidade com essa condição é protegida de qualquer ataque lançado a ela" | "condição de quem protege. O aliado protegido fica 'Protegido': todo o dano que ele receberia vai para a Vanguarda; em dano de área, metade e metade. Dá para proteger vários aliados, um por uso" | Decisão do PO em 06/10 |
+| 14 descrições (Energia comprimida, Renovação, Manipulação de energia, Sangue grosso, Matriz encantada, Foco total, Destrinchar, Feitiço inato, Verde, Mago, Em nome do filho, Puritano, Caminhar dos anjos, Sacramento) | "recupera / gasta energia", "pontos de energia" | "recupera / gasta Foco", "pontos de Foco" | O recurso das habilidades é o Foco. Os **nomes** "Energia comprimida" e "Manipulação de energia" e o **atributo** Energia ficaram |
+| Louco (Xamã) | "sanidade da cartomante" | "sanidade da xamã" | Grafia oficial |
+| Título do Escudeiro | "-Escurdeiro-" | "-Escudeiro-" | Erro de digitação |
+
+### GDD
+
+| Onde | Antes | Agora | Motivo |
+|---|---|---|---|
+| Exploração | "A movimentação é de apenas para trás e frente" | "A movimentação é livre pelo mapa 3D isométrico, com a câmera girando em 8 ângulos em volta do personagem (referência: Don't Starve Together)" | O jogo virou 3D isométrico em 18/09 |
+| Sumário e título | "Thao A'Bajal (Peregrino)", "Thao desde cedo" | "Tao" | Grafia oficial |
+| Sumário | "Jedah, Filho de Tauron" | "Jedara" | Grafia oficial |
+| Título da Amana | "Amana K'Ushim(Cartomante)" | "Amana K'Ushim (Xamã)" | Grafia oficial |
+
+**Conferido antes de entregar:** a estrutura interna dos dois arquivos é igual à do original (estilos,
+sumário, numeração), o texto antigo sumiu e o que deveria ficar (lore, personagens, regiões) está lá.
+
+**Não mexido de propósito:** os erros de digitação dos nomes de habilidades (Pouco Espaço / Espaço
+aberto, Fera / Besta vampírica, Negrosar / Necrosar, os dois "Cruel" do Desgarrado) — nomes viram
+identificadores, e escolher o certo é da equipe. Ver as pendências em `SUGESTOES-PARA-DOCUMENTACAO.md`.
+
+**A Demo e Interações não tinham nada a corrigir.** (Interações chama a Rosaria de "Abominação", e a
+Demo fala em "Escudeiro e abominação"; a documentação local usa "Aberração", que é o nome da Árvore.
+Ficou como pergunta, porque Interações é mais novo que a Árvore.)
 
 ---
 

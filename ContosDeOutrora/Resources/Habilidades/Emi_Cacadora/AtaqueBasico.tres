@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="Habilidade" format=3]
+
+[ext_resource type="Script" path="res://Scripts/Combat/Dados/EfeitoDeHabilidade.cs" id="1_dlxy0"]
+[ext_resource type="Script" path="res://Scripts/Combat/Dados/Habilidade.cs" id="2_63738"]
+
+[resource]
+script = ExtResource("2_63738")
+Nome = "Ataque básico"
+Descricao = "Flecha."
+Alcance = 5
+DanoMinimo = 3
+DanoMaximo = 6
+Forma = 1

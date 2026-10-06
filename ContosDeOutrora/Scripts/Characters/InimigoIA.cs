@@ -142,6 +142,27 @@ public partial class InimigoIA : CharacterBody3D
 	public Modo ModoAtual { get; private set; } = Modo.Ronda;
 	public float DirecaoOlhando { get; private set; } = 270.0f;
 
+	// Alteração de IA - Revisar (06/10/2026)
+	// O que faz: a ficha de combate deste inimigo (vida, atributos, ataque, alcance do grito de aviso).
+	// Por quê: fica num arquivo de dados em Resources/Inimigos/, para o game designer balancear.
+	//          Sem ficha, o combate usa a do Rasgador.
+	[Export]
+	public FichaDeCombatente? Ficha { get; set; }
+
+	// Alteração de IA - Revisar (06/10/2026)
+	// O que faz: enquanto houver combate, o inimigo para de rondar, procurar e perseguir.
+	// Por quê: na luta quem decide o que ele faz é o turno dele. Os inimigos que não entraram na luta
+	//          também ficam parados onde estão até ela acabar.
+	public bool EmCombate { get; set; }
+
+	// Alteração de IA - Revisar (06/10/2026)
+	// O que faz: vira o inimigo para um ponto na hora (o combate usa para ele encarar o alvo).
+	public void OlharPara(Vector3 ponto)
+	{
+		DirecaoOlhando = AnguloAte(ponto);
+		_direcaoDesejada = DirecaoOlhando;
+	}
+
 	// Alteração de IA - Revisar
 	// O que faz: informa em que ponto da reação ao barulho o inimigo está.
 	// Por quê: o desenho de teste mostra isso na tela, para dar para conferir se a sequência
@@ -279,6 +300,14 @@ public partial class InimigoIA : CharacterBody3D
 	public override void _PhysicsProcess(double delta)
 	{
 		float dt = (float)delta;
+
+		// Alteração de IA - Revisar (06/10/2026)
+		// O que faz: no combate, o inimigo não decide nada sozinho (ver EmCombate).
+		if (EmCombate)
+		{
+			Velocity = Vector3.Zero;
+			return;
+		}
 
 		AlinharAlturaDaNavegacao();
 		AvaliarOQuePercebe(dt);

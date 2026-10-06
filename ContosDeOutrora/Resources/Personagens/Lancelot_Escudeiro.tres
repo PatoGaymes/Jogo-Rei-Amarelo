@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="FichaDeCombatente" format=3]
+
+[ext_resource type="Resource" path="res://Resources/Habilidades/Lancelot_Escudeiro/AtaqueBasico.tres" id="1_ft4j8"]
+[ext_resource type="Script" path="res://Scripts/Combat/Dados/Habilidade.cs" id="2_fkv50"]
+[ext_resource type="Resource" path="res://Resources/Habilidades/Lancelot_Escudeiro/LancaSagrada.tres" id="3_jul6l"]
+[ext_resource type="Resource" path="res://Resources/Habilidades/Lancelot_Escudeiro/FogoAcolhedor.tres" id="4_aq1af"]
+[ext_resource type="Resource" path="res://Resources/Habilidades/Lancelot_Escudeiro/SermaoDivino.tres" id="5_5ps6c"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Lancelot_Escudeiro/Provisorio/Lancelot_Escudeiro.webp" id="6_w8iks"]
+[ext_resource type="Script" path="res://Scripts/Combat/Dados/FichaDeCombatente.cs" id="7_odueq"]
+
+[resource]
+script = ExtResource("7_odueq")
+Nome = "Lancelot Claivar"
+Classe = "Escudeiro"
+Imagem = ExtResource("6_w8iks")
+Vida = 24
+Robustez = 1
+Vontade = 2
+Foco = 12
+AtaqueBasico = ExtResource("1_ft4j8")
+Habilidades = Array[ExtResource("2_fkv50")]([ExtResource("3_jul6l"), ExtResource("4_aq1af"), ExtResource("5_5ps6c")])

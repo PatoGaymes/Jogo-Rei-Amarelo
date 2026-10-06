@@ -1,12 +1,14 @@
 # Documentação interna — Contos de Outrora: O Rei De Amarelo
 
-Esta pasta existe porque **o Claude não consegue acessar a documentação do projeto**. Trello e
-Google Drive são privados e exigem login. A equipe **exporta** o conteúdo para `docs/externo/`,
-e é de lá que o Claude lê — ele abre PDF, Markdown, DOCX e JSON direto do repositório.
+Esta pasta nasceu porque **o Claude não conseguia acessar a documentação do projeto**: a equipe
+**exportava** o conteúdo do Trello e do Google Drive para `docs/externo/`, e era de lá que ele lia.
+Desde 06/10/2026 ele lê o Drive e o Trello direto (no Claude Code desktop), mas as cópias continuam
+aqui — é contra elas que as diferenças são conferidas.
 
-> Os sites continuam sendo a fonte de verdade. Esta pasta é uma **cópia de leitura**. O Claude
-> nunca altera um documento oficial nos sites (Regra 3) — desde 01/10/2026 ele pode gravar só na
-> pasta "Para revisão" do Drive, e um dev leva para a pasta oficial depois de revisar.
+> **Desde 06/10/2026 a documentação do projeto (esta pasta) é a mais atualizada.** Quando ela e o
+> Drive divergem, vale a daqui, salvo exceções que a equipe indicar. O Claude nunca altera um
+> documento oficial nos sites (Regra 3): as correções vão para a pasta **Pato Games/Revisão** do
+> Drive, e um dev leva para a pasta oficial depois de revisar.
 
 > **OneNote e Canva foram descartados** pela equipe em 11/09/2026 por estarem desatualizados.
 

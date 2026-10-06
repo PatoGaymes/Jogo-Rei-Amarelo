@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="Habilidade" format=3]
+
+[ext_resource type="Script" path="res://Scripts/Combat/Dados/EfeitoDeHabilidade.cs" id="1_114ri"]
+[ext_resource type="Script" path="res://Scripts/Combat/Dados/Habilidade.cs" id="2_1o8sl"]
+
+[sub_resource type="Resource" id="Resource_pd51q"]
+script = ExtResource("1_114ri")
+Tipo = 1
+Efeito = 20
+Duracao = -1
+
+[resource]
+script = ExtResource("2_1o8sl")
+Nome = "Postura oculta"
+Descricao = "Ao entrar nessa postura, seu dano é reduzido, mas aumenta a esquiva e resistência, ganha um incremento de contra ataque, além de aplicar efeito de \"maldição\".
+(Provisório: dano -30%, +2 Reação, +2 Robustez, contra-ataca golpes corpo a corpo com metade do dano; a maldição ainda não tem efeito.)"
+CustoDeFoco = 2
+Alvo = 2
+Alcance = 0
+Forma = 2
+Efeitos = Array[ExtResource("1_114ri")]([SubResource("Resource_pd51q")])

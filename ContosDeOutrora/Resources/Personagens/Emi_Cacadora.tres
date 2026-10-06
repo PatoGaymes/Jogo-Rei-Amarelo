@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="FichaDeCombatente" format=3]
+
+[ext_resource type="Resource" path="res://Resources/Habilidades/Emi_Cacadora/AtaqueBasico.tres" id="1_7lbpy"]
+[ext_resource type="Script" path="res://Scripts/Combat/Dados/Habilidade.cs" id="2_o2oqo"]
+[ext_resource type="Resource" path="res://Resources/Habilidades/Emi_Cacadora/Embuste.tres" id="3_t12t8"]
+[ext_resource type="Resource" path="res://Resources/Habilidades/Emi_Cacadora/TecnicaSecreta.tres" id="4_in0bg"]
+[ext_resource type="Resource" path="res://Resources/Habilidades/Emi_Cacadora/MatadoraDeYokais.tres" id="5_p63cm"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Characters/Emi_Cacadora/Provisorio/Emi_Cacadora.webp" id="6_oreis"]
+[ext_resource type="Script" path="res://Scripts/Combat/Dados/FichaDeCombatente.cs" id="7_mn2ko"]
+
+[resource]
+script = ExtResource("7_mn2ko")
+Nome = "Emi Matsunaga"
+Classe = "Caçadora"
+Imagem = ExtResource("6_oreis")
+Precisao = 3
+Furtividade = 2
+Iniciativa = 3
+Reacao = 2
+AtaqueBasico = ExtResource("1_7lbpy")
+Habilidades = Array[ExtResource("2_o2oqo")]([ExtResource("3_t12t8"), ExtResource("4_in0bg"), ExtResource("5_p63cm")])

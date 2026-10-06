@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="Habilidade" format=3]
+
+[ext_resource type="Script" path="res://Scripts/Combat/Dados/EfeitoDeHabilidade.cs" id="1_gxxgi"]
+[ext_resource type="Script" path="res://Scripts/Combat/Dados/Habilidade.cs" id="2_ulmfa"]
+
+[sub_resource type="Resource" id="Resource_28fhm"]
+script = ExtResource("1_gxxgi")
+Tipo = 9
+Duracao = 1
+
+[resource]
+script = ExtResource("2_ulmfa")
+Nome = "Alma imaculada"
+Descricao = "Mostra os próximos movimentos de todos os inimigos.
+(Provisório: cada inimigo mostra quem vai atacar, e cumpre.)"
+CustoDeFoco = 2
+Alvo = 2
+Alcance = 0
+Forma = 2
+Efeitos = Array[ExtResource("1_gxxgi")]([SubResource("Resource_28fhm")])

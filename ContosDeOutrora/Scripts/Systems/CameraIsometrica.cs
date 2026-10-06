@@ -72,6 +72,44 @@ public partial class CameraIsometrica : Camera3D
 
 	public Modo ModoAtual { get; private set; } = Modo.Exploracao;
 
+	// Alteração de IA - Revisar (06/10/2026)
+	// O que faz: a distância da câmera durante o combate, os limites da roda do mouse no combate e o
+	//            tempo da aproximação.
+	// Por quê: a entrada no combate é **a câmera se aproximando**, sem corte de tela (referência dos
+	//          Metal Gear antigos, em docs/JOGO.md). Na luta, a roda do mouse afasta e aproxima para o
+	//          jogador ver o campo inteiro quando precisar.
+	[Export]
+	public float DistanciaEmCombate { get; set; } = 8.0f;
+
+	[Export]
+	public float DistanciaMinimaEmCombate { get; set; } = 5.0f;
+
+	[Export]
+	public float DistanciaMaximaEmCombate { get; set; } = 16.0f;
+
+	[Export]
+	public float DuracaoDaTransicao { get; set; } = 1.0f;
+
+	// Alteração de IA - Revisar (06/10/2026)
+	// O que faz: a rapidez com que a câmera desliza até o novo alvo (no combate, a câmera acompanha
+	//            quem está na vez) e com que a distância muda.
+	[Export]
+	public float SuavidadeDoAlvo { get; set; } = 5.0f;
+
+	[Export]
+	public float SuavidadeDaDistancia { get; set; } = 4.0f;
+
+	// Alteração de IA - Revisar (06/10/2026)
+	// O que faz: onde a câmera está mirando agora e a que distância está, e se está "colada" no alvo.
+	// Por quê: na exploração a câmera fica colada no personagem, exatamente como antes. Quando o alvo
+	//          muda (o combate passa a vez) ou a distância muda, ela desliza até lá em vez de saltar;
+	//          ao voltar à exploração, cola de novo assim que alcança o personagem.
+	private Vector3 _centroAtual;
+	private float _distanciaAtual = -1.0f;
+	private float _distanciaDesejada = -1.0f;
+	private bool _colada = true;
+	private float _tempoNaTransicao;
+
 	// Alteração de IA - Revisar
 	// O que faz: informa em qual dos 8 ângulos a câmera está apontando.
 	// Por quê: outras partes do jogo vão precisar disso — principalmente o personagem, que
@@ -106,6 +144,12 @@ public partial class CameraIsometrica : Camera3D
 		// Por quê: sem isso, o jogo começaria com a câmera na origem do mundo e ela
 		//          "voaria" até o personagem no primeiro segundo, o que fica feio.
 		_anguloAtual = _anguloDesejado;
+		_distanciaAtual = Distancia;
+		_distanciaDesejada = Distancia;
+		if (Alvo != null)
+		{
+			_centroAtual = Alvo.GlobalPosition + new Vector3(0.0f, AlturaDoAlvo, 0.0f);
+		}
 		PosicionarCamera();
 
 		CriarNevoa();
@@ -131,9 +175,25 @@ public partial class CameraIsometrica : Camera3D
 
 	public override void _UnhandledInput(InputEvent evento)
 	{
-		if (ModoAtual != Modo.Exploracao)
+		// Alteração de IA - Revisar (06/10/2026)
+		// O que faz: girar vale na exploração e no combate (girar para ver atrás de paredes é
+		//            mecânica de jogo nos dois); só não vale no meio da aproximação. No combate, a roda
+		//            do mouse aproxima e afasta.
+		if (ModoAtual == Modo.Transicao)
 		{
 			return;
+		}
+
+		if (ModoAtual == Modo.Combate && evento is InputEventMouseButton { Pressed: true } roda)
+		{
+			if (roda.ButtonIndex == MouseButton.WheelUp)
+			{
+				_distanciaDesejada = Mathf.Clamp(_distanciaDesejada - 0.8f, DistanciaMinimaEmCombate, DistanciaMaximaEmCombate);
+			}
+			else if (roda.ButtonIndex == MouseButton.WheelDown)
+			{
+				_distanciaDesejada = Mathf.Clamp(_distanciaDesejada + 0.8f, DistanciaMinimaEmCombate, DistanciaMaximaEmCombate);
+			}
 		}
 
 		// Alteração de IA - Revisar
@@ -163,7 +223,8 @@ public partial class CameraIsometrica : Camera3D
 
 	public override void _PhysicsProcess(double delta)
 	{
-		if (Alvo == null)
+		// (06/10/2026) o alvo pode ser um inimigo que acabou de morrer e sair do mapa
+		if (Alvo == null || !IsInstanceValid(Alvo))
 		{
 			return;
 		}
@@ -178,7 +239,51 @@ public partial class CameraIsometrica : Camera3D
 		float novoRad = Mathf.LerpAngle(atualRad, desejadoRad, (float)delta * VelocidadeDeGiro);
 		_anguloAtual = Mathf.PosMod(Mathf.RadToDeg(novoRad), 360.0f);
 
+		AtualizarCentroEDistancia((float)delta);
 		PosicionarCamera();
+	}
+
+	// Alteração de IA - Revisar (06/10/2026)
+	// O que faz: desliza a mira e a distância até onde devem estar, e passa da aproximação para o
+	//            combate quando ela termina.
+	private void AtualizarCentroEDistancia(float dt)
+	{
+		Vector3 alvo = Alvo!.GlobalPosition + new Vector3(0.0f, AlturaDoAlvo, 0.0f);
+
+		if (ModoAtual == Modo.Exploracao)
+		{
+			_distanciaDesejada = Distancia;
+		}
+		if (_distanciaAtual < 0.0f)
+		{
+			_distanciaAtual = _distanciaDesejada = Distancia;
+		}
+		_distanciaAtual = Mathf.Lerp(_distanciaAtual, _distanciaDesejada, 1.0f - Mathf.Exp(-dt * SuavidadeDaDistancia));
+
+		if (_colada)
+		{
+			_centroAtual = alvo;
+		}
+		else
+		{
+			_centroAtual = _centroAtual.Lerp(alvo, 1.0f - Mathf.Exp(-dt * SuavidadeDoAlvo));
+			// de volta à exploração: cola no personagem assim que chega nele
+			if (ModoAtual == Modo.Exploracao && _centroAtual.DistanceTo(alvo) < 0.03f
+				&& Mathf.Abs(_distanciaAtual - Distancia) < 0.03f)
+			{
+				_colada = true;
+				_distanciaAtual = Distancia;
+			}
+		}
+
+		if (ModoAtual == Modo.Transicao)
+		{
+			_tempoNaTransicao += dt;
+			if (_tempoNaTransicao >= DuracaoDaTransicao)
+			{
+				ModoAtual = Modo.Combate;
+			}
+		}
 	}
 
 	// Alteração de IA - Revisar
@@ -193,14 +298,20 @@ public partial class CameraIsometrica : Camera3D
 	//          "de cima" fica a visão.
 	private void PosicionarCamera()
 	{
-		Vector3 centro = Alvo!.GlobalPosition + new Vector3(0.0f, AlturaDoAlvo, 0.0f);
+		// Alteração de IA - Revisar (06/10/2026)
+		// O que mudou: a mira e a distância vêm das versões "suaves" (ver AtualizarCentroEDistancia).
+		//              Na exploração elas são exatamente o personagem e a Distancia, como antes.
+		Vector3 centro = _colada || _distanciaAtual < 0.0f
+			? Alvo!.GlobalPosition + new Vector3(0.0f, AlturaDoAlvo, 0.0f)
+			: _centroAtual;
+		float distancia = _distanciaAtual > 0.0f ? _distanciaAtual : Distancia;
 
 		float anguloRad = Mathf.DegToRad(_anguloAtual);
 		float inclinacaoRad = Mathf.DegToRad(Inclinacao);
 
 		// distância na horizontal e altura, separadas pela inclinação
-		float raio = Distancia * Mathf.Cos(inclinacaoRad);
-		float altura = Distancia * Mathf.Sin(inclinacaoRad);
+		float raio = distancia * Mathf.Cos(inclinacaoRad);
+		float altura = distancia * Mathf.Sin(inclinacaoRad);
 
 		Vector3 deslocamento = new Vector3(
 			raio * Mathf.Cos(anguloRad),
@@ -214,10 +325,30 @@ public partial class CameraIsometrica : Camera3D
 
 	// Alteração de IA - Revisar
 	// O que faz: troca o estado da câmera entre exploração, transição e combate.
-	// Por quê: por enquanto só guarda o estado. Quando o combate for feito, é aqui que
-	//          entra a aproximação suave da câmera ao começar a luta.
+	// Por quê: (06/10/2026) a transição é a aproximação ao começar a luta: a câmera desliza até a
+	//          DistanciaEmCombate em DuracaoDaTransicao segundos e então entra no modo Combate. Voltar
+	//          à exploração desliza de volta para a Distancia normal e cola no personagem de novo.
 	public void DefinirModo(Modo novoModo)
 	{
 		ModoAtual = novoModo;
+		_colada = false;
+		if (Alvo != null && _distanciaAtual < 0.0f)
+		{
+			_centroAtual = Alvo.GlobalPosition + new Vector3(0.0f, AlturaDoAlvo, 0.0f);
+		}
+
+		switch (novoModo)
+		{
+			case Modo.Transicao:
+				_tempoNaTransicao = 0.0f;
+				_distanciaDesejada = DistanciaEmCombate;
+				break;
+			case Modo.Combate:
+				_distanciaDesejada = DistanciaEmCombate;
+				break;
+			default:
+				_distanciaDesejada = Distancia;
+				break;
+		}
 	}
 }

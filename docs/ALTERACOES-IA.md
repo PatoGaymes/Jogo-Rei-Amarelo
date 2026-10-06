@@ -1151,3 +1151,97 @@ repetiam a regra antiga: `docs/README.md` e `docs/SUGESTOES-PARA-DOCUMENTACAO.md
 ambiente (VS Code), então por enquanto vale o caminho manual de sempre (`docs/para-repositorio/`). O
 nome e o lugar exatos da pasta "Para revisão" no Drive precisam ser definidos quando o acesso
 funcionar.
+
+## 06/10/2026 — Combate básico em hexágonos
+
+Decisões do PO de 06/10/2026, com o Pit People como referência. O que vale como regra está em
+`docs/JOGO.md`, seção "Combate"; aqui fica o que foi feito em cada arquivo e o que revisar.
+
+### Scripts novos (`Scripts/Combat/` e `Scripts/UI/`)
+
+| Arquivo | O que faz |
+|---|---|
+| `Combat/Hex.cs` | O endereço de uma casa hexagonal (topo reto), distância, vizinhas, giro de 60° e conversão para o mapa |
+| `Combat/GradeDeCombate.cs` | A grade do mapa: calculada uma vez quando a fase carrega, com andares, rampas, paredes e obstáculos; caminho, alcance e linha de visão |
+| `Combat/DesenhoDaGrade.cs` | Desenha os hexágonos no chão (só no combate, ou com F6) |
+| `Combat/Dados/FichaDeCombatente.cs`, `Habilidade.cs`, `EfeitoDeHabilidade.cs`, `EquipeInicial.cs`, `TipoDeEfeito.cs` | Os tipos dos arquivos de dados: ficha, habilidade, as peças de cada habilidade, a equipe inicial e a lista de efeitos |
+| `Combat/RegrasDeCombate.cs` | Todos os números das regras num lugar só — **simbólicos** |
+| `Combat/Combatente.cs` | O estado de cada lutador durante a luta (vida, Foco, efeitos, iniciativa, movimento, ação) |
+| `Combat/ExecutorDeHabilidades.cs` | Usa uma habilidade: acerto, dano, Vanguarda, Couraça, efeitos, empurrão, cura, contra-ataque |
+| `Combat/AnimacaoDeAtaque.cs` | O plano do golpe (distância até o alvo, encaixe da arma, quanto andar) e as animações provisórias |
+| `Combat/IaDeCombate.cs` | O turno do inimigo: escolhe o alvo (Furtividade pesa), anda e ataca |
+| `Combat/GerenciadorDeCombate.cs` | Comanda a luta: grito de aviso, formação, iniciativa, turnos, mouse, fim. Nó global "Combate" |
+| `Combat/Equipe.cs` | A equipe (5 personagens, formação, líder, quem morreu, vida entre lutas). Nó global "Equipe" |
+| `Combat/CorpoDeCombate.cs` | O corpo dos membros da equipe que aparecem só na luta |
+| `Combat/MarcadorDeCombate.cs` | Barra de vida, nome, efeitos e números de dano sobre a cabeça |
+| `UI/InterfaceDeCombate.cs` | Ordem da iniciativa, painel da vez, botões das ações, lista de habilidades, registro |
+| `UI/MenuDeEquipe.cs` | O menu de equipe (T) com a formação arrastável |
+| `UI/TelaDeFimDeJogo.cs` | A tela de fim de jogo provisória |
+
+### Scripts alterados
+
+- `PlayerIsometrico.cs`: `ControladoPeloCombate` (na luta não lê o teclado), `OlharPara` e
+  `TrocarDesenho` (quando o líder morre, o próximo assume).
+- `InimigoIA.cs`: `Ficha` (a ficha de combate), `EmCombate` (para de rondar) e `OlharPara`.
+- `CameraIsometrica.cs`: a aproximação ao começar a luta (`DefinirModo` agora faz algo), a câmera
+  desliza até quem está na vez, a roda do mouse afasta no combate, e girar com Q/E vale também na luta.
+  **Na exploração ela continua colada no personagem, como antes.**
+
+### Arquivos que não aceitam comentário
+
+- `project.godot`: dois nós globais (autoload) — `Equipe` e `Combate` — e três teclas novas:
+  `menu_equipe` (T), `combate_encerrar_turno` (Enter) e `debug_grade` (F6).
+- `Scenes/Characters/Inimigo.tscn`: o campo `Ficha` aponta para `Resources/Inimigos/Rasgador.tres`.
+- `Scenes/Levels/Sandbox.tscn`: o nó `GradeDeCombate`, **deslocado 0,5 m para oeste** (sem isso a
+  coluna de hexágonos caía na beirada da laje e a rampa não chegava ao andar de cima — testados 28
+  deslocamentos, este deixa rampa, porta e muro funcionando em todos os testes), e dois inimigos novos,
+  `InimigoGrupo1` e `InimigoGrupo2`, parados a oeste do ponto de partida, para testar o grito de aviso.
+- `Resources/` (novos, gravados pelo próprio Godot para o formato sair certo):
+  `Personagens/` (5 fichas), `Inimigos/Rasgador.tres`, `Habilidades/<personagem>/` (21 habilidades) e
+  `Equipe/EquipeInicial.tres` (Uzhan líder, Khalid, Lancelot, Emi, Tao, com a formação inicial).
+
+### Ferramentas e documentação
+
+- `docs/ferramentas/revisao-2026-10-06.py` (novo): gera os `.docx` corrigidos a partir da versão atual
+  do Drive. Saída em `docs/para-repositorio/2026-10-06/`.
+- `CLAUDE.md`: Regra 3 reescrita (a documentação local vale mais; o que o conector do Drive faz e não
+  faz) e "Estado do código".
+- `docs/JOGO.md`: seção "Combate" reescrita; câmera, sandbox e "Ainda não implementado" atualizados.
+- `docs/externo/Infos/Árvores de Habilidades.md` e `GDD Rei de Amarelo.md` (as nossas cópias): as mesmas
+  correções do Drive, e o GDD local recebeu também as decisões de 18/09 que só tinham ido para o
+  `.docx` (Lábia, Intuição e Análise fora, Furtividade, respawn) e o atributo Iniciativa.
+- `docs/MUDANCAS-DOCUMENTACAO.md`, `docs/SUGESTOES-PARA-DOCUMENTACAO.md` e `docs/AMBIENTE.md`.
+- No Drive, pasta `Pato Games/Revisão`: o documento "Revisão 06-10-2026 — o que está desatualizado no
+  Drive", com a lista das correções.
+
+### Dois defeitos achados no teste com janela (e corrigidos)
+
+1. **A luta não começava sozinha.** Os nós globais ficam prontos **depois** de o mapa inteiro entrar em
+   cena, então o combate não ouvia o aviso dos inimigos do mapa inicial. No teste automático o mapa
+   era carregado depois, e por isso passou. Agora o combate começa a escutar na entrada e liga também
+   os inimigos que já estavam lá.
+2. **Clicar na casa de um inimigo não atacava** (só clicar no desenho dele), e dois desenhos vizinhos
+   sobrepostos mandavam o clique para o personagem errado. Agora vale primeiro a casa do chão debaixo
+   do mouse.
+
+### Testes feitos
+
+- **Teste automático sem janela** (temporário, já apagado): 54 verificações, todas ok — a grade (térreo,
+  andar de cima pela rampa em 22 casas, porta, estrutura de pedra, nenhuma das 16 árvores numa casa
+  válida), o grito (entra quem está a 4 m; não entra quem está a 6,5 m atrás de uma caixa nem quem está
+  longe), a formação virada para os inimigos, a ordem da iniciativa, uma luta inteira jogada sozinha
+  (vitória na 4ª rodada, todas as 20 habilidades usadas ao longo das rodadas de teste), a volta à
+  exploração e a tela de fim de jogo.
+- **Teste com janela, com mouse e teclado:** a luta começando sozinha, andar, atacar, Rasga-ossos, a
+  área laranja da Voz amaldiçoada, o segundo turno de quem tirou 20, os inimigos jogando, o menu de
+  equipe (arrastar e trocar) e a formação nova aplicada na luta seguinte.
+- Grade do sandbox: 1.863 casas e 4.786 ligações, montadas em ~0,3 s quando a fase carrega.
+
+### O que revisar
+
+- **Os números são todos simbólicos** (`RegrasDeCombate.cs` e os `.tres`).
+- **Decisões provisórias** para dar para testar, listadas no fim da seção "Combate" do `JOGO.md` e nas
+  pendências de `SUGESTOES-PARA-DOCUMENTACAO.md`: inimigos fora da luta ficam parados; Foco cheio em
+  cada luta; vida e sanidade continuam entre lutas; Protetora dura 3 rodadas; Transfiguração térmica
+  sorteia Gelo ou Fogo; o que acontece com quem tira 1 na iniciativa (por enquanto, nada).
+- **As alucinações da sanidade baixa ainda não foram feitas** — a regra está documentada.

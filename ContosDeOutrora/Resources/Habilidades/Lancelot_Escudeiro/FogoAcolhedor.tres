@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="Habilidade" format=3]
+
+[ext_resource type="Script" path="res://Scripts/Combat/Dados/EfeitoDeHabilidade.cs" id="1_bvh7n"]
+[ext_resource type="Script" path="res://Scripts/Combat/Dados/Habilidade.cs" id="2_65vpl"]
+
+[sub_resource type="Resource" id="Resource_cxt7c"]
+script = ExtResource("1_bvh7n")
+Tipo = 6
+Duracao = 1
+Quantidade = 6
+
+[sub_resource type="Resource" id="Resource_kf6mr"]
+script = ExtResource("1_bvh7n")
+Tipo = 8
+Duracao = 1
+
+[resource]
+script = ExtResource("2_65vpl")
+Nome = "Fogo acolhedor"
+Descricao = "Cura o alvo e remove debuffs."
+CustoDeFoco = 3
+Alvo = 1
+Alcance = 3
+Forma = 2
+Efeitos = Array[ExtResource("1_bvh7n")]([SubResource("Resource_cxt7c"), SubResource("Resource_kf6mr")])

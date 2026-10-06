@@ -1,0 +1,21 @@
+[gd_resource type="Resource" script_class="Habilidade" format=3]
+
+[ext_resource type="Script" path="res://Scripts/Combat/Dados/EfeitoDeHabilidade.cs" id="1_cngkr"]
+[ext_resource type="Script" path="res://Scripts/Combat/Dados/Habilidade.cs" id="2_em07n"]
+
+[sub_resource type="Resource" id="Resource_cpuax"]
+script = ExtResource("1_cngkr")
+Tipo = 7
+Duracao = 1
+Quantidade = 3
+
+[resource]
+script = ExtResource("2_em07n")
+Nome = "Energia comprimida"
+Descricao = "Causa dano e recupera Foco."
+CustoDeFoco = 2
+Alcance = 3
+DanoMinimo = 3
+DanoMaximo = 6
+Forma = 1
+Efeitos = Array[ExtResource("1_cngkr")]([SubResource("Resource_cpuax")])

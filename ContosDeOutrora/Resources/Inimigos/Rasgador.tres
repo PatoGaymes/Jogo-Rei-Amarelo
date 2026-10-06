@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="FichaDeCombatente" format=3]
+
+[ext_resource type="Resource" path="res://Resources/Habilidades/Rasgador/AtaqueBasico.tres" id="1_e8pwr"]
+[ext_resource type="Script" path="res://Scripts/Combat/Dados/Habilidade.cs" id="2_pd13n"]
+[ext_resource type="Texture2D" path="res://Assets/Art/Enemies/Rasgador/Provisorio/Rasgador.webp" id="3_kl7qr"]
+[ext_resource type="Script" path="res://Scripts/Combat/Dados/FichaDeCombatente.cs" id="4_4cvkx"]
+
+[resource]
+script = ExtResource("4_4cvkx")
+Nome = "Rasgador"
+Classe = "Inimigo"
+Imagem = ExtResource("3_kl7qr")
+AlturaDoDesenho = 1.9
+Vida = 18
+Iniciativa = 1
+Robustez = 1
+Sanidade = 10
+Foco = 0
+AtaqueBasico = ExtResource("1_e8pwr")

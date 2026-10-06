@@ -110,22 +110,27 @@ Valem para **todos os devs**, porque estão versionadas no Git.
 | `layer_names/2d_physics/*` | sem nome | `Player`, `Enemy`, `Interactable`, `Wall`, `Trigger` | Para não decorar o que é "camada 3" |
 | `[input]` | vazio | 7 comandos nomeados | Permite trocar teclas sem mexer no código |
 
-### Comandos criados no Input Map
+### Comandos do Input Map (atualizado em 06/10/2026)
 
-| Comando | Teclas |
-|---|---|
-| `move_left` | A, seta esquerda |
-| `move_right` | D, seta direita |
-| `interact` | E |
-| `combat_confirm` | Espaço |
-| `combat_cancel` | X |
-| `open_inventory` | I |
-| `pause` | Esc |
+| Comando | Teclas | Para quê |
+|---|---|---|
+| `move_forward` / `move_back` / `move_left` / `move_right` | W A S D e as setas | Andar (relativo à câmera) |
+| `camera_girar_esquerda` / `camera_girar_direita` | Q / E | Girar a câmera em 45° |
+| `agachar` | Ctrl ou C | Agachar |
+| `lanterna` | L | Acender e apagar a lanterna |
+| `interact` | F | Interagir |
+| `menu_equipe` | T | Menu de equipe (fora do combate) |
+| `combat_confirm` | Espaço | Reservado para o combate |
+| `combat_cancel` | X | Cancelar a escolha de alvo no combate (o botão direito também cancela) |
+| `combate_encerrar_turno` | Enter | Encerrar o turno no combate |
+| `open_inventory` | I | Reservado para o inventário |
+| `pause` | Esc | Pausa (fecha o menu de equipe) |
+| `debug_raios` | F3 | Teste: desenho da detecção |
+| `debug_nevoa` | F4 | Teste: troca o ambiente (limpo, névoa, escuridão, breu) |
+| `debug_grade` | F6 | Teste: grade de hexágonos do mapa inteiro |
 
-Ponto de partida. Trocar em **Project Settings → Input Map**.
-
-> Pelo GDD, o combate tem **5 posições** e uma ação de **Movimento** lateral. Quando o combate
-> for implementado, provavelmente serão necessárias ações novas para navegar a formação.
+Trocar em **Project Settings → Input Map**. No combate o mouse faz o resto: clicar numa casa anda,
+clicar num inimigo ataca, a roda afasta a câmera.
 
 ### Configurações conferidas e corretas (não mexer)
 
@@ -181,46 +186,47 @@ instalação altera o PATH e programas já abertos não enxergam a mudança.
 - ~~Sugestões para a documentação~~ → aplicadas no Trello pela equipe
 - ~~Formato das músicas~~ → **`.ogg`**, convertido (87% menor)
 - ~~Formato das imagens~~ → **`.webp`** sem perda, convertido (44% menor)
-- ~~Técnica de animação~~ → **ossos** para personagens, **quadro a quadro** para efeitos
+- ~~Técnica de animação~~ → **quadro a quadro para tudo** (29/09/2026; antes era ossos para personagens)
 - ~~GDD vs Árvore de Habilidades~~ → **a Árvore é a fonte oficial do combate** (decisão do PO)
 
 ## ⚠️ Pendências em aberto
 
 ### 1. Renderizador: Forward+ ou Compatibility
 
-Hoje está em **Forward+**, um renderizador voltado para 3D avançado. Como o jogo é 2D puro, o
-modo **Compatibility** geraria um jogo mais leve, que roda em placas de vídeo fracas e pode ser
-publicado para navegador. As luzes 2D (tochas, ambientação escura) funcionam nos dois.
+Hoje está em **Forward+**, um renderizador voltado para 3D avançado. Quando esta pendência foi
+escrita o jogo era 2D puro, e o modo **Compatibility** pareceria o bastante (mais leve, roda em placas
+fracas e no navegador).
 
-Quanto antes decidir, menos retrabalho.
+**Atualização de 06/10/2026:** desde 18/09 o mapa é **3D isométrico**, e a névoa e a escuridão usam a
+imagem de profundidade da tela num desenho próprio. Antes de trocar de renderizador, é preciso testar
+se tudo isso continua funcionando no Compatibility. A decisão continua com a equipe.
 
-### 2. Quais ações existem no turno de combate
+### ~~2. Quais ações existem no turno de combate~~ — resolvida
 
-O PO confirmou que é **1 ação por turno**, mas não quais ações existem: o GDD lista Movimento e
-Conversar, a Árvore lista Fugir. Isso define as telas de combate e os controles.
-Ver pendência 2 em [SUGESTOES-PARA-DOCUMENTACAO.md](SUGESTOES-PARA-DOCUMENTACAO.md).
+As 5 ações (Atacar, Habilidades, Defender, Itens, Fugir) foram definidas em 12/09/2026, e em
+06/10/2026 entrou o **mover** de até 3 casas por turno, que não gasta a ação. Ver `docs/JOGO.md`.
 
 ### 3. Cena inicial do jogo
 
-Hoje o jogo abre no **corredor de teste**, que serve para conferir movimentação e câmera. Quando
-existir menu inicial, criar `Scenes/Main.tscn` e apontar `run/main_scene` para ela.
+Hoje o jogo abre no **mapa de testes** (`Scenes/Levels/Sandbox.tscn`). Quando existir menu
+inicial, criar `Scenes/Main.tscn` e apontar `run/main_scene` para ela. A tela de fim de jogo já tem o
+botão "Voltar ao menu" esperando por ele (por enquanto recomeça o mapa).
 
 ### 4. Enquadramento da câmera precisa ser conferido com a arte real
 
-A câmera do corredor está com aproximação 1.6 e altura travada em 600. Esses valores foram
-ajustados a olho, com a arte provisória. **Quando a arte de cenário ficar pronta, conferir de
-novo** — é o que define quanto aparece de chão, parede e teto.
+A câmera 3D está com 9 m de distância e 40° de inclinação na exploração, e 8 m no combate (a roda do
+mouse vai de 5 a 16 m). Esses valores foram ajustados a olho, com a arte provisória. **Quando a arte
+de cenário ficar pronta, conferir de novo** — é o que define quanto aparece de chão, parede e teto.
 
-Os dois valores ficam na cena do corredor, no nó `Camera`.
+Os valores ficam no nó `Camera` do mapa (`CameraIsometrica`).
 
 ### 5. Singletons (Autoload)
 
-Ainda não criados. Candidatos: `GameManager`, `AudioManager`, `SaveSystem`.
-Definir junto com a arquitetura do combate.
+**Criados em 06/10/2026, com o combate:** `Equipe` (a equipe, a formação e o menu de equipe) e
+`Combate` (o gerenciador do combate, que escuta todos os inimigos de qualquer mapa). Ainda faltam:
+`AudioManager` e `SaveSystem` — o "voltar ao último save" da tela de fim de jogo espera por ele.
 
-### 6. O GDD continua com as regras antigas de combate escritas
+### ~~6. O GDD continua com as regras antigas de combate escritas~~ — resolvida
 
-A Árvore de Habilidades virou a fonte oficial, mas o GDD — que é o documento principal e o
-primeiro lugar onde alguém novo procura — ainda tem as regras antigas no texto. Enquanto os
-dois coexistirem, a confusão se repete com a próxima pessoa que ler.
-Sugestão de correção na pendência 1 de [SUGESTOES-PARA-DOCUMENTACAO.md](SUGESTOES-PARA-DOCUMENTACAO.md).
+O GDD do Drive recebeu o aviso de seção desatualizada em 18/09/2026, apontando para a Árvore de
+Habilidades.

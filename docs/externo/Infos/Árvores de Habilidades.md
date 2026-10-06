@@ -3,14 +3,22 @@
 > **Fonte oficial do sistema de combate.** Sincronizado com a versão do repositório
 > (`Árvores de HabilidadesDoRepositorio.docx`) em 18/09/2026.
 >
+> **06/10/2026:** aplicadas as decisões de combate do PO (ações com o mover em hexágonos, alcance
+> em casas, iniciativa, Vanguarda nova, Foco no lugar de "energia") e as grafias oficiais. A versão
+> corrigida do .docx foi para a pasta Revisão do Drive (ver docs/MUDANCAS-DOCUMENTACAO.md).
+>
 > Em caso de conflito com o GDD, **este documento vale**.
 
 ---
 
 ## Mecânicas gerais de combate
 ### Ações
-- Os personagens tem 4 ações: atacar/usar habilidades, usar itens, defender, fugir
+- Os personagens têm 5 ações: atacar, usar habilidades, usar itens, defender e fugir
 -cada personagem só pode fazer uma ação por turno, a não ser que ele tenha habilidades que contornam isso
+-Todos, personagens e inimigos, também podem se mover: até 3 casas (hexágonos) por turno. Andar não gasta a ação — dá para andar e atacar no mesmo turno, a não ser que alguma condição impeça
+-O alcance dos ataques e das habilidades também é contado em casas
+-Iniciativa: no começo do combate, cada um rola um dado de 20 lados e soma o atributo Iniciativa; a ordem vai do maior para o menor, misturando aliados e inimigos. Quem tira 20 no dado joga 2 turnos seguidos sempre que chega a vez dele
+-O recurso gasto pelas habilidades é o Foco
 ### Efeitos de status
 - Gelo:Atordoa o alvo e causa um pouco de dano ao sair do estado
 - Veneno: causa ticks de dano
@@ -26,7 +34,7 @@
 - Atodordoado: atordoa o alvo
 - Enraizado: impede o alvo de se mover
 - Vulnerável: não pode recebr buffs-couraça: bloqueia o próximo dano recebido, mas não o efeito de status
--vanguarda: a unidade com essa condição é protegida de qualquer ataque lançado a ela
+-vanguarda: condição de quem protege. O aliado protegido fica "Protegido": todo o dano que ele receberia vai para a Vanguarda; em dano de área, metade fica com o protegido e metade vai para a Vanguarda. Dá para proteger vários aliados, um por uso
 - Furtivo: não pode ser alvo de ataques por meios padrões
 - Cego: reduz a precisão e suas habilidades passam a ter um alvo aleatório
 - Espinhos: o alvo devolve parte do dano que recebe
@@ -108,13 +116,13 @@ Estigma da Conveniência                                       /                
 Mãos do abismo / Renovação/ Misto de coquetéis                /              Mina de espinhos/Dilascerar/Fratura terminal
 Vortex Negro-Poço das moléstias/ Propagação-Manipulação de energia/Prismático-Colorismo       /     Sangue Grosso-Sangue frio /Derreter as entranhas-Matriz encantada/Ossos famintos-Foco interior
 ## Descrição das habilidades
-Energia comprimida: causa dano e recupera energia
+Energia comprimida: causa dano e recupera Foco
 Transfiguração térmica: aplica status de gelo ou fogo no alvo
 Voz amaldiçoada: Causa dano em área e aplica efeito de raio
 Estigma da conveniência: diminui o agro inimigo em você e aumenta o agro em aliados
 Criadouro de insestos: Ganha hp temporário que enquanto ativo, reflete parte do dano recebido e aplica status de fogo
 Mãos do abismo: seu ataque básico agora tem chance de aplicar um efeito de status aleatório
-Renovação: recupera uma certa quantidade de energia
+Renovação: recupera uma certa quantidade de Foco
 Misto de coquetéis: aplica um status extra ao inimigo ao causar dano massivo com ataques
 Mina de espinhos: demarca uma área inimiga, e sempre que um inimigo terminar a rodada em cima dela, ele recebe dano e aplica escuridão por algumas rodadas
 Dilascerar: Ao usar "Criadouro de insetos" novamente, enquanto ele estiver ativo, se transforma num ataque em área
@@ -122,14 +130,14 @@ Fratura terminal: após o inimigo afetado por "transfiguração térmica", ele e
 Vortex negro: Aplica escuridão em área e dano. Quando atinge inimigos com status que não sejam escuridão, os convertem para tal
 Poço das moléstias: causa dano em área, e deixa poças que aplicam veneno e corrosão
 Propagação: quando aplicar um status a um inimigo já afetado, o status atual passa para um dos inimigos atuais. Caso o inimigo seja de estatura "grande" ou maior, a quantidade de status lançado nele é trplicada
-Manipulação de energia: quando um aliado consome mais do que uma certa quantidade de energia, você recupera metade do gasto da energia
+Manipulação de energia: quando um aliado consome mais do que uma certa quantidade de Foco, você recupera metade do Foco gasto
 Prismático: você marca um alvo por algumas rodadas, deixando-o
 desarmado. E aplicando efeitos status aleatórios para cada ataque que receba
 Colorismo: Ganha afinidade com relíquias de "arma" e intrísicos, e ganha +1 espaço de relíquia
-Sangue grosso: ao perder vida, recupera energia e sanidade, metade do valor perdido para cada
+Sangue grosso: ao perder vida, recupera Foco e sanidade, metade do valor perdido para cada
 Sangue frio: aplica frio em si mesmo, e ganha dano de espinhos, e aplica gelo
 Derreter as entranhas: "dilascerar" agora causa cegueira nos inimigos, e reduz a precisão também
-Matriz encantada: quando estiver com a vida cheia, não gasta energia nas habilidades; hp temporário não é considerado
+Matriz encantada: quando estiver com a vida cheia, não gasta Foco nas habilidades; hp temporário não é considerado
 Ossos famintos: causa dano, aplica corrosão e enraiza o inimigo
 Foco interior: Ao receber um acerto de dano massivo, aumenta em muito todas suas estatísticas
 - Desgarrado-
@@ -145,14 +153,14 @@ Rasga ossos: causa dano e sai da postura oculta
 Alma imaculada: mostra os próximos movimentos de todos os inimigos
 Mão firme: você é imune ao efeito de "desarmado" e devolve o efeito caso atingido por tal
 Mastodonte: Seus contra ataques causam o dobro do dano, mas todos os seus ataques que não funcionem como contra ataque causam menos dano
-Foco total: recupera energia, entra e sai na postura oculta
+Foco total: recupera Foco, entra e sai na postura oculta
 Esmagador: causa mais dano caso não esteja com nenhuma relíquia do tipo "arma"
 Manobra rasante: Danos massivos aplicam desarmado no alvo
 Escamas duras: ganha 1 "couraça" e seu contra ataque causa mais dano. Só pode ser usado na Postura oculta. Fica incapacitado por 1 rodada ou até ser atacado
 Reflexos dilatados: Não perde mais os benefícios da postura oculta ao sair dela
 Ataque poderoso: Causa dano e entra na postura oculta. Não é afetado por "Mastodonte"
-Destrinchar: Seu ataque básico agora gasta energia, mas agora tem a margem de acerto massivo drasticamente diminuida e causa maldição mesmo fora da postura oculta
-Feitiço inato: gastar energia recupera um pouco de  vida com base na quantia gasta
+Destrinchar: Seu ataque básico agora gasta Foco, mas agora tem a margem de acerto massivo drasticamente diminuida e causa maldição mesmo fora da postura oculta
+Feitiço inato: gastar Foco recupera um pouco de  vida com base na quantia gasta
 Pés arrastados: ganha +1 movimento, +1 ação de ataque, mas não recebe os buffs de relíquias
 Cruel: os inimigos ganham uma barra de execução com base no quão baixa está sua sanidade, causar dano ao inimigo caso ele esteja abaixo dessa barra mata ele na hora
 Forte intenção: escolhe um alvo pra ignorar suas habilidades pelo próximo turno
@@ -244,7 +252,7 @@ Roda dos 6 Desejos: rola uma roda com 6 efeitos diferentes, e dependendo da cor 
 Azul: atordoa o alvo no acerto
 Preto: aplica um status aleatório
 Vermelho: O dano causado respinga nos adjacentes em, mesmo em ataques em área
-Verde: Recupera energia no acerto
+Verde: Recupera Foco no acerto
 Amarelo: empurra no acerto
 Espírito sol: invoca o "espírito sol", que tem muita vida e dano moderado, focado em defensiva
 Espírito lua: invoca o "espírito lua", que tem pouca vida, e muito dano, focado na ofensiva
@@ -260,13 +268,13 @@ Morte: amaldiçoa o alvo com uma quantidade de dano. Se o alvo cair pra menos qu
 Mundo: causa dano verdadeiro a todos os inimigos
 Fortuna: "Roda dos 6 desejos" agora aplica 3 benefícios ao invés de 1
 Temperança: o espírito sol compartilha suas resistências com os alvos adjacentes
-Mago: o espírito lua recupera vida e energia para xamã ao acertar um ataque de dano massivo
+Mago: o espírito lua recupera vida e Foco para a xamã ao acertar um ataque de dano massivo
 Hierofante: Causa dano a todos os inimgos e aplica desvantagem. Caso o espírito lua esteja invocado, ele ganha vantagem após o uso
 Enforcado: causa dano e atordoa o inimigo, causando dano enquanto ele estiver atordoado nos turnos seguintes, passando imunidade em dano massivo. Se ele morrer estando atordoado, ele explode e causa dano aos adjacentes
-Louco: o espírito lua causa mais dano conforme a sanidade da cartomante, ela pode ativamente perder sanidade usando esta habilidade
+Louco: o espírito lua causa mais dano conforme a sanidade da xamã, ela pode ativamente perder sanidade usando esta habilidade
 Amantes: ao morrer, o espirito lua rouba a vida do inimigo mais fraco presente e se recupera. Caso mate o alvo nesse ataque, volta com a vida cheia e ganha um turno
 Torre: causa dano e gera um efeito nos inimigos, que bloqueia ataques a distância por algumas rodadas
-- Escurdeiro-
+- Escudeiro-
 Suporte Defensivo, com foco em curar e dar buff aos aliados
 Habilidades padrão: Ataque básico, Lança sagrada, Fogo acolhedor, Sermão divino         Caminhos
 Santificado/-/Abençoado
@@ -279,19 +287,19 @@ Fogo acolhedor: cura o alvo e remove debuffs
 Sermão divino: atordoa o alvo e aplica luz
 Em nome do pai: Agora, "Fogo acolhedor" cura também a sanidade do alvo.
 Exocomungar: causa dano, aplica luz e remove os buffs do inimigo
-Em nome do filho: todos os aliados a sua frente recuperam energia
+Em nome do filho: todos os aliados a sua frente recuperam Foco
 Espírito santo: Suas curas, tanto de sanidade quanto de vida concedem sobre-cura
 Crucifixo: você é imune a empurrões e puxões, e pode usar "fogo acolhedor" sem gastar seu turno, uma vez por combate
 Impeto fulgaz: "fogo acolhedor" se torna hp regen ao invés de uma cura instantânea, e o alvo não pode ser acometido por efeitos de status enquanto sob efeito da habilidade
 Acusação: Marca o alvo e o impede de receber buffs enquanto a marca durar
-Puritano: Seus pontos de energia aumentam conforme menos vida máxima você tem
+Puritano: Seus pontos de Foco aumentam conforme menos vida máxima você tem
 Fé inabalável: ao receber um golpe fatal, você cura seus aliados, e se preserva com 1 de hp
 Exaltação: Torna um aliado invencível por algumas rodadas, aumenta seu dano e concede dano de espinhos que aplicam luz
 Baluarte da fé: "lança sagrada" se torna um ataque em área, e após o uso, aumenta o dano dos aliados de acordo com quantos alvos foram atingidos
 Em ti confio: faz um aliado aplicar "vanguarda" a outro aliado, e recupera sanidade do alvo
 Armadura de deus: torna um aliado imune a dano verdadeiro pelo combate
-Caminhar dos anjos: ao iniciar um combate, você aumenta os pontos de energia e sanidade máximos e atuais dos seus aliados
-Sacramento: Sermão divino e fogo acolhedor não gastam mais energia para serem lançados
+Caminhar dos anjos: ao iniciar um combate, você aumenta os pontos de Foco e sanidade máximos e atuais dos seus aliados
+Sacramento: Sermão divino e fogo acolhedor não gastam mais Foco para serem lançados
 Abadia monumental: "fogo acolhedor" agora é lançado em todos os aliados em campo
 Empírico: Você é imune ao efeito de fogo, e reflete ele ao ser atingido por tal
 Mente iluminada: você não pode mais morrer por sanidade e nem enlouquecer

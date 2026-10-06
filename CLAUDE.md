@@ -31,32 +31,38 @@ salvar): registrar em [docs/ALTERACOES-IA.md](docs/ALTERACOES-IA.md).
 
 ### Regra 3 — Documentação externa: o Claude só grava na pasta de revisão
 
-Trello e Google Drive são a fonte de verdade. **O Claude nunca altera um documento oficial
-diretamente** (decidido em 01/10/2026; até então ele não gravava nada no Drive):
+**A documentação do projeto (aqui, fora do Drive) é a mais atualizada** (decidido em 06/10/2026).
+Quando ela e o Drive divergem, **vale a daqui** — salvo exceções que a equipe indicar (a primeira: o
+atributo Iniciativa, que veio do GDD do Drive em 06/10/2026). O que estiver desatualizado no Drive vai
+corrigido para a pasta de revisão. **O Claude nunca altera um documento oficial diretamente**:
 
 | Onde | O que o Claude pode fazer |
 |---|---|
-| **Drive — pasta oficial** | Só ler |
-| **Drive — pasta "Para revisão"** | Gravar as alterações. Um dev revisa e, dando o ok, leva para a pasta oficial |
+| **Drive — pasta oficial** (`Pato Games/Infos`) | Só ler |
+| **Drive — pasta `Pato Games/Revisão`** | Gravar as correções. Um dev revisa e, dando o ok, leva para a pasta oficial |
 | **Trello** | Só ler os cards |
 
 Sugestões que não são alteração de documento vão para
 [docs/SUGESTOES-PARA-DOCUMENTACAO.md](docs/SUGESTOES-PARA-DOCUMENTACAO.md).
 
-**Arquivos com sufixo `DoRepositorio`:** são o espelho do que está no Drive. O Claude edita **apenas
-os arquivos sem esse sufixo**. Havendo divergência, **perguntar qual lado vale antes de aplicar** —
-nunca escolher sozinho.
+**Arquivos com sufixo `DoRepositorio`:** são o espelho do que estava no Drive. O Claude edita **apenas
+os arquivos sem esse sufixo**.
 
-**Enquanto o Claude não tiver acesso ao Drive** (em 01/10/2026 ainda não tinha neste ambiente), o
-caminho é manual:
+**O que o acesso ao Drive deixa fazer** (testado em 06/10/2026, no Claude Code desktop): ler e baixar
+qualquer documento (o `.docx` baixado vai direto para o disco, sem passar pela conversa) e criar
+documentos de texto na pasta Revisão. **Não dá para enviar um `.docx`**: o conector só sobe texto.
+Por isso a correção de um documento sai em duas partes:
+
+1. a **lista do que mudou** (onde, texto antigo, texto novo, por quê) vai como documento na pasta
+   Revisão do Drive;
+2. o **`.docx` corrigido** é gerado em `docs/para-repositorio/<data>/`, e um dev sobe para a pasta
+   Revisão.
 
 ```bash
 python docs/ferramentas/sincronizar-docs.py         # o que está diferente?
-python docs/ferramentas/atualizar-documentacao.py   # gera os .docx atualizados
+python docs/ferramentas/atualizar-documentacao.py   # rodada de 18/09/2026
+python docs/ferramentas/revisao-2026-10-06.py --gdd "GDD baixado do Drive.docx"   # rodada de 06/10/2026
 ```
-
-Os arquivos saem em `docs/para-repositorio/`. O dev revisa e sobe para o Drive — é a mesma revisão
-da pasta "Para revisão", feita à mão.
 
 **Regra da formatação:** os documentos são lidos por outras pessoas da equipe, então os `.docx`
 **nunca são gerados do zero** — o script abre o original e altera só o texto, mantendo estilos,
@@ -183,6 +189,12 @@ No VS Code, **F5** roda com depuração de C#.
 
 Base de exploração 3D isométrica: câmera de 8 ângulos, personagem em billboard e movimentação
 relativa à câmera. Arte e cenário ainda são provisórios.
+
+**Combate básico (06/10/2026):** em hexágonos, no próprio mapa onde a luta começou, no estilo do Pit
+People — grade fixa por mapa (`GradeDeCombate`), grito de aviso, formação pelo menu de equipe (T),
+iniciativa d20, movimento de 3 casas, ataque básico e as habilidades padrão da equipe de teste, tela de
+fim de jogo provisória. Dois nós globais (autoload): `Equipe` e `Combate`. Regras e números
+(simbólicos) em [docs/JOGO.md](docs/JOGO.md), seção "Combate".
 
 Se uma informação sobre o jogo não estiver em `docs/externo/`, **perguntar à equipe em vez de
 supor.**
